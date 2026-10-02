@@ -1,0 +1,2555 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0891b2">
+
+<title>Ангийн фонд</title>
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+:root{
+    --primary:#0891b2;
+    --primary-dark:#0e7490;
+    --green:#16a34a;
+    --green-dark:#15803d;
+    --blue:#2563eb;
+    --orange:#f59e0b;
+    --red:#dc2626;
+
+    --text:#0f172a;
+    --muted:#64748b;
+    --border:#e2e8f0;
+    --background:#f1f5f9;
+    --card:#ffffff;
+}
+
+body{
+    margin:0;
+    font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Arial,
+        sans-serif;
+
+    background:var(--background);
+    color:var(--text);
+}
+
+button,
+input,
+select,
+textarea{
+    font:inherit;
+}
+
+button{
+    cursor:pointer;
+}
+
+.hidden{
+    display:none !important;
+}
+
+/* ==========================================
+   APP
+========================================== */
+
+.app{
+    width:100%;
+    max-width:480px;
+    min-height:100vh;
+    margin:auto;
+    background:#f8fafc;
+    position:relative;
+    padding-bottom:95px;
+}
+
+/* ==========================================
+   LOGIN
+========================================== */
+
+#authScreen{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+
+    background:
+        radial-gradient(circle at top right,
+        rgba(34,197,94,.15),
+        transparent 32%),
+
+        linear-gradient(
+            145deg,
+            #ecfeff,
+            #f0fdf4 55%,
+            #ffffff
+        );
+}
+
+.auth-card{
+    width:100%;
+    max-width:410px;
+
+    background:#ffffff;
+    border:1px solid rgba(148,163,184,.25);
+    border-radius:28px;
+
+    padding:26px;
+
+    box-shadow:
+        0 24px 60px rgba(15,23,42,.10);
+}
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:15px;
+    margin-bottom:26px;
+}
+
+.logo{
+    width:76px;
+    height:76px;
+    min-width:76px;
+
+    border-radius:22px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:40px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #dbeafe,
+            #dcfce7
+        );
+
+    box-shadow:
+        0 10px 24px rgba(8,145,178,.15);
+}
+
+.brand h1{
+    margin:0;
+    font-size:26px;
+    line-height:1;
+    font-weight:900;
+}
+
+.brand p{
+    margin:7px 0 0;
+    color:var(--muted);
+    font-size:12px;
+    line-height:1.45;
+}
+
+.auth-tabs{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:5px;
+
+    padding:5px;
+
+    background:#f1f5f9;
+    border-radius:13px;
+
+    margin-bottom:20px;
+}
+
+.auth-tab{
+    border:0;
+    padding:11px;
+
+    border-radius:10px;
+
+    background:transparent;
+
+    font-size:13px;
+    font-weight:700;
+    color:#64748b;
+}
+
+.auth-tab.active{
+    background:#ffffff;
+    color:var(--primary-dark);
+
+    box-shadow:
+        0 3px 10px rgba(15,23,42,.08);
+}
+
+.field{
+    margin-bottom:14px;
+}
+
+.field label{
+    display:block;
+    margin-bottom:7px;
+
+    font-size:12px;
+    font-weight:700;
+    color:#475569;
+}
+
+.field input,
+.field select,
+.field textarea{
+    width:100%;
+
+    padding:14px 15px;
+
+    border:1px solid #dbe3ea;
+    border-radius:13px;
+
+    outline:none;
+
+    background:#ffffff;
+    color:#0f172a;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus{
+    border-color:#22b8cf;
+    box-shadow:
+        0 0 0 3px rgba(34,184,207,.10);
+}
+
+.primary-btn{
+    width:100%;
+
+    border:0;
+    border-radius:13px;
+
+    padding:14px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #0891b2,
+            #16a34a
+        );
+
+    color:#ffffff;
+
+    font-weight:800;
+
+    box-shadow:
+        0 8px 18px rgba(8,145,178,.20);
+}
+
+.demo-note{
+    margin-top:18px;
+    padding:12px;
+
+    border-radius:12px;
+
+    background:#f8fafc;
+
+    font-size:11px;
+    line-height:1.5;
+    color:#64748b;
+
+    text-align:center;
+}
+
+/* ==========================================
+   HEADER
+========================================== */
+
+.header{
+    padding:
+        max(20px, env(safe-area-inset-top))
+        20px
+        18px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #0e7490,
+            #0891b2 50%,
+            #16a34a
+        );
+
+    color:white;
+
+    border-radius:
+        0 0 26px 26px;
+}
+
+.header-top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+}
+
+.header-brand{
+    display:flex;
+    align-items:center;
+    gap:11px;
+}
+
+.mini-logo{
+    width:46px;
+    height:46px;
+
+    border-radius:14px;
+
+    background:rgba(255,255,255,.18);
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:25px;
+
+    border:1px solid rgba(255,255,255,.25);
+}
+
+.header h2{
+    margin:0;
+    font-size:19px;
+}
+
+.header-sub{
+    margin-top:4px;
+    font-size:11px;
+    opacity:.82;
+}
+
+.avatar{
+    width:42px;
+    height:42px;
+
+    border-radius:50%;
+
+    background:#ffffff;
+    color:#0e7490;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-weight:900;
+}
+
+.class-card{
+    margin-top:20px;
+
+    padding:16px;
+
+    border:1px solid rgba(255,255,255,.22);
+    border-radius:18px;
+
+    background:rgba(255,255,255,.13);
+
+    backdrop-filter:blur(12px);
+}
+
+.class-card-top{
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+}
+
+.class-name{
+    font-size:18px;
+    font-weight:900;
+}
+
+.class-school{
+    margin-top:4px;
+    font-size:11px;
+    opacity:.8;
+}
+
+.role-pill{
+    height:max-content;
+
+    padding:6px 9px;
+
+    border-radius:999px;
+
+    background:rgba(255,255,255,.18);
+
+    font-size:10px;
+    font-weight:700;
+}
+
+/* ==========================================
+   CONTENT
+========================================== */
+
+.content{
+    padding:18px 16px;
+}
+
+.section-title{
+    margin:
+        7px 2px
+        12px;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+}
+
+.section-title h3{
+    margin:0;
+    font-size:16px;
+}
+
+.section-title span{
+    color:#64748b;
+    font-size:11px;
+}
+
+/* ==========================================
+   SUMMARY
+========================================== */
+
+.balance-card{
+    padding:20px;
+
+    border-radius:20px;
+
+    color:#ffffff;
+
+    background:
+        linear-gradient(
+            135deg,
+            #0f766e,
+            #16a34a
+        );
+
+    box-shadow:
+        0 14px 30px rgba(22,163,74,.18);
+}
+
+.balance-label{
+    font-size:12px;
+    opacity:.82;
+}
+
+.balance{
+    margin-top:5px;
+
+    font-size:32px;
+    font-weight:900;
+    letter-spacing:-1px;
+}
+
+.balance-meta{
+    margin-top:17px;
+
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+}
+
+.balance-meta > div{
+    padding:11px;
+
+    background:rgba(255,255,255,.13);
+
+    border-radius:13px;
+}
+
+.balance-meta small{
+    display:block;
+    opacity:.75;
+    margin-bottom:4px;
+}
+
+.balance-meta strong{
+    font-size:14px;
+}
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:10px;
+
+    margin-top:12px;
+}
+
+.stat{
+    padding:15px;
+
+    background:#ffffff;
+
+    border:1px solid var(--border);
+    border-radius:17px;
+}
+
+.stat-icon{
+    width:37px;
+    height:37px;
+
+    border-radius:11px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    background:#ecfeff;
+
+    margin-bottom:10px;
+}
+
+.stat small{
+    display:block;
+    color:#64748b;
+    margin-bottom:5px;
+}
+
+.stat strong{
+    font-size:18px;
+}
+
+/* ==========================================
+   ACTIONS
+========================================== */
+
+.actions{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:8px;
+}
+
+.action{
+    border:0;
+    background:#ffffff;
+
+    padding:13px 5px;
+
+    border-radius:15px;
+
+    box-shadow:
+        0 4px 14px rgba(15,23,42,.05);
+
+    color:#334155;
+}
+
+.action-icon{
+    width:40px;
+    height:40px;
+
+    margin:0 auto 7px;
+
+    border-radius:13px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    background:#ecfeff;
+
+    font-size:20px;
+}
+
+.action span{
+    display:block;
+
+    font-size:10px;
+    font-weight:700;
+}
+
+/* ==========================================
+   LIST
+========================================== */
+
+.list{
+    display:flex;
+    flex-direction:column;
+    gap:9px;
+}
+
+.list-item{
+    display:flex;
+    align-items:center;
+    gap:11px;
+
+    padding:13px;
+
+    background:#ffffff;
+
+    border:1px solid #e5e7eb;
+    border-radius:15px;
+}
+
+.list-avatar{
+    width:42px;
+    height:42px;
+    min-width:42px;
+
+    border-radius:13px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    background:#eff6ff;
+
+    font-size:20px;
+}
+
+.list-main{
+    flex:1;
+    min-width:0;
+}
+
+.list-title{
+    font-size:13px;
+    font-weight:800;
+}
+
+.list-sub{
+    margin-top:4px;
+
+    font-size:10px;
+    color:#64748b;
+}
+
+.amount{
+    font-size:13px;
+    font-weight:900;
+}
+
+.green{
+    color:#16a34a;
+}
+
+.red{
+    color:#dc2626;
+}
+
+.orange{
+    color:#d97706;
+}
+
+.status{
+    display:inline-flex;
+
+    margin-top:5px;
+    padding:4px 7px;
+
+    border-radius:999px;
+
+    font-size:9px;
+    font-weight:800;
+}
+
+.status.pending{
+    color:#a16207;
+    background:#fef9c3;
+}
+
+.status.approved{
+    color:#15803d;
+    background:#dcfce7;
+}
+
+.status.rejected{
+    color:#b91c1c;
+    background:#fee2e2;
+}
+
+/* ==========================================
+   EMPTY
+========================================== */
+
+.empty{
+    padding:28px 20px;
+
+    background:#ffffff;
+
+    border:1px dashed #cbd5e1;
+    border-radius:17px;
+
+    text-align:center;
+
+    color:#64748b;
+}
+
+.empty-icon{
+    font-size:31px;
+    margin-bottom:8px;
+}
+
+/* ==========================================
+   NAV
+========================================== */
+
+.bottom-nav{
+    position:fixed;
+
+    left:50%;
+    bottom:0;
+
+    transform:translateX(-50%);
+
+    width:100%;
+    max-width:480px;
+
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+
+    padding:
+        8px 6px
+        max(8px, env(safe-area-inset-bottom));
+
+    background:rgba(255,255,255,.96);
+
+    border-top:1px solid #e2e8f0;
+
+    backdrop-filter:blur(18px);
+
+    z-index:50;
+}
+
+.nav-btn{
+    border:0;
+    background:transparent;
+
+    padding:7px 2px;
+
+    color:#94a3b8;
+
+    font-size:9px;
+    font-weight:700;
+}
+
+.nav-btn .nav-icon{
+    display:block;
+    margin-bottom:3px;
+    font-size:20px;
+}
+
+.nav-btn.active{
+    color:#0891b2;
+}
+
+/* ==========================================
+   PAGE
+========================================== */
+
+.page{
+    display:none;
+}
+
+.page.active{
+    display:block;
+}
+
+/* ==========================================
+   MODAL
+========================================== */
+
+.modal{
+    position:fixed;
+    inset:0;
+
+    z-index:100;
+
+    display:flex;
+    align-items:flex-end;
+    justify-content:center;
+
+    background:rgba(15,23,42,.48);
+
+    padding:14px;
+}
+
+.modal-box{
+    width:100%;
+    max-width:450px;
+
+    max-height:88vh;
+    overflow:auto;
+
+    background:#ffffff;
+
+    border-radius:24px;
+
+    padding:20px;
+
+    box-shadow:
+        0 24px 70px rgba(15,23,42,.25);
+}
+
+.modal-head{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+
+    margin-bottom:18px;
+}
+
+.modal-head h3{
+    margin:0;
+    font-size:18px;
+}
+
+.modal-head p{
+    margin:5px 0 0;
+
+    color:#64748b;
+    font-size:11px;
+}
+
+.close-btn{
+    width:35px;
+    height:35px;
+
+    border:0;
+    border-radius:10px;
+
+    background:#f1f5f9;
+
+    color:#64748b;
+
+    font-size:18px;
+}
+
+.two-buttons{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:9px;
+
+    margin-top:12px;
+}
+
+.secondary-btn{
+    padding:13px;
+
+    border:1px solid #dbe3ea;
+    border-radius:12px;
+
+    background:#ffffff;
+
+    font-weight:700;
+    color:#475569;
+}
+
+.approve-btn{
+    padding:11px;
+
+    border:0;
+    border-radius:11px;
+
+    background:#dcfce7;
+    color:#15803d;
+
+    font-weight:800;
+}
+
+.reject-btn{
+    padding:11px;
+
+    border:0;
+    border-radius:11px;
+
+    background:#fee2e2;
+    color:#b91c1c;
+
+    font-weight:800;
+}
+
+/* ==========================================
+   TOAST
+========================================== */
+
+.toast{
+    position:fixed;
+
+    left:50%;
+    bottom:95px;
+
+    transform:translateX(-50%);
+
+    z-index:200;
+
+    width:calc(100% - 35px);
+    max-width:410px;
+
+    padding:13px 15px;
+
+    border-radius:13px;
+
+    background:#0f172a;
+    color:#ffffff;
+
+    font-size:12px;
+
+    box-shadow:
+        0 12px 30px rgba(15,23,42,.25);
+}
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media(max-width:360px){
+
+    .actions{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .brand h1{
+        font-size:23px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ==========================================
+     AUTH
+========================================== -->
+
+<div id="authScreen">
+
+    <div class="auth-card">
+
+        <div class="brand">
+
+            <div class="logo">
+                🐷
+            </div>
+
+            <div>
+                <h1>Ангийн фонд</h1>
+
+                <p>
+                    Анги, бүлгийн сангаа<br>
+                    ил тод удирд.
+                </p>
+            </div>
+
+        </div>
+
+        <div class="auth-tabs">
+
+            <button
+                class="auth-tab active"
+                id="loginTab"
+                onclick="showAuth('login')"
+            >
+                Нэвтрэх
+            </button>
+
+            <button
+                class="auth-tab"
+                id="registerTab"
+                onclick="showAuth('register')"
+            >
+                Бүртгүүлэх
+            </button>
+
+        </div>
+
+
+        <!-- LOGIN -->
+
+        <div id="loginForm">
+
+            <div class="field">
+                <label>Утасны дугаар</label>
+
+                <input
+                    type="tel"
+                    id="loginPhone"
+                    placeholder="99112233"
+                    maxlength="8"
+                >
+            </div>
+
+            <div class="field">
+                <label>Нууц үг</label>
+
+                <input
+                    type="password"
+                    id="loginPassword"
+                    placeholder="••••••••"
+                >
+            </div>
+
+            <button
+                class="primary-btn"
+                onclick="demoLogin()"
+            >
+                Нэвтрэх
+            </button>
+
+        </div>
+
+
+        <!-- REGISTER -->
+
+        <div
+            id="registerForm"
+            class="hidden"
+        >
+
+            <div class="field">
+                <label>Таны нэр</label>
+
+                <input
+                    type="text"
+                    id="registerName"
+                    placeholder="Нэр"
+                >
+            </div>
+
+            <div class="field">
+                <label>Утасны дугаар</label>
+
+                <input
+                    type="tel"
+                    id="registerPhone"
+                    placeholder="99112233"
+                    maxlength="8"
+                >
+            </div>
+
+            <div class="field">
+                <label>Нууц үг</label>
+
+                <input
+                    type="password"
+                    id="registerPassword"
+                    placeholder="6-аас дээш тэмдэгт"
+                >
+            </div>
+
+            <button
+                class="primary-btn"
+                onclick="openRoleModal()"
+            >
+                Үргэлжлүүлэх
+            </button>
+
+        </div>
+
+        <div class="demo-note">
+            Одоогоор UI туршилтын хувилбар.<br>
+            Supabase authentication дараагийн шатанд холбогдоно.
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================
+     MAIN APP
+========================================== -->
+
+<div
+    id="mainApp"
+    class="app hidden"
+>
+
+    <header class="header">
+
+        <div class="header-top">
+
+            <div class="header-brand">
+
+                <div class="mini-logo">
+                    🐷
+                </div>
+
+                <div>
+                    <h2>Ангийн фонд</h2>
+
+                    <div class="header-sub">
+                        Анги, бүлгийн сангаа ил тод удирд.
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="avatar">
+                Б
+            </div>
+
+        </div>
+
+
+        <div class="class-card">
+
+            <div class="class-card-top">
+
+                <div>
+
+                    <div class="class-name">
+                        3А анги
+                    </div>
+
+                    <div class="class-school">
+                        2026–2027 оны хичээлийн жил
+                    </div>
+
+                </div>
+
+                <div
+                    class="role-pill"
+                    id="roleLabel"
+                >
+                    Админ
+                </div>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- ======================================
+         HOME
+    ======================================= -->
+
+    <main
+        id="homePage"
+        class="page active"
+    >
+
+        <div class="content">
+
+            <div class="balance-card">
+
+                <div class="balance-label">
+                    Сангийн үлдэгдэл
+                </div>
+
+                <div class="balance">
+                    480,000 ₮
+                </div>
+
+                <div class="balance-meta">
+
+                    <div>
+                        <small>Нийт орлого</small>
+                        <strong>600,000 ₮</strong>
+                    </div>
+
+                    <div>
+                        <small>Нийт зарлага</small>
+                        <strong>120,000 ₮</strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="stats">
+
+                <div class="stat">
+                    <div class="stat-icon">👧</div>
+                    <small>Нийт хүүхэд</small>
+                    <strong>30</strong>
+                </div>
+
+                <div class="stat">
+                    <div class="stat-icon">✅</div>
+                    <small>Төлсөн</small>
+                    <strong class="green">20</strong>
+                </div>
+
+                <div class="stat">
+                    <div class="stat-icon">⏳</div>
+                    <small>Хүлээгдэж буй</small>
+                    <strong class="orange">3</strong>
+                </div>
+
+                <div class="stat">
+                    <div class="stat-icon">⚠️</div>
+                    <small>Төлөөгүй</small>
+                    <strong class="red">7</strong>
+                </div>
+
+            </div>
+
+
+            <div class="section-title">
+                <h3>Шуурхай үйлдэл</h3>
+            </div>
+
+            <div class="actions">
+
+                <button
+                    class="action"
+                    onclick="openModal('paymentModal')"
+                >
+                    <div class="action-icon">💳</div>
+                    <span>Төлөлт</span>
+                </button>
+
+                <button
+                    class="action"
+                    onclick="openModal('expenseModal')"
+                >
+                    <div class="action-icon">🧾</div>
+                    <span>Зарлага</span>
+                </button>
+
+                <button
+                    class="action"
+                    onclick="openModal('inviteModal')"
+                >
+                    <div class="action-icon">🔗</div>
+                    <span>Урих</span>
+                </button>
+
+                <button
+                    class="action"
+                    onclick="switchPage('report')"
+                >
+                    <div class="action-icon">📊</div>
+                    <span>Тайлан</span>
+                </button>
+
+            </div>
+
+
+            <div class="section-title">
+                <h3>Сүүлийн хөдөлгөөн</h3>
+                <span>Бүгд</span>
+            </div>
+
+            <div class="list">
+
+                <div class="list-item">
+
+                    <div class="list-avatar">
+                        👧
+                    </div>
+
+                    <div class="list-main">
+                        <div class="list-title">
+                            Ану
+                        </div>
+
+                        <div class="list-sub">
+                            I улирлын фонд
+                        </div>
+                    </div>
+
+                    <div class="amount green">
+                        +30,000 ₮
+                    </div>
+
+                </div>
+
+
+                <div class="list-item">
+
+                    <div class="list-avatar">
+                        🧾
+                    </div>
+
+                    <div class="list-main">
+                        <div class="list-title">
+                            Ангийн хэрэглэл
+                        </div>
+
+                        <div class="list-sub">
+                            Өнгийн цаас, маркер
+                        </div>
+                    </div>
+
+                    <div class="amount red">
+                        -45,000 ₮
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <!-- ======================================
+         CHILDREN
+    ======================================= -->
+
+    <main
+        id="childrenPage"
+        class="page"
+    >
+
+        <div class="content">
+
+            <div class="section-title">
+                <h3>Хүүхдүүд</h3>
+                <span>30 хүүхэд</span>
+            </div>
+
+
+            <div class="list">
+
+                <div class="list-item">
+
+                    <div class="list-avatar">
+                        👧
+                    </div>
+
+                    <div class="list-main">
+
+                        <div class="list-title">
+                            Батмаа
+                        </div>
+
+                        <div class="list-sub">
+                            Ээж: Сараа · 9911••••
+                        </div>
+
+                        <span class="status approved">
+                            Баталгаажсан
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="list-item">
+
+                    <div class="list-avatar">
+                        👦
+                    </div>
+
+                    <div class="list-main">
+
+                        <div class="list-title">
+                            Тэмүүлэн
+                        </div>
+
+                        <div class="list-sub">
+                            Аав: Бат · 8811••••
+                        </div>
+
+                        <span class="status pending">
+                            Баталгаажуулах
+                        </span>
+
+                    </div>
+
+                    <button
+                        class="approve-btn"
+                        onclick="toast('Хүүхдийн бүртгэлийг баталгаажууллаа.')"
+                    >
+                        ✓
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div class="section-title">
+                <h3>Шинэ бүртгэл</h3>
+            </div>
+
+            <button
+                class="primary-btn"
+                onclick="openModal('childModal')"
+            >
+                + Хүүхдийн бүртгэл илгээх
+            </button>
+
+        </div>
+
+    </main>
+
+
+    <!-- ======================================
+         PAYMENTS
+    ======================================= -->
+
+    <main
+        id="paymentsPage"
+        class="page"
+    >
+
+        <div class="content">
+
+            <div class="section-title">
+                <h3>Фондын төлбөр</h3>
+                <span>2026</span>
+            </div>
+
+
+            <div class="list">
+
+                <div class="list-item">
+
+                    <div class="list-avatar">
+                        💰
+                    </div>
+
+                    <div class="list-main">
+
+                        <div class="list-title">
+                            I улирлын фонд
+                        </div>
+
+                        <div class="list-sub">
+                            Төлөх дүн: 30,000 ₮
+                        </div>
+
+                        <span class="status approved">
+                            Төлсөн
+                        </span>
+
+                    </div>
+
+                    <strong class="green">
+                        30,000 ₮
+                    </strong>
+
+                </div>
+
+
+                <div class="list-item">
+
+                    <div class="list-avatar">
+                        💰
+                    </div>
+
+                    <div class="list-main">
+
+                        <div class="list-title">
+                            II улирлын фонд
+                        </div>
+
+                        <div class="list-sub">
+                            Төлөх дүн: 30,000 ₮
+                        </div>
+
+                        <span class="status pending">
+                            Төлөөгүй
+                        </span>
+
+                    </div>
+
+                    <button
+                        class="approve-btn"
+                        onclick="openModal('paymentModal')"
+                    >
+                        Төлөх
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div class="section-title">
+                <h3>Төлөлтийн хүсэлтүүд</h3>
+            </div>
+
+
+            <div class="list">
+
+                <div class="list-item">
+
+                    <div class="list-avatar">
+                        🧾
+                    </div>
+
+                    <div class="list-main">
+
+                        <div class="list-title">
+                            Тэмүүлэн
+                        </div>
+
+                        <div class="list-sub">
+                            30,000 ₮ · I улирлын фонд
+                        </div>
+
+                        <span class="status pending">
+                            Шалгаж байна
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <!-- ======================================
+         REPORT
+    ======================================= -->
+
+    <main
+        id="reportPage"
+        class="page"
+    >
+
+        <div class="content">
+
+            <div class="section-title">
+                <h3>Сангийн тайлан</h3>
+                <span>2026–2027</span>
+            </div>
+
+
+            <div class="balance-card">
+
+                <div class="balance-label">
+                    Одоогийн үлдэгдэл
+                </div>
+
+                <div class="balance">
+                    480,000 ₮
+                </div>
+
+            </div>
+
+
+            <div class="stats">
+
+                <div class="stat">
+                    <div class="stat-icon">📥</div>
+                    <small>Орлого</small>
+                    <strong class="green">
+                        600,000 ₮
+                    </strong>
+                </div>
+
+                <div class="stat">
+                    <div class="stat-icon">📤</div>
+                    <small>Зарлага</small>
+                    <strong class="red">
+                        120,000 ₮
+                    </strong>
+                </div>
+
+            </div>
+
+
+            <div class="section-title">
+                <h3>Зарлагын түүх</h3>
+            </div>
+
+
+            <div class="list">
+
+                <div class="list-item">
+
+                    <div class="list-avatar">
+                        🧹
+                    </div>
+
+                    <div class="list-main">
+                        <div class="list-title">
+                            Цэвэрлэгээний хэрэгсэл
+                        </div>
+
+                        <div class="list-sub">
+                            2026.10.01 · Баримттай
+                        </div>
+                    </div>
+
+                    <strong class="red">
+                        -75,000 ₮
+                    </strong>
+
+                </div>
+
+
+                <div class="list-item">
+
+                    <div class="list-avatar">
+                        ✏️
+                    </div>
+
+                    <div class="list-main">
+                        <div class="list-title">
+                            Ангийн хэрэглэл
+                        </div>
+
+                        <div class="list-sub">
+                            2026.09.25 · Баримттай
+                        </div>
+                    </div>
+
+                    <strong class="red">
+                        -45,000 ₮
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <!-- ======================================
+         SETTINGS
+    ======================================= -->
+
+    <main
+        id="settingsPage"
+        class="page"
+    >
+
+        <div class="content">
+
+            <div class="section-title">
+                <h3>Тохиргоо</h3>
+            </div>
+
+
+            <div class="field">
+                <label>Анги / бүлгийн нэр</label>
+
+                <input
+                    value="3А анги"
+                >
+            </div>
+
+
+            <div class="field">
+                <label>Байгууллагын төрөл</label>
+
+                <select>
+                    <option>
+                        Ерөнхий боловсролын сургууль
+                    </option>
+
+                    <option>
+                        Цэцэрлэг
+                    </option>
+                </select>
+            </div>
+
+
+            <div class="field">
+                <label>Хичээлийн жил</label>
+
+                <input
+                    value="2026–2027"
+                >
+            </div>
+
+
+            <div class="section-title">
+                <h3>Фондын данс</h3>
+            </div>
+
+
+            <div class="field">
+                <label>Банк</label>
+
+                <select>
+                    <option>Хаан банк</option>
+                    <option>Голомт банк</option>
+                    <option>Хас банк</option>
+                    <option>Төрийн банк</option>
+                    <option>Худалдаа хөгжлийн банк</option>
+                </select>
+            </div>
+
+
+            <div class="field">
+                <label>Дансны дугаар</label>
+
+                <input
+                    placeholder="Дансны дугаар"
+                >
+            </div>
+
+
+            <div class="field">
+                <label>Дансны нэр</label>
+
+                <input
+                    placeholder="Данс эзэмшигчийн нэр"
+                >
+            </div>
+
+
+            <button
+                class="primary-btn"
+                onclick="toast('Тохиргоог хадгаллаа.')"
+            >
+                Хадгалах
+            </button>
+
+
+            <button
+                class="secondary-btn"
+                style="
+                    width:100%;
+                    margin-top:12px;
+                "
+                onclick="logoutDemo()"
+            >
+                Гарах
+            </button>
+
+        </div>
+
+    </main>
+
+
+    <!-- ======================================
+         BOTTOM NAV
+    ======================================= -->
+
+    <nav class="bottom-nav">
+
+        <button
+            class="nav-btn active"
+            data-page="home"
+            onclick="switchPage('home',this)"
+        >
+            <span class="nav-icon">⌂</span>
+            Нүүр
+        </button>
+
+        <button
+            class="nav-btn"
+            data-page="children"
+            onclick="switchPage('children',this)"
+        >
+            <span class="nav-icon">👥</span>
+            Хүүхэд
+        </button>
+
+        <button
+            class="nav-btn"
+            data-page="payments"
+            onclick="switchPage('payments',this)"
+        >
+            <span class="nav-icon">₮</span>
+            Төлбөр
+        </button>
+
+        <button
+            class="nav-btn"
+            data-page="report"
+            onclick="switchPage('report',this)"
+        >
+            <span class="nav-icon">▥</span>
+            Тайлан
+        </button>
+
+        <button
+            class="nav-btn"
+            data-page="settings"
+            onclick="switchPage('settings',this)"
+        >
+            <span class="nav-icon">⚙</span>
+            Тохиргоо
+        </button>
+
+    </nav>
+
+</div>
+
+
+<!-- ==========================================
+     ROLE MODAL
+========================================== -->
+
+<div
+    id="roleModal"
+    class="modal hidden"
+>
+
+    <div class="modal-box">
+
+        <div class="modal-head">
+
+            <div>
+                <h3>Та ямар эрхээр ашиглах вэ?</h3>
+
+                <p>
+                    Дараа нь анги, бүлэгтэйгээ холбогдоно.
+                </p>
+            </div>
+
+            <button
+                class="close-btn"
+                onclick="closeModal('roleModal')"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <button
+            class="primary-btn"
+            onclick="registerAs('admin')"
+        >
+            👨‍💼 Анги / бүлгийн админ
+        </button>
+
+
+        <button
+            class="secondary-btn"
+            style="
+                width:100%;
+                margin-top:10px;
+            "
+            onclick="registerAs('parent')"
+        >
+            👨‍👩‍👧 Эцэг эх / асран хамгаалагч
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================
+     CHILD MODAL
+========================================== -->
+
+<div
+    id="childModal"
+    class="modal hidden"
+>
+
+    <div class="modal-box">
+
+        <div class="modal-head">
+
+            <div>
+                <h3>Хүүхдийн бүртгэл</h3>
+
+                <p>
+                    Админд баталгаажуулах хүсэлт илгээгдэнэ.
+                </p>
+            </div>
+
+            <button
+                class="close-btn"
+                onclick="closeModal('childModal')"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="field">
+            <label>Урилгын код</label>
+
+            <input
+                placeholder="Жишээ: 3A-K7P4"
+            >
+        </div>
+
+
+        <div class="field">
+            <label>Хүүхдийн овог, нэр</label>
+
+            <input
+                placeholder="Овог нэр"
+            >
+        </div>
+
+
+        <div class="field">
+            <label>Хүүхэдтэй ямар холбоотой</label>
+
+            <select>
+                <option>Ээж</option>
+                <option>Аав</option>
+                <option>Асран хамгаалагч</option>
+            </select>
+        </div>
+
+
+        <button
+            class="primary-btn"
+            onclick="
+                closeModal('childModal');
+                toast('Хүүхдийн бүртгэлийг админд илгээлээ.');
+            "
+        >
+            Бүртгэл илгээх
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================
+     PAYMENT MODAL
+========================================== -->
+
+<div
+    id="paymentModal"
+    class="modal hidden"
+>
+
+    <div class="modal-box">
+
+        <div class="modal-head">
+
+            <div>
+                <h3>Төлөлт илгээх</h3>
+
+                <p>
+                    Админ шалгаж баталгаажуулсны дараа
+                    фондын орлогод бүртгэгдэнэ.
+                </p>
+            </div>
+
+            <button
+                class="close-btn"
+                onclick="closeModal('paymentModal')"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <div
+            style="
+                padding:14px;
+                margin-bottom:15px;
+
+                background:#f0fdf4;
+
+                border:1px solid #bbf7d0;
+                border-radius:14px;
+            "
+        >
+            <strong style="font-size:13px;">
+                Хаан банк
+            </strong>
+
+            <div
+                style="
+                    margin-top:5px;
+                    font-size:12px;
+                    color:#475569;
+                "
+            >
+                5000000000 · БАТМАА
+            </div>
+        </div>
+
+
+        <div class="field">
+            <label>Төлсөн дүн</label>
+
+            <input
+                type="number"
+                placeholder="30000"
+            >
+        </div>
+
+
+        <div class="field">
+            <label>Гүйлгээний утга</label>
+
+            <input
+                placeholder="Хүүхдийн нэр"
+            >
+        </div>
+
+
+        <div class="field">
+            <label>Баримтын зураг</label>
+
+            <input
+                type="file"
+                accept="image/*"
+            >
+        </div>
+
+
+        <button
+            class="primary-btn"
+            onclick="
+                closeModal('paymentModal');
+                toast('Төлөлтийн хүсэлт илгээгдлээ.');
+            "
+        >
+            Төлөлт илгээх
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================
+     EXPENSE MODAL
+========================================== -->
+
+<div
+    id="expenseModal"
+    class="modal hidden"
+>
+
+    <div class="modal-box">
+
+        <div class="modal-head">
+
+            <div>
+                <h3>Зарлага бүртгэх</h3>
+
+                <p>
+                    Фондын зарцуулалтыг баримттай бүртгэнэ.
+                </p>
+            </div>
+
+            <button
+                class="close-btn"
+                onclick="closeModal('expenseModal')"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="field">
+            <label>Зарлагын нэр</label>
+
+            <input
+                placeholder="Жишээ: Ангийн хэрэглэл"
+            >
+        </div>
+
+
+        <div class="field">
+            <label>Дүн</label>
+
+            <input
+                type="number"
+                placeholder="45000"
+            >
+        </div>
+
+
+        <div class="field">
+            <label>Тайлбар</label>
+
+            <textarea
+                rows="3"
+                placeholder="Зарлагын тайлбар"
+            ></textarea>
+        </div>
+
+
+        <div class="field">
+            <label>Баримтын зураг</label>
+
+            <input
+                type="file"
+                accept="image/*"
+            >
+        </div>
+
+
+        <button
+            class="primary-btn"
+            onclick="
+                closeModal('expenseModal');
+                toast('Зарлага бүртгэгдлээ.');
+            "
+        >
+            Зарлага хадгалах
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================
+     INVITE MODAL
+========================================== -->
+
+<div
+    id="inviteModal"
+    class="modal hidden"
+>
+
+    <div class="modal-box">
+
+        <div class="modal-head">
+
+            <div>
+                <h3>Эцэг эх урих</h3>
+
+                <p>
+                    Доорх кодыг ангийн эцэг эхчүүдэд илгээнэ.
+                </p>
+            </div>
+
+            <button
+                class="close-btn"
+                onclick="closeModal('inviteModal')"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <div
+            style="
+                padding:25px;
+
+                border-radius:18px;
+
+                background:
+                    linear-gradient(
+                        135deg,
+                        #ecfeff,
+                        #f0fdf4
+                    );
+
+                text-align:center;
+            "
+        >
+
+            <div
+                style="
+                    font-size:11px;
+                    color:#64748b;
+                "
+            >
+                Ангийн код
+            </div>
+
+            <div
+                style="
+                    margin-top:5px;
+
+                    font-size:29px;
+                    font-weight:900;
+
+                    letter-spacing:3px;
+
+                    color:#0e7490;
+                "
+            >
+                3A-K7P4
+            </div>
+
+        </div>
+
+
+        <button
+            class="primary-btn"
+            style="margin-top:14px;"
+            onclick="copyInviteCode()"
+        >
+            Код хуулах
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================
+     TOAST
+========================================== -->
+
+<div
+    id="toast"
+    class="toast hidden"
+></div>
+
+
+<script>
+
+/* ==========================================
+   AUTH UI
+========================================== */
+
+function showAuth(type){
+
+    const loginForm =
+        document.getElementById("loginForm");
+
+    const registerForm =
+        document.getElementById("registerForm");
+
+    const loginTab =
+        document.getElementById("loginTab");
+
+    const registerTab =
+        document.getElementById("registerTab");
+
+
+    if(type === "login"){
+
+        loginForm.classList.remove("hidden");
+        registerForm.classList.add("hidden");
+
+        loginTab.classList.add("active");
+        registerTab.classList.remove("active");
+
+    }else{
+
+        loginForm.classList.add("hidden");
+        registerForm.classList.remove("hidden");
+
+        loginTab.classList.remove("active");
+        registerTab.classList.add("active");
+
+    }
+
+}
+
+
+/* ==========================================
+   DEMO LOGIN
+========================================== */
+
+function demoLogin(){
+
+    document
+        .getElementById("authScreen")
+        .classList
+        .add("hidden");
+
+    document
+        .getElementById("mainApp")
+        .classList
+        .remove("hidden");
+
+}
+
+
+/* ==========================================
+   REGISTER
+========================================== */
+
+function openRoleModal(){
+
+    const name =
+        document
+            .getElementById("registerName")
+            .value
+            .trim();
+
+    const phone =
+        document
+            .getElementById("registerPhone")
+            .value
+            .trim();
+
+    const password =
+        document
+            .getElementById("registerPassword")
+            .value;
+
+
+    if(!name || phone.length !== 8 || password.length < 6){
+
+        toast(
+            "Нэр, 8 оронтой утас, 6-аас дээш тэмдэгттэй нууц үг оруулна уу."
+        );
+
+        return;
+    }
+
+
+    openModal("roleModal");
+
+}
+
+
+function registerAs(role){
+
+    closeModal("roleModal");
+
+    document
+        .getElementById("roleLabel")
+        .textContent =
+        role === "admin"
+        ? "Админ"
+        : "Эцэг эх";
+
+
+    document
+        .getElementById("authScreen")
+        .classList
+        .add("hidden");
+
+    document
+        .getElementById("mainApp")
+        .classList
+        .remove("hidden");
+
+
+    toast(
+        role === "admin"
+        ? "Админ эрхээр демо бүртгэл үүслээ."
+        : "Эцэг эхийн эрхээр демо бүртгэл үүслээ."
+    );
+
+}
+
+
+/* ==========================================
+   PAGE SWITCH
+========================================== */
+
+function switchPage(page,button){
+
+    document
+        .querySelectorAll(".page")
+        .forEach(function(item){
+
+            item.classList.remove("active");
+
+        });
+
+
+    const pageElement =
+        document.getElementById(
+            page + "Page"
+        );
+
+
+    if(pageElement){
+
+        pageElement
+            .classList
+            .add("active");
+
+    }
+
+
+    document
+        .querySelectorAll(".nav-btn")
+        .forEach(function(item){
+
+            item.classList.remove("active");
+
+        });
+
+
+    if(button){
+
+        button
+            .classList
+            .add("active");
+
+    }else{
+
+        const targetButton =
+            document.querySelector(
+                '.nav-btn[data-page="' +
+                page +
+                '"]'
+            );
+
+        if(targetButton){
+
+            targetButton
+                .classList
+                .add("active");
+
+        }
+
+    }
+
+
+    window.scrollTo({
+        top:0,
+        behavior:"smooth"
+    });
+
+}
+
+
+/* ==========================================
+   MODALS
+========================================== */
+
+function openModal(id){
+
+    const modal =
+        document.getElementById(id);
+
+    if(modal){
+
+        modal
+            .classList
+            .remove("hidden");
+
+    }
+
+}
+
+
+function closeModal(id){
+
+    const modal =
+        document.getElementById(id);
+
+    if(modal){
+
+        modal
+            .classList
+            .add("hidden");
+
+    }
+
+}
+
+
+/* ==========================================
+   COPY INVITE
+========================================== */
+
+async function copyInviteCode(){
+
+    const code =
+        "3A-K7P4";
+
+
+    try{
+
+        await navigator
+            .clipboard
+            .writeText(code);
+
+        toast(
+            "Ангийн код хуулагдлаа: " +
+            code
+        );
+
+    }catch(error){
+
+        toast(
+            "Ангийн код: " +
+            code
+        );
+
+    }
+
+}
+
+
+/* ==========================================
+   LOGOUT
+========================================== */
+
+function logoutDemo(){
+
+    document
+        .getElementById("mainApp")
+        .classList
+        .add("hidden");
+
+    document
+        .getElementById("authScreen")
+        .classList
+        .remove("hidden");
+
+    switchPage("home");
+
+}
+
+
+/* ==========================================
+   TOAST
+========================================== */
+
+let toastTimer = null;
+
+
+function toast(message){
+
+    const element =
+        document.getElementById("toast");
+
+
+    element.textContent =
+        message;
+
+    element
+        .classList
+        .remove("hidden");
+
+
+    clearTimeout(
+        toastTimer
+    );
+
+
+    toastTimer =
+        setTimeout(function(){
+
+            element
+                .classList
+                .add("hidden");
+
+        },2600);
+
+}
+
+
+/* ==========================================
+   CLOSE MODAL BY BACKDROP
+========================================== */
+
+document
+    .querySelectorAll(".modal")
+    .forEach(function(modal){
+
+        modal.addEventListener(
+            "click",
+            function(event){
+
+                if(event.target === modal){
+
+                    modal
+                        .classList
+                        .add("hidden");
+
+                }
+
+            }
+        );
+
+    });
+
+</script>
+
+</body>
+</html>
