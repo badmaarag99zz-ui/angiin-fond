@@ -965,17 +965,16 @@ button{
 
         <div id="loginForm">
 
-            <div class="field">
-                <label>Утасны дугаар</label>
+           <div class="field">
+    <label>И-мэйл хаяг</label>
 
-                <input
-                    type="tel"
-                    id="loginPhone"
-                    placeholder="99112233"
-                    maxlength="8"
-                >
-            </div>
-
+    <input
+        type="email"
+        id="registerEmail"
+        placeholder="name@example.com"
+        autocomplete="email"
+    >
+</div>
             <div class="field">
                 <label>Нууц үг</label>
 
@@ -1013,16 +1012,16 @@ button{
                 >
             </div>
 
-            <div class="field">
-                <label>Утасны дугаар</label>
+          <div class="field">
+    <label>И-мэйл хаяг</label>
 
-                <input
-                    type="tel"
-                    id="registerPhone"
-                    placeholder="99112233"
-                    maxlength="8"
-                >
-            </div>
+    <input
+        type="email"
+        id="loginEmail"
+        placeholder="name@example.com"
+        autocomplete="email"
+    >
+</div>
 
             <div class="field">
                 <label>Нууц үг</label>
@@ -2264,11 +2263,11 @@ function openRoleModal(){
             .value
             .trim();
 
-    const phone =
-        document
-            .getElementById("registerPhone")
-            .value
-            .trim();
+   const email =
+    document
+        .getElementById("registerEmail")
+        .value
+        .trim();
 
     const password =
         document
@@ -2276,14 +2275,19 @@ function openRoleModal(){
             .value;
 
 
-    if(!name || phone.length !== 8 || password.length < 6){
+  if(
+    !name ||
+    !email ||
+    !email.includes("@") ||
+    password.length < 6
+){
 
-        toast(
-            "Нэр, 8 оронтой утас, 6-аас дээш тэмдэгттэй нууц үг оруулна уу."
-        );
+    toast(
+        "Нэр, зөв и-мэйл хаяг, 6-аас дээш тэмдэгттэй нууц үг оруулна уу."
+    );
 
-        return;
-    }
+    return;
+}
 
 
     openModal("roleModal");
