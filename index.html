@@ -369,6 +369,82 @@ h4 {
 
     box-shadow: 0 3px 10px rgba(0,0,0,.12);
 }
+ /* ===== CLASS COVER SCALE ===== */
+
+.hero-ill{
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    height: auto;
+    overflow: hidden;
+    background: #dfe9ef;
+}
+
+/* Blur background */
+.class-cover-bg{
+    position: absolute;
+    inset: -20px;
+
+    background-size: cover;
+    background-position: center;
+
+    filter: blur(18px);
+    opacity: .45;
+
+    transform: scale(1.15);
+}
+
+/* Жинхэнэ зураг */
+.class-cover-image{
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: contain;
+    object-position: center;
+
+    display: block;
+}
+
+/* Slider */
+.cover-scale-box{
+    margin: 15px 0;
+}
+
+.cover-scale-row{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.cover-scale-row input[type="range"]{
+    flex: 1;
+}
+
+.cover-preview{
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+
+    overflow: hidden;
+
+    border-radius: 14px;
+    background: #e5edf3;
+
+    margin: 10px 0 15px;
+}
+
+.cover-preview img{
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: contain;
+}
 </style></head><body>
 <div id="toast" class="toast hidden"></div>
 <section id="auth" class="wrap" style="max-width:480px;padding-top:8vh"><div class="card"><h1>Ангийн фонд</h1><p class="muted">Анги, бүлгийн сангийн ил тод бүртгэл.</p><div class="tabs"><button class="btn primary" onclick="authTab('login')">Нэвтрэх</button><button class="btn soft" onclick="authTab('register')">Бүртгүүлэх</button></div><div id="loginBox"><div class="field"><label>Email</label><input id="le" type="email"></div><div class="field"><label>Нууц үг</label><input id="lp" type="password"></div><button class="btn primary" onclick="login()">Нэвтрэх</button></div><div id="registerBox" class="hidden"><div class="field"><label>Нэр</label><input id="rn"></div><div class="field"><label>Email</label><input id="re" type="email"></div><div class="field"><label>Нууц үг</label><input id="rp" type="password"></div><button class="btn primary" onclick="register()">Бүртгүүлэх</button></div></div></section>
@@ -481,11 +557,26 @@ function classCoverHTML(){
             .from("class-covers")
             .getPublicUrl(G.cover_image_path);
 
+        const url = data.publicUrl;
+
+        const scale =
+            Number(G.cover_image_scale || 1);
+
         return `
+            <div
+                class="class-cover-bg"
+                style="
+                    background-image:url('${url}');
+                "
+            ></div>
+
             <img
-                src="${data.publicUrl}"
+                src="${url}"
                 class="class-cover-image"
                 alt="Ангийн зураг"
+                style="
+                    transform:scale(${scale});
+                "
             >
 
             ${
@@ -493,15 +584,42 @@ function classCoverHTML(){
                 ? `
                     <button
                         class="cover-edit-btn"
-                        onclick="event.stopPropagation();openCoverUpload()"
+                        onclick="
+                            event.stopPropagation();
+                            openCoverUpload();
+                        "
                     >
-                        📷 Зураг солих
+                        📷 Зураг тохируулах
                     </button>
                 `
                 : ""
             }
         `;
     }
+
+
+    return `
+        <div class="class-cover-empty">
+            🏫
+        </div>
+
+        ${
+            M.role !== "parent"
+                ? `
+                    <button
+                        class="cover-edit-btn"
+                        onclick="
+                            event.stopPropagation();
+                            openCoverUpload();
+                        "
+                    >
+                        📷 Ангийн зураг оруулах
+                    </button>
+                `
+                : ""
+        }
+    `;
+}
 
     return `
         <div class="class-cover-empty">
@@ -525,130 +643,223 @@ function classCoverHTML(){
 
 
 function openCoverUpload(){
+function previewNewCover(input){
 
-    modal(`
-        <h3>Ангийн зураг</h3>
+    const file =
+        input.files?.[0];
 
-        <p class="muted">
-            Ангийн хамт олны зураг эсвэл ангийн cover зураг оруулна уу.
-        </p>
+    if(!file){
+        return;
+    }
 
-        <div class="field">
-            <label>Зураг сонгох</label>
 
-            <input
-                id="classCoverFile"
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-            >
-        </div>
+    const url =
+        URL.createObjectURL(file);
 
-        <button
-            class="btn primary"
-            style="width:100%"
-            onclick="uploadClassCover()"
+
+    let preview =
+        document.querySelector(
+            ".cover-preview"
+        );
+
+
+    preview.innerHTML = `
+
+        <div
+            id="coverPreviewBg"
+            class="class-cover-bg"
+            style="
+                background-image:url('${url}');
+            "
+        ></div>
+
+        <img
+            id="coverPreviewImage"
+            src="${url}"
         >
-            Зураг хадгалах
-        </button>
 
-        ${
-            G.cover_image_path
-            ? `
-                <button
-                    class="btn danger"
-                    style="width:100%;margin-top:8px"
-                    onclick="removeClassCover()"
-                >
-                    Зураг устгах
-                </button>
-            `
-            : ""
-        }
-    `);
+    `;
+
+
+    updateCoverScale(
+        document.getElementById(
+            "coverScale"
+        ).value
+    );
 }
 
 
-async function uploadClassCover(){
+function updateCoverScale(value){
+
+    const img =
+        document.getElementById(
+            "coverPreviewImage"
+        );
+
+    if(img){
+
+        img.style.transform =
+            `scale(${value})`;
+    }
+
+
+    const text =
+        document.getElementById(
+            "coverScaleText"
+        );
+
+    if(text){
+
+        text.textContent =
+            Math.round(
+                Number(value) * 100
+            ) + "%";
+    }
+}
+
+
+async function saveClassCover(){
 
     const input =
-        document.getElementById("classCoverFile");
+        document.getElementById(
+            "classCoverFile"
+        );
 
     const file =
         input?.files?.[0];
 
-    if(!file){
-        return toast("Зураг сонгоно уу");
-    }
 
-    if(file.size > 5 * 1024 * 1024){
-        return toast("Зураг 5MB-аас бага байна.");
-    }
+    const scale =
+        Number(
+            document.getElementById(
+                "coverScale"
+            ).value
+        );
+
 
     try{
 
-        const ext =
-            file.name
-                .split(".")
-                .pop()
-                .toLowerCase();
+        let imagePath =
+            G.cover_image_path || null;
 
-        const path =
-            `${G.id}/cover-${Date.now()}.${ext}`;
 
-        const { error: uploadError } =
-            await sb
-                .storage
-                .from("class-covers")
-                .upload(
-                    path,
-                    file,
-                    {
-                        cacheControl: "3600",
-                        upsert: false
-                    }
+        /* =========================
+           ШИНЭ ЗУРАГ БАЙВАЛ UPLOAD
+        ========================= */
+
+        if(file){
+
+            if(
+                file.size >
+                5 * 1024 * 1024
+            ){
+
+                return toast(
+                    "Зураг 5MB-аас бага байна."
                 );
+            }
 
-        if(uploadError){
-            throw uploadError;
+
+            const ext =
+                file.name
+                    .split(".")
+                    .pop()
+                    .toLowerCase();
+
+
+            const newPath =
+                `${G.id}/cover-${Date.now()}.${ext}`;
+
+
+            const {
+                error: uploadError
+            } =
+                await sb
+                    .storage
+                    .from(
+                        "class-covers"
+                    )
+                    .upload(
+                        newPath,
+                        file,
+                        {
+                            cacheControl:
+                                "3600",
+
+                            upsert:
+                                false
+                        }
+                    );
+
+
+            if(uploadError){
+                throw uploadError;
+            }
+
+
+            /* хуучин зураг */
+
+            if(G.cover_image_path){
+
+                await sb
+                    .storage
+                    .from(
+                        "class-covers"
+                    )
+                    .remove([
+                        G.cover_image_path
+                    ]);
+            }
+
+
+            imagePath =
+                newPath;
         }
 
 
-        /* Хуучин зураг байвал устгана */
+        /* =========================
+           GROUP UPDATE
+        ========================= */
 
-        if(G.cover_image_path){
-
-            await sb
-                .storage
-                .from("class-covers")
-                .remove([
-                    G.cover_image_path
-                ]);
-        }
-
-
-        /* Group дээр шинэ path хадгална */
-
-        const { data, error } =
+        const {
+            data,
+            error
+        } =
             await sb
                 .from("af_groups")
                 .update({
-                    cover_image_path: path
+
+                    cover_image_path:
+                        imagePath,
+
+                    cover_image_scale:
+                        scale
+
                 })
-                .eq("id", G.id)
+                .eq(
+                    "id",
+                    G.id
+                )
                 .select()
                 .single();
+
 
         if(error){
             throw error;
         }
 
+
         G = data;
+
 
         closeModal();
 
         home();
 
-        toast("Ангийн зураг хадгалагдлаа");
+
+        toast(
+            "Ангийн зураг хадгалагдлаа"
+        );
 
     }
     catch(e){
@@ -661,6 +872,152 @@ async function uploadClassCover(){
         );
     }
 }
+    let currentImage = "";
+
+    if(G.cover_image_path){
+
+        const { data } = sb
+            .storage
+            .from("class-covers")
+            .getPublicUrl(G.cover_image_path);
+
+        currentImage = data.publicUrl;
+    }
+
+
+    const scale =
+        Number(G.cover_image_scale || 1);
+
+
+    modal(`
+        <h3>Ангийн зураг</h3>
+
+        ${
+            currentImage
+            ? `
+                <div class="cover-preview">
+
+                    <div
+                        id="coverPreviewBg"
+                        class="class-cover-bg"
+                        style="
+                            background-image:url('${currentImage}');
+                        "
+                    ></div>
+
+                    <img
+                        id="coverPreviewImage"
+                        src="${currentImage}"
+                        style="
+                            transform:scale(${scale});
+                        "
+                    >
+
+                </div>
+            `
+            : `
+                <div
+                    class="cover-preview"
+                    style="
+                        display:flex;
+                        align-items:center;
+                        justify-content:center;
+                        font-size:45px;
+                    "
+                >
+                    🏫
+                </div>
+            `
+        }
+
+
+        <div class="field">
+
+            <label>
+                Шинэ зураг сонгох
+            </label>
+
+            <input
+                id="classCoverFile"
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onchange="previewNewCover(this)"
+            >
+
+        </div>
+
+
+        <div class="cover-scale-box">
+
+            <label>
+                Зургийн хэмжээ
+            </label>
+
+            <div class="cover-scale-row">
+
+                <span>−</span>
+
+                <input
+                    id="coverScale"
+                    type="range"
+
+                    min="0.7"
+                    max="1.8"
+                    step="0.05"
+
+                    value="${scale}"
+
+                    oninput="updateCoverScale(this.value)"
+                >
+
+                <span>＋</span>
+
+            </div>
+
+            <div
+                id="coverScaleText"
+                class="muted"
+                style="
+                    text-align:center;
+                    margin-top:5px;
+                "
+            >
+                ${Math.round(scale * 100)}%
+            </div>
+
+        </div>
+
+
+        <button
+            class="btn primary"
+            style="width:100%"
+            onclick="saveClassCover()"
+        >
+            Хадгалах
+        </button>
+
+
+        ${
+            G.cover_image_path
+            ? `
+                <button
+                    class="btn danger"
+                    style="
+                        width:100%;
+                        margin-top:8px;
+                    "
+                    onclick="removeClassCover()"
+                >
+                    Зураг устгах
+                </button>
+            `
+            : ""
+        }
+
+    `);
+}
+
+
 
 
 async function removeClassCover(){
