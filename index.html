@@ -319,15 +319,24 @@ h4 {
 
 .hero-ill{
     position: relative;
-    height: 150px;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    height: auto;
     overflow: hidden;
     background: linear-gradient(135deg,#dff8e9,#d9efff);
+    border-radius: 16px 16px 0 0;
 }
 
 .class-cover-image{
+    position: absolute;
+    inset: 0;
+
     width: 100%;
     height: 100%;
+
     object-fit: cover;
+    object-position: center;
+
     display: block;
 }
 
