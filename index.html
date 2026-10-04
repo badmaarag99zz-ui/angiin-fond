@@ -943,7 +943,7 @@ button{
  <div class="section-title"><h3>Сүүлийн хөдөлгөөн</h3><span id="movementCount">0</span></div><div class="list" id="recentMovements"></div>
 </div></main>
 
-<main id="childrenPage" class="page"><div class="content"><div class="section-title"><h3>Хүүхдүүд</h3><span id="childrenCountLabel">0 хүүхэд</span></div><div class="list" id="childrenList"></div><div class="section-title"><h3>Шинэ бүртгэл</h3></div><button class="primary-btn" onclick="openModal('childModal')">+ Хүүхэд нэмэх</button></div></main>
+<main id="childrenPage" class="page"><div class="content"><div class="section-title"><h3>Хүүхдүүд</h3><span id="childrenCountLabel">0 хүүхэд</span></div><div class="list" id="childrenList"></div><div class="info-box" style="margin-top:14px">Хүүхдийн бүртгэлийг эцэг эх нэгдэх хүсэлтээрээ илгээнэ. Админ хүсэлтийг зөвшөөрөхөд хүүхэд автоматаар бүртгэгдэнэ.</div></div></main>
 
 <main id="paymentsPage" class="page"><div class="content"><div class="section-title"><h3>Фондын хураалтууд</h3><span id="collectionCount">0</span></div><div class="list" id="collectionsList"></div><div class="section-title"><h3>Үйлдэл</h3></div><div class="two-buttons"><button class="primary-btn" onclick="openModal('collectionModal')">+ Хураалт</button><button class="secondary-btn" onclick="preparePaymentModal()">+ Төлөлт</button></div><div class="section-title"><h3>Хүүхдийн төлөлтийн төлөв</h3></div><div class="list" id="memberStatusList"></div></div></main>
 
@@ -960,11 +960,7 @@ button{
   <div class="info-box">Та эцэг эх / асран хамгаалагч эрхээр нэвтэрсэн байна. Ангийн мэдээллийг зөвхөн харах эрхтэй.</div>
   <div class="section-title"><h3>Миний хүүхэд</h3><span id="myChildLinkStatus">—</span></div>
   <div id="myLinkedChildren" class="list"></div>
-  <div id="childLinkForm">
-    <div class="field"><label>Хүүхдээ сонгох</label><select id="parentChildSelect"></select></div>
-    <button class="primary-btn" onclick="requestChildLink(this)">Хүүхэд холбох хүсэлт илгээх</button>
-  </div>
-  <button class="secondary-btn" style="width:100%;margin-top:14px" onclick="openModal('joinGroupModal')">Ангид нэгдэх / өөр анги холбох</button>
+  <button class="secondary-btn" style="width:100%;margin-top:14px" onclick="openModal('joinGroupModal')">Ангид нэгдэх хүсэлт</button>
 </div>
 <button class="secondary-btn" style="width:100%;margin-top:14px" onclick="logoutUser()">Гарах</button></div></main>
 
@@ -978,7 +974,15 @@ button{
 <div id="paymentModal" class="modal hidden"><div class="modal-box"><div class="modal-head"><div><h3>Төлөлт бүртгэх</h3><p>Хэсэгчлэн төлөлт мөн бүртгэж болно.</p></div><button class="close-btn" onclick="closeModal('paymentModal')">×</button></div><div class="field"><label>Хураалт *</label><select id="paymentCollection"></select></div><div class="field"><label>Хүүхэд *</label><select id="paymentMember"></select></div><div class="field"><label>Төлсөн дүн *</label><input id="paymentAmount" type="number" min="1" placeholder="30000"></div><div class="field"><label>Огноо</label><input id="paymentDate" type="date"></div><div class="field"><label>Тэмдэглэл</label><input id="paymentNote" placeholder="Жишээ: Бэлнээр"></div><button class="primary-btn" onclick="savePayment(this)">Төлөлт хадгалах</button></div></div>
 <div id="expenseModal" class="modal hidden"><div class="modal-box"><div class="modal-head"><div><h3>Зарлага бүртгэх</h3><p>Сангийн зарцуулалтыг бүртгэнэ.</p></div><button class="close-btn" onclick="closeModal('expenseModal')">×</button></div><div class="field"><label>Зарлагын нэр *</label><input id="expenseTitle" placeholder="Жишээ: Ангийн хэрэглэл"></div><div class="field"><label>Дүн *</label><input id="expenseAmount" type="number" min="1" placeholder="45000"></div><div class="field"><label>Огноо</label><input id="expenseDate" type="date"></div><div class="field"><label>Тайлбар</label><textarea id="expenseDescription" rows="3"></textarea></div><button class="primary-btn" onclick="saveExpense(this)">Зарлага хадгалах</button></div></div>
 
-<div id="joinGroupModal" class="modal hidden"><div class="modal-box"><div class="modal-head"><div><h3>Ангид нэгдэх</h3><p>Админаас авсан AF-XXXXXX кодоо оруулна уу.</p></div><button class="close-btn" onclick="closeModal('joinGroupModal')">×</button></div><div class="field"><label>Урилгын код</label><input id="joinInviteCode" placeholder="AF-ABC123" maxlength="9" style="text-transform:uppercase"></div><div id="joinGroupPreview" class="info-box hidden"></div><div class="two-buttons"><button class="secondary-btn" onclick="lookupInviteCode(this)">Анги шалгах</button><button class="primary-btn" onclick="sendJoinRequest(this)">Хүсэлт илгээх</button></div></div></div>
+<div id="joinGroupModal" class="modal hidden"><div class="modal-box"><div class="modal-head"><div><h3>Ангид нэгдэх</h3><p>Урилгын код болон хүүхдийн мэдээллээ оруулна уу. Админ зөвшөөрөхөд хүүхдийн бүртгэл автоматаар үүснэ.</p></div><button class="close-btn" onclick="closeModal('joinGroupModal')">×</button></div>
+<div class="field"><label>Урилгын код *</label><input id="joinInviteCode" placeholder="AF-ABC123" maxlength="9" style="text-transform:uppercase"></div>
+<div id="joinGroupPreview" class="info-box hidden"></div>
+<div class="field"><label>Хүүхдийн нэр *</label><input id="joinChildName" placeholder="Овог нэр"></div>
+<div class="field"><label>Эцэг эх / асран хамгаалагчийн нэр *</label><input id="joinParentName" placeholder="Нэр"></div>
+<div class="field"><label>Утас</label><input id="joinParentPhone" type="tel" maxlength="8" placeholder="99112233"></div>
+<div class="field"><label>Гэрийн хаяг *</label><textarea id="joinHomeAddress" rows="3" placeholder="Жишээ: СБД, 8-р хороо..."></textarea></div>
+<div class="two-buttons"><button class="secondary-btn" onclick="lookupInviteCode(this)">Анги шалгах</button><button class="primary-btn" onclick="sendJoinRequest(this)">Хүсэлт илгээх</button></div>
+</div></div>
 <div id="toast" class="toast hidden"></div>
 
 <script>
@@ -1157,10 +1161,59 @@ function renderDashboard(){const contributionIncome=appData.contributions.reduce
 function renderMovements(){const memberMap=Object.fromEntries(appData.members.map(x=>[x.id,x.child_name])),collectionMap=Object.fromEntries(appData.collections.map(x=>[x.id,x.title]));const c=appData.contributions.map(x=>({kind:'income',title:memberMap[x.member_id]||'Төлөлт',sub:collectionMap[x.collection_id]||'Фондын төлөлт',amount:Number(x.amount),date:x.created_at})),t=appData.transactions.map(x=>({kind:x.transaction_type,title:x.title,sub:x.description||'Сангийн хөдөлгөөн',amount:Number(x.amount),date:x.created_at}));const all=[...c,...t].sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,10);$("movementCount").textContent=all.length;$("recentMovements").innerHTML=all.length?all.map(x=>`<div class="list-item"><div class="list-avatar">${x.kind==='expense'?'🧾':'💳'}</div><div class="list-main"><div class="list-title">${esc(x.title)}</div><div class="list-sub">${esc(x.sub)} · ${dateText(x.date.slice(0,10))}</div></div><div class="amount ${x.kind==='expense'?'red':'green'}">${x.kind==='expense'?'-':'+'}${money(x.amount)}</div></div>`).join(""):'<div class="empty"><div class="empty-icon">📒</div>Одоогоор хөдөлгөөн алга.</div>';}
 function renderExpenses(){const a=appData.transactions.filter(x=>x.transaction_type==='expense');$("expenseList").innerHTML=a.length?a.map(x=>`<div class="list-item"><div class="list-avatar">🧾</div><div class="list-main"><div class="list-title">${esc(x.title)}</div><div class="list-sub">${dateText(x.transaction_date)}${x.description?' · '+esc(x.description):''}</div></div><strong class="red">-${money(x.amount)}</strong></div>`).join(""):'<div class="empty">Зарлага бүртгэгдээгүй байна.</div>';}
 async function lookupInviteCode(btn){const code=$("joinInviteCode").value.trim().toUpperCase();if(!code)return toast("Урилгын кодоо оруулна уу.");setBusy(btn,true,"Шалгаж байна...");const {data,error}=await supabaseClient.rpc("find_group_by_invite_code",{p_invite_code:code});setBusy(btn,false);if(error)return toast("Код шалгах алдаа: "+error.message);const g=data?.[0];if(!g){$("joinGroupPreview").classList.add("hidden");return toast("Ийм кодтой анги олдсонгүй.");}$("joinGroupPreview").innerHTML=`<strong>${esc(g.group_name)}</strong><br>${esc(g.institution_name)}${g.academic_year?" · "+esc(g.academic_year):""}`;$("joinGroupPreview").classList.remove("hidden");}
-async function sendJoinRequest(btn){const code=$("joinInviteCode").value.trim().toUpperCase();if(!code)return toast("Урилгын кодоо оруулна уу.");setBusy(btn,true,"Илгээж байна...");const {error}=await supabaseClient.rpc("request_to_join_group",{p_invite_code:code});setBusy(btn,false);if(error)return toast("Хүсэлт илгээх алдаа: "+error.message);closeModal("joinGroupModal");toast("Нэгдэх хүсэлт илгээгдлээ. Админы зөвшөөрөл хүлээнэ үү.");await bootApp();}
-async function loadJoinRequests(){if(!currentGroup||currentRole==="parent")return;const {data,error}=await supabaseClient.from("group_memberships").select("id,user_id,role,status,created_at").eq("group_id",currentGroup.id).eq("role","parent").order("created_at",{ascending:false});if(error)return toast("Хүсэлт унших алдаа: "+error.message);const a=data||[];$("joinRequestCount").textContent=a.filter(x=>x.status==="pending").length;$("joinRequests").innerHTML=a.length?a.map(x=>`<div class="request-card"><div class="list-avatar">👨‍👩‍👧</div><div class="list-main"><div class="list-title">Эцэг эхийн хүсэлт</div><div class="list-sub">${dateText(x.created_at.slice(0,10))}</div><span class="status ${x.status}">${x.status==="pending"?"Хүлээгдэж байна":x.status==="approved"?"Зөвшөөрсөн":"Татгалзсан"}</span></div>${x.status==="pending"?`<div class="row-actions"><button class="approve-btn" onclick="reviewJoin('${x.id}','approved')">✓</button><button class="reject-btn" onclick="reviewJoin('${x.id}','rejected')">×</button></div>`:""}</div>`).join(""):'<div class="empty">Одоогоор нэгдэх хүсэлт алга.</div>'; }
-async function reviewJoin(id,status){const {error}=await supabaseClient.rpc("review_join_request",{p_membership_id:id,p_status:status});if(error)return toast("Хүсэлт шинэчлэх алдаа: "+error.message);toast(status==="approved"?"Эцэг эхийг зөвшөөрлөө.":"Хүсэлтийг татгалзлаа.");await loadJoinRequests();}
-
+async function sendJoinRequest(btn){
+ const code=$("joinInviteCode").value.trim().toUpperCase();
+ const child_name=$("joinChildName").value.trim();
+ const parent_name=$("joinParentName").value.trim();
+ const parent_phone=$("joinParentPhone").value.trim();
+ const home_address=$("joinHomeAddress").value.trim();
+ if(!code||!child_name||!parent_name||!home_address)return toast("Урилгын код, хүүхдийн нэр, эцэг эхийн нэр, гэрийн хаягаа бөглөнө үү.");
+ if(parent_phone&&!/^\d{8}$/.test(parent_phone))return toast("Утас 8 оронтой байна.");
+ setBusy(btn,true,"Илгээж байна...");
+ const {error}=await supabaseClient.rpc("request_to_join_group_with_child",{
+   p_invite_code:code,
+   p_child_name:child_name,
+   p_parent_name:parent_name,
+   p_parent_phone:parent_phone||null,
+   p_home_address:home_address
+ });
+ setBusy(btn,false);
+ if(error)return toast("Хүсэлт илгээх алдаа: "+error.message);
+ closeModal("joinGroupModal");
+ toast("Нэгдэх хүсэлт илгээгдлээ. Админы зөвшөөрөл хүлээнэ үү.");
+ await bootApp();
+}
+async function loadJoinRequests(){
+ if(!currentGroup||currentRole==="parent")return;
+ const {data,error}=await supabaseClient
+   .from("group_join_requests")
+   .select("id,user_id,child_name,parent_name,parent_phone,home_address,status,created_at")
+   .eq("group_id",currentGroup.id)
+   .order("created_at",{ascending:false});
+ if(error)return toast("Хүсэлт унших алдаа: "+error.message);
+ const a=data||[];
+ $("joinRequestCount").textContent=a.filter(x=>x.status==="pending").length;
+ $("joinRequests").innerHTML=a.length?a.map(x=>`
+   <div class="request-card">
+     <div class="list-avatar">👧</div>
+     <div class="list-main">
+       <div class="list-title">${esc(x.child_name)}</div>
+       <div class="list-sub">${esc(x.parent_name)}${x.parent_phone?" · "+esc(x.parent_phone):""} · ${dateText(x.created_at.slice(0,10))}</div><div class="list-sub">🏠 ${esc(x.home_address||"Хаяггүй")}</div>
+       <span class="status ${x.status}">${x.status==="pending"?"Хүлээгдэж байна":x.status==="approved"?"Зөвшөөрсөн":"Татгалзсан"}</span>
+     </div>
+     ${x.status==="pending"?`<div class="row-actions"><button class="approve-btn" onclick="reviewJoin('${x.id}','approved')">✓</button><button class="reject-btn" onclick="reviewJoin('${x.id}','rejected')">×</button></div>`:""}
+   </div>`).join(""):'<div class="empty">Одоогоор нэгдэх хүсэлт алга.</div>';
+}
+async function reviewJoin(id,status){
+ const {error}=await supabaseClient.rpc("review_join_request_with_child",{
+   p_request_id:id,
+   p_status:status
+ });
+ if(error)return toast("Хүсэлт шинэчлэх алдаа: "+error.message);
+ toast(status==="approved"?"Эцэг эхийг зөвшөөрч, хүүхдийг бүртгэлээ.":"Хүсэлтийг татгалзлаа.");
+ await loadAppData();
+ await loadJoinRequests();
+}
 async function loadParentChildLinks(){
  if(currentRole!=="parent"||!currentGroup)return;
  const {data,error}=await supabaseClient
@@ -1178,79 +1231,22 @@ async function loadParentChildLinks(){
 
 function renderParentReadOnly(){
  document.querySelectorAll("#paymentsPage .two-buttons").forEach(x=>x.style.display="none");
- const memberMap=Object.fromEntries(appData.members.map(x=>[x.id,x]));
- const links=appData.parentChildren||[];
- const approved=links.filter(x=>x.status==="approved");
- const pending=links.filter(x=>x.status==="pending");
- if($("myChildLinkStatus")) $("myChildLinkStatus").textContent=approved.length?"Холбогдсон":pending.length?"Хүлээгдэж байна":"Холбоогүй";
- if($("myLinkedChildren")) $("myLinkedChildren").innerHTML=approved.length
-   ?approved.map(x=>`<div class="list-item"><div class="list-avatar">👧</div><div class="list-main"><div class="list-title">${esc(memberMap[x.member_id]?.child_name||"Хүүхэд")}</div><div class="list-sub">Таны хүүхэдтэй холбогдсон</div><span class="status approved">Баталгаажсан</span></div></div>`).join("")
-   :pending.length
-     ?pending.map(x=>`<div class="list-item"><div class="list-avatar">⏳</div><div class="list-main"><div class="list-title">${esc(memberMap[x.member_id]?.child_name||"Хүүхэд")}</div><div class="list-sub">Админы баталгаажуулалт хүлээж байна</div><span class="status pending">Хүлээгдэж байна</span></div></div>`).join("")
-     :'<div class="empty">Хүүхэд хараахан холбогдоогүй байна.</div>';
-
- const requested=new Set(links.filter(x=>x.status!=="rejected").map(x=>x.member_id));
- const options=appData.members.filter(x=>!requested.has(x.id));
- if($("parentChildSelect")) $("parentChildSelect").innerHTML=options.length
-   ?options.map(x=>`<option value="${x.id}">${esc(x.child_name)}</option>`).join("")
-   :'<option value="">Сонгох хүүхэд алга</option>';
- if($("childLinkForm")) $("childLinkForm").style.display=approved.length||pending.length?"none":"block";
+ renderParentChildLinks();
 }
 
-async function requestChildLink(btn){
- if(currentRole!=="parent"||!currentGroup)return;
- const member_id=$("parentChildSelect")?.value;
- if(!member_id)return toast("Хүүхдээ сонгоно уу.");
- setBusy(btn,true,"Илгээж байна...");
- const {error}=await supabaseClient.from("parent_children").upsert({
-   group_id:currentGroup.id,
-   member_id,
-   parent_user_id:currentUser.id,
-   relationship:"parent",
-   status:"pending",
-   approved_at:null,
-   approved_by:null
- },{onConflict:"member_id,parent_user_id"});
- setBusy(btn,false);
- if(error)return toast("Хүсэлт илгээх алдаа: "+error.message);
- toast("Хүүхэд холбох хүсэлт илгээгдлээ.");
- await loadParentChildLinks();
+function renderParentChildLinks(){
+ const memberMap=Object.fromEntries(appData.members.map(x=>[x.id,x]));
+ const approved=(appData.parentChildren||[]).filter(x=>x.status==="approved");
+ if($("myChildLinkStatus")) $("myChildLinkStatus").textContent=approved.length?"Холбогдсон":"Холбоогүй";
+ if($("myLinkedChildren")) $("myLinkedChildren").innerHTML=approved.length
+   ?approved.map(x=>`<div class="list-item"><div class="list-avatar">👧</div><div class="list-main"><div class="list-title">${esc(memberMap[x.member_id]?.child_name||"Хүүхэд")}</div><div class="list-sub">Таны хүүхэд</div><span class="status approved">Баталгаажсан</span></div></div>`).join("")
+   :'<div class="empty">Хүүхэд хараахан холбогдоогүй байна.</div>';
 }
 
 async function loadChildLinkRequests(){
- if(currentRole!=="admin"||!currentGroup)return;
- const {data,error}=await supabaseClient
-   .from("parent_children")
-   .select("id,member_id,parent_user_id,status,created_at")
-   .eq("group_id",currentGroup.id)
-   .order("created_at",{ascending:false});
- if(error)return toast("Хүүхэд холбох хүсэлт унших алдаа: "+error.message);
-
- const a=data||[];
- const memberMap=Object.fromEntries(appData.members.map(x=>[x.id,x.child_name]));
- $("childLinkRequestCount").textContent=a.filter(x=>x.status==="pending").length;
- $("childLinkRequests").innerHTML=a.length?a.map(x=>`
-   <div class="request-card">
-     <div class="list-avatar">👧</div>
-     <div class="list-main">
-       <div class="list-title">${esc(memberMap[x.member_id]||"Хүүхэд")}</div>
-       <div class="list-sub">Эцэг эхийн хүүхэд холбох хүсэлт · ${dateText(x.created_at.slice(0,10))}</div>
-       <span class="status ${x.status}">${x.status==="pending"?"Хүлээгдэж байна":x.status==="approved"?"Зөвшөөрсөн":"Татгалзсан"}</span>
-     </div>
-     ${x.status==="pending"?`<div class="row-actions"><button class="approve-btn" onclick="reviewChildLink('${x.id}','approved')">✓</button><button class="reject-btn" onclick="reviewChildLink('${x.id}','rejected')">×</button></div>`:""}
-   </div>`).join(""):'<div class="empty">Одоогоор хүүхэд холбох хүсэлт алга.</div>';
-}
-
-async function reviewChildLink(id,status){
- const row={
-   status,
-   approved_at:status==="approved"?new Date().toISOString():null,
-   approved_by:status==="approved"?currentUser.id:null
- };
- const {error}=await supabaseClient.from("parent_children").update(row).eq("id",id);
- if(error)return toast("Хүүхэд холбох хүсэлт шинэчлэх алдаа: "+error.message);
- toast(status==="approved"?"Хүүхдийн холбоосыг зөвшөөрлөө.":"Хүүхдийн холбоосыг татгалзлаа.");
- await loadChildLinkRequests();
+ // Child creation/linking is now completed atomically when the admin approves the join request.
+ if($("childLinkRequestCount")) $("childLinkRequestCount").textContent="0";
+ if($("childLinkRequests")) $("childLinkRequests").innerHTML='<div class="empty">Хүүхэд холбох тусдаа хүсэлт шаардлагагүй.</div>';
 }
 
 function copyInviteCode(){const code=currentGroup?.invite_code;if(!code)return toast("Урилгын код алга.");navigator.clipboard?.writeText(code);toast("Урилгын код хуулагдлаа: "+code);}
