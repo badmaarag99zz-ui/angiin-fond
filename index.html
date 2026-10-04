@@ -954,8 +954,18 @@ button{
 <div class="field"><label>Сургууль / цэцэрлэг</label><input id="settingsInstitution"></div><div class="field"><label>Анги / бүлгийн нэр</label><input id="settingsGroupName"></div><div class="field"><label>Төрөл</label><select id="settingsType"><option value="school">ЕБС</option><option value="kindergarten">Цэцэрлэг</option></select></div><div class="field"><label>Хичээлийн жил</label><input id="settingsYear"></div><button class="primary-btn" onclick="saveGroupSettings(this)">Хадгалах</button>
 <div class="section-title"><h3>Эцэг эх урих</h3></div><div class="invite-box"><div>Ангийн урилгын код</div><div class="invite-code" id="groupInviteCode">—</div><button class="secondary-btn" style="width:100%" onclick="copyInviteCode()">Код хуулах</button></div>
 <div class="section-title"><h3>Нэгдэх хүсэлтүүд</h3><span id="joinRequestCount">0</span></div><div id="joinRequests" class="list"></div>
+<div class="section-title"><h3>Хүүхэд холбох хүсэлтүүд</h3><span id="childLinkRequestCount">0</span></div><div id="childLinkRequests" class="list"></div>
 </div>
-<div class="parent-only" id="parentSettings"><div class="info-box">Та эцэг эх / асран хамгаалагч эрхээр нэвтэрсэн байна.</div><button class="primary-btn" style="margin-top:14px" onclick="openModal('joinGroupModal')">Ангид нэгдэх / өөр анги холбох</button></div>
+<div class="parent-only" id="parentSettings">
+  <div class="info-box">Та эцэг эх / асран хамгаалагч эрхээр нэвтэрсэн байна. Ангийн мэдээллийг зөвхөн харах эрхтэй.</div>
+  <div class="section-title"><h3>Миний хүүхэд</h3><span id="myChildLinkStatus">—</span></div>
+  <div id="myLinkedChildren" class="list"></div>
+  <div id="childLinkForm">
+    <div class="field"><label>Хүүхдээ сонгох</label><select id="parentChildSelect"></select></div>
+    <button class="primary-btn" onclick="requestChildLink(this)">Хүүхэд холбох хүсэлт илгээх</button>
+  </div>
+  <button class="secondary-btn" style="width:100%;margin-top:14px" onclick="openModal('joinGroupModal')">Ангид нэгдэх / өөр анги холбох</button>
+</div>
 <button class="secondary-btn" style="width:100%;margin-top:14px" onclick="logoutUser()">Гарах</button></div></main>
 
 <nav class="bottom-nav"><button class="nav-btn active" data-page="home" onclick="switchPage('home',this)"><span class="nav-icon">⌂</span>Нүүр</button><button class="nav-btn" data-page="children" onclick="switchPage('children',this)"><span class="nav-icon">👥</span>Хүүхэд</button><button class="nav-btn" data-page="payments" onclick="switchPage('payments',this)"><span class="nav-icon">₮</span>Төлбөр</button><button class="nav-btn" data-page="report" onclick="switchPage('report',this)"><span class="nav-icon">▥</span>Тайлан</button><button class="nav-btn" data-page="settings" onclick="switchPage('settings',this)"><span class="nav-icon">⚙</span>Тохиргоо</button></nav>
@@ -976,7 +986,7 @@ const SUPABASE_URL="https://fjvjtujwnbsonycgxuuu.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY="sb_publishable_0QwVZZJsw_J0iHTov07o5A_ykK11Uai";
 const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
 let currentUser=null,currentProfile=null,currentGroup=null,toastTimer=null,currentRole="admin",currentMembership=null;
-let appData={members:[],collections:[],statuses:[],contributions:[],transactions:[]};
+let appData={members:[],collections:[],statuses:[],contributions:[],transactions:[],parentChildren:[]};
 const $=id=>document.getElementById(id);
 function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));}
 function money(n){return new Intl.NumberFormat("mn-MN",{maximumFractionDigits:0}).format(Number(n||0))+" ₮";}
@@ -1031,7 +1041,15 @@ async function bootApp(){
      ||null;
 
    if(currentMembership?.status==="approved"){
-     currentGroup={
+     const {data:g,error:groupError}=await supabaseClient
+       .from("groups")
+       .select("*")
+       .eq("id",currentMembership.group_id)
+       .maybeSingle();
+
+     if(groupError) toast("Ангийн мэдээлэл унших алдаа: "+groupError.message);
+
+     currentGroup=g||{
        id:currentMembership.group_id,
        group_name:"Холбогдсон анги",
        institution_name:"",
@@ -1050,32 +1068,90 @@ async function bootApp(){
  const childNav=document.querySelector('.nav-btn[data-page="children"]');
  const paymentNav=document.querySelector('.nav-btn[data-page="payments"]');
  if(childNav) childNav.style.display=currentRole==="parent"?"none":"block";
- if(paymentNav) paymentNav.style.display=currentRole==="parent"?"none":"block";
+ if(paymentNav) paymentNav.style.display="block";
 
  renderCurrentGroup(); $("authScreen").classList.add("hidden"); $("mainApp").classList.remove("hidden");
- if(currentGroup && currentRole!=="parent"){await loadAppData();await loadJoinRequests();}
- else if(!currentGroup && currentRole!=="parent") openModal("groupSetupModal");
- else if(currentMembership?.status==="pending") {toast("Таны нэгдэх хүсэлт админы зөвшөөрөл хүлээж байна.");openModal("joinGroupModal");}
- else if(!currentMembership) openModal("joinGroupModal");
+
+ if(currentGroup && currentRole==="admin"){
+   await loadAppData();
+   await loadJoinRequests();
+   await loadChildLinkRequests();
+ }else if(!currentGroup && currentRole==="admin"){
+   openModal("groupSetupModal");
+ }else if(currentMembership?.status==="approved" && currentGroup){
+   await loadAppData();
+   await loadParentChildLinks();
+ }else if(currentMembership?.status==="pending"){
+   toast("Таны нэгдэх хүсэлт админы зөвшөөрөл хүлээж байна.");
+   openModal("joinGroupModal");
+ }else if(!currentMembership){
+   openModal("joinGroupModal");
+ }
 }
 
 function renderCurrentGroup(){$("currentGroupName").textContent=currentGroup?.group_name||"Анги / бүлэг үүсгээгүй";$("currentGroupYear").textContent=currentGroup?`${currentGroup.institution_name} · ${currentGroup.academic_year||"—"}`:"Эхлээд анги / бүлгээ үүсгэнэ үү";if(currentGroup){if($("groupInviteCode"))$("groupInviteCode").textContent=currentGroup.invite_code||"—";$ ("settingsInstitution").value=currentGroup.institution_name||"";$("settingsGroupName").value=currentGroup.group_name||"";$("settingsType").value=currentGroup.type||"school";$("settingsYear").value=currentGroup.academic_year||"";$("reportYear").textContent=currentGroup.academic_year||"—";}}
-async function createGroup(btn){const row={owner_id:currentUser.id,type:$("setupGroupType").value,institution_name:$("setupInstitutionName").value.trim(),group_name:$("setupGroupName").value.trim(),academic_year:$("setupAcademicYear").value.trim()};if(!row.institution_name||!row.group_name)return toast("Байгууллага болон анги / бүлгийн нэрээ оруулна уу.");setBusy(btn,true);const {data,error}=await supabaseClient.from("groups").insert(row).select().single();setBusy(btn,false);if(error)return toast("Анги үүсгэхэд алдаа: "+error.message);currentGroup=data;closeModal("groupSetupModal");renderCurrentGroup();await loadAppData();await loadJoinRequests();toast("Анги / бүлэг үүслээ.");}
+async function createGroup(btn){const row={owner_id:currentUser.id,type:$("setupGroupType").value,institution_name:$("setupInstitutionName").value.trim(),group_name:$("setupGroupName").value.trim(),academic_year:$("setupAcademicYear").value.trim()};if(!row.institution_name||!row.group_name)return toast("Байгууллага болон анги / бүлгийн нэрээ оруулна уу.");setBusy(btn,true);const {data,error}=await supabaseClient.from("groups").insert(row).select().single();setBusy(btn,false);if(error)return toast("Анги үүсгэхэд алдаа: "+error.message);currentGroup=data;closeModal("groupSetupModal");renderCurrentGroup();await loadAppData();await loadJoinRequests();await loadChildLinkRequests();toast("Анги / бүлэг үүслээ.");}
 async function saveGroupSettings(btn){if(!currentGroup)return;const row={institution_name:$("settingsInstitution").value.trim(),group_name:$("settingsGroupName").value.trim(),type:$("settingsType").value,academic_year:$("settingsYear").value.trim()};if(!row.institution_name||!row.group_name)return toast("Нэрийн талбаруудыг бөглөнө үү.");setBusy(btn,true);const {data,error}=await supabaseClient.from("groups").update(row).eq("id",currentGroup.id).select().single();setBusy(btn,false);if(error)return toast("Хадгалах алдаа: "+error.message);currentGroup=data;renderCurrentGroup();toast("Тохиргоо хадгалагдлаа.");}
 async function logoutUser(){await supabaseClient.auth.signOut();currentUser=currentProfile=currentGroup=null;showLoggedOut();}
 function showLoggedOut(){$("mainApp").classList.add("hidden");$("authScreen").classList.remove("hidden");switchPage("home");}
-async function loadAppData(){if(!currentGroup)return;const [m,c,s,co,t]=await Promise.all([supabaseClient.from("members").select("*").eq("group_id",currentGroup.id).eq("is_active",true).order("created_at"),supabaseClient.from("fund_collections").select("*").eq("group_id",currentGroup.id).order("created_at",{ascending:false}),supabaseClient.from("member_payment_status").select("*").eq("group_id",currentGroup.id),supabaseClient.from("contributions").select("*").eq("group_id",currentGroup.id).order("created_at",{ascending:false}),supabaseClient.from("transactions").select("*").eq("group_id",currentGroup.id).order("created_at",{ascending:false})]);const errors=[m,c,s,co,t].map(x=>x.error).filter(Boolean);if(errors.length)return toast("Өгөгдөл унших алдаа: "+errors[0].message);appData={members:m.data||[],collections:c.data||[],statuses:s.data||[],contributions:co.data||[],transactions:t.data||[]};renderAll();}
-function renderAll(){renderMembers();renderCollections();renderStatuses();renderDashboard();renderExpenses();fillPaymentOptions();}
+async function loadAppData(){
+ if(!currentGroup)return;
+ const [m,c,co,t]=await Promise.all([
+   supabaseClient.from("members").select("*").eq("group_id",currentGroup.id).eq("is_active",true).order("created_at"),
+   supabaseClient.from("fund_collections").select("*").eq("group_id",currentGroup.id).order("created_at",{ascending:false}),
+   supabaseClient.from("contributions").select("*").eq("group_id",currentGroup.id).order("created_at",{ascending:false}),
+   supabaseClient.from("transactions").select("*").eq("group_id",currentGroup.id).order("created_at",{ascending:false})
+ ]);
+ const errors=[m,c,co,t].map(x=>x.error).filter(Boolean);
+ if(errors.length)return toast("Өгөгдөл унших алдаа: "+errors[0].message);
+
+ const members=m.data||[], collections=c.data||[], contributions=co.data||[];
+ const statuses=[];
+ for(const collection of collections){
+   for(const member of members){
+     const paid=contributions
+       .filter(x=>x.collection_id===collection.id&&x.member_id===member.id)
+       .reduce((s,x)=>s+Number(x.amount||0),0);
+     const target=Number(collection.amount_per_member||0);
+     statuses.push({
+       collection_id:collection.id,
+       member_id:member.id,
+       child_name:member.child_name,
+       amount_per_member:target,
+       paid_amount:paid,
+       remaining_amount:Math.max(0,target-paid),
+       payment_status:paid>=target?"paid":paid>0?"partial":"unpaid"
+     });
+   }
+ }
+ appData={...appData,members,collections,statuses,contributions,transactions:t.data||[]};
+ renderAll();
+}
+function renderAll(){
+ renderMembers();renderCollections();renderStatuses();renderDashboard();renderExpenses();fillPaymentOptions();
+ if(currentRole==="parent") renderParentReadOnly();
+}
 function renderMembers(){const a=appData.members;$("childrenCountLabel").textContent=`${a.length} хүүхэд`;$("homeMemberCount").textContent=a.length;$("childrenList").innerHTML=a.length?a.map(m=>`<div class="list-item"><div class="list-avatar">👧</div><div class="list-main"><div class="list-title">${esc(m.child_name)}</div><div class="list-sub">${esc(m.parent_name||"Эцэг эх")}${m.parent_phone?" · "+esc(m.parent_phone):""}</div><span class="status approved">Идэвхтэй</span></div><button class="mini-btn danger-btn" onclick="archiveMember('${m.id}')">Хасах</button></div>`).join(""):'<div class="empty"><div class="empty-icon">👥</div>Хүүхэд бүртгэгдээгүй байна.</div>';}
 async function addMember(btn){if(!currentGroup)return toast("Эхлээд анги үүсгэнэ үү.");const row={group_id:currentGroup.id,child_name:$("childName").value.trim(),parent_name:$("parentName").value.trim()||null,parent_phone:$("parentPhone").value.trim()||null};if(!row.child_name)return toast("Хүүхдийн нэр оруулна уу.");if(row.parent_phone&&!/^\d{8}$/.test(row.parent_phone))return toast("Утас 8 оронтой байна.");setBusy(btn,true);const {error}=await supabaseClient.from("members").insert(row);setBusy(btn,false);if(error)return toast("Хүүхэд нэмэх алдаа: "+error.message);["childName","parentName","parentPhone"].forEach(id=>$(id).value="");closeModal("childModal");await loadAppData();toast("Хүүхэд нэмэгдлээ.");}
 async function archiveMember(id){if(!confirm("Энэ хүүхдийг идэвхгүй болгох уу?"))return;const {error}=await supabaseClient.from("members").update({is_active:false}).eq("id",id);if(error)return toast("Хасахад алдаа: "+error.message);await loadAppData();toast("Хүүхэд жагсаалтаас хасагдлаа.");}
-function renderCollections(){const a=appData.collections;$("collectionCount").textContent=a.length;$("collectionsList").innerHTML=a.length?a.map(c=>{const st=appData.statuses.filter(x=>x.collection_id===c.id),paid=st.reduce((s,x)=>s+Number(x.paid_amount||0),0),expected=Number(c.amount_per_member||0)*appData.members.length,pct=expected?Math.min(100,paid/expected*100):0;return `<div class="list-item"><div class="list-avatar">💰</div><div class="list-main"><div class="list-title">${esc(c.title)}</div><div class="list-sub">Хүүхэд бүр: ${money(c.amount_per_member)}${c.due_date?" · "+dateText(c.due_date):""}</div><div class="progress"><span style="width:${pct}%"></span></div><div class="list-sub">Цугласан: ${money(paid)} / ${money(expected)}</div><span class="status ${c.status==='closed'?'approved':'pending'}">${c.status==='closed'?'Хаасан':'Идэвхтэй'}</span></div>${c.status==='active'?`<button class="mini-btn" onclick="closeCollection('${c.id}')">Хаах</button>`:''}</div>`}).join(""):'<div class="empty"><div class="empty-icon">💰</div>Хураалт үүсгээгүй байна.</div>';}
+function renderCollections(){const a=appData.collections;$("collectionCount").textContent=a.length;$("collectionsList").innerHTML=a.length?a.map(c=>{const st=appData.statuses.filter(x=>x.collection_id===c.id),paid=st.reduce((s,x)=>s+Number(x.paid_amount||0),0),expected=Number(c.amount_per_member||0)*appData.members.length,pct=expected?Math.min(100,paid/expected*100):0;return `<div class="list-item"><div class="list-avatar">💰</div><div class="list-main"><div class="list-title">${esc(c.title)}</div><div class="list-sub">Хүүхэд бүр: ${money(c.amount_per_member)}${c.due_date?" · "+dateText(c.due_date):""}</div><div class="progress"><span style="width:${pct}%"></span></div><div class="list-sub">Цугласан: ${money(paid)} / ${money(expected)}</div><span class="status ${c.status==='closed'?'approved':'pending'}">${c.status==='closed'?'Хаасан':'Идэвхтэй'}</span></div>${currentRole==='admin'&&c.status==='active'?`<button class="mini-btn" onclick="closeCollection('${c.id}')">Хаах</button>`:''}</div>`}).join(""):'<div class="empty"><div class="empty-icon">💰</div>Хураалт үүсгээгүй байна.</div>';}
 async function createCollection(btn){const title=$("collectionTitle").value.trim(),amount=Number($("collectionAmount").value),due_date=$("collectionDueDate").value||null,description=$("collectionDescription").value.trim()||null;if(!title||amount<=0)return toast("Хураалтын нэр, зөв дүн оруулна уу.");setBusy(btn,true);const {error}=await supabaseClient.from("fund_collections").insert({group_id:currentGroup.id,title,amount_per_member:amount,due_date,description,created_by:currentUser.id});setBusy(btn,false);if(error)return toast("Хураалт үүсгэх алдаа: "+error.message);["collectionTitle","collectionAmount","collectionDueDate","collectionDescription"].forEach(id=>$(id).value="");closeModal("collectionModal");await loadAppData();toast("Хураалт үүслээ.");}
 async function closeCollection(id){if(!confirm("Энэ хураалтыг хаах уу?"))return;const {error}=await supabaseClient.from("fund_collections").update({status:"closed"}).eq("id",id);if(error)return toast("Хаахад алдаа: "+error.message);await loadAppData();}
 function fillPaymentOptions(){const cs=appData.collections.filter(x=>x.status==='active');$("paymentCollection").innerHTML=cs.map(x=>`<option value="${x.id}">${esc(x.title)} · ${money(x.amount_per_member)}</option>`).join("")||'<option value="">Хураалт алга</option>';$("paymentMember").innerHTML=appData.members.map(x=>`<option value="${x.id}">${esc(x.child_name)}</option>`).join("")||'<option value="">Хүүхэд алга</option>';}
 function preparePaymentModal(){fillPaymentOptions();$("paymentDate").value=new Date().toISOString().slice(0,10);openModal("paymentModal");}
 async function savePayment(btn){const collection_id=$("paymentCollection").value,member_id=$("paymentMember").value,amount=Number($("paymentAmount").value),paid_date=$("paymentDate").value||new Date().toISOString().slice(0,10),note=$("paymentNote").value.trim()||null;if(!collection_id||!member_id||amount<=0)return toast("Хураалт, хүүхэд, төлсөн дүнгээ сонгоно уу.");const target=appData.collections.find(x=>x.id===collection_id);const already=appData.contributions.filter(x=>x.collection_id===collection_id&&x.member_id===member_id).reduce((s,x)=>s+Number(x.amount||0),0);if(target&&already+amount>Number(target.amount_per_member)){if(!confirm(`Төлөлт зорилтот дүнгээс ${money(already+amount-Number(target.amount_per_member))}-өөр илүү байна. Үргэлжлүүлэх үү?`))return;}setBusy(btn,true);const {error}=await supabaseClient.from("contributions").insert({group_id:currentGroup.id,collection_id,member_id,amount,paid_date,note,created_by:currentUser.id});setBusy(btn,false);if(error)return toast("Төлөлт хадгалах алдаа: "+error.message);$("paymentAmount").value="";$("paymentNote").value="";closeModal("paymentModal");await loadAppData();toast("Төлөлт бүртгэгдлээ.");}
-function renderStatuses(){const active=appData.collections.find(x=>x.status==='active');const a=active?appData.statuses.filter(x=>x.collection_id===active.id):[];$("memberStatusList").innerHTML=active?(a.length?a.map(x=>`<div class="list-item"><div class="list-avatar">${x.payment_status==='paid'?'✅':x.payment_status==='partial'?'⏳':'⚠️'}</div><div class="list-main"><div class="list-title">${esc(x.child_name)}</div><div class="list-sub">${esc(active.title)} · ${money(x.paid_amount)} / ${money(active.amount_per_member)}</div><span class="status ${x.payment_status==='paid'?'approved':'pending'}">${x.payment_status==='paid'?'Төлсөн':x.payment_status==='partial'?'Дутуу':'Төлөөгүй'}</span></div><strong class="${x.payment_status==='paid'?'green':x.payment_status==='partial'?'orange':'red'}">${money(x.remaining_amount)}</strong></div>`).join(""):'<div class="empty">Хүүхэд бүртгэгдээгүй байна.</div>'):'<div class="empty"><div class="empty-icon">💳</div>Идэвхтэй хураалт алга.</div>';}
+function renderStatuses(){
+ const active=appData.collections.find(x=>x.status==='active');
+ let a=active?appData.statuses.filter(x=>x.collection_id===active.id):[];
+ if(currentRole==="parent"){
+   const linkedIds=new Set((appData.parentChildren||[]).filter(x=>x.status==="approved").map(x=>x.member_id));
+   a=a.filter(x=>linkedIds.has(x.member_id));
+ }
+ $("memberStatusList").innerHTML=active
+   ?(a.length?a.map(x=>`<div class="list-item"><div class="list-avatar">${x.payment_status==='paid'?'✅':x.payment_status==='partial'?'⏳':'⚠️'}</div><div class="list-main"><div class="list-title">${esc(x.child_name)}</div><div class="list-sub">${esc(active.title)} · ${money(x.paid_amount)} / ${money(active.amount_per_member)}</div><span class="status ${x.payment_status==='paid'?'approved':'pending'}">${x.payment_status==='paid'?'Төлсөн':x.payment_status==='partial'?'Дутуу':'Төлөөгүй'}</span></div><strong class="${x.payment_status==='paid'?'green':x.payment_status==='partial'?'orange':'red'}">${money(x.remaining_amount)}</strong></div>`).join("")
+   :'<div class="empty">Эхлээд хүүхдээ холбож, админаар батлуулна уу.</div>')
+   :'<div class="empty"><div class="empty-icon">💳</div>Идэвхтэй хураалт алга.</div>';
+}
 async function saveExpense(btn){const title=$("expenseTitle").value.trim(),amount=Number($("expenseAmount").value),transaction_date=$("expenseDate").value||new Date().toISOString().slice(0,10),description=$("expenseDescription").value.trim()||null;if(!title||amount<=0)return toast("Зарлагын нэр, зөв дүн оруулна уу.");setBusy(btn,true);const {error}=await supabaseClient.from("transactions").insert({group_id:currentGroup.id,transaction_type:"expense",amount,title,description,transaction_date,created_by:currentUser.id});setBusy(btn,false);if(error)return toast("Зарлага хадгалах алдаа: "+error.message);["expenseTitle","expenseAmount","expenseDescription"].forEach(id=>$(id).value="");closeModal("expenseModal");await loadAppData();toast("Зарлага бүртгэгдлээ.");}
 function renderDashboard(){const contributionIncome=appData.contributions.reduce((s,x)=>s+Number(x.amount||0),0),manualIncome=appData.transactions.filter(x=>x.transaction_type==='income').reduce((s,x)=>s+Number(x.amount||0),0),expense=appData.transactions.filter(x=>x.transaction_type==='expense').reduce((s,x)=>s+Number(x.amount||0),0),income=contributionIncome+manualIncome,balance=income-expense;["homeIncome","reportIncome"].forEach(id=>$(id).textContent=money(income));["homeExpense","reportExpense"].forEach(id=>$(id).textContent=money(expense));["homeBalance","reportBalance"].forEach(id=>$(id).textContent=money(balance));const active=appData.collections.find(x=>x.status==='active'),st=active?appData.statuses.filter(x=>x.collection_id===active.id):[];$("homePaidCount").textContent=st.filter(x=>x.payment_status==='paid').length;$("homePartialCount").textContent=st.filter(x=>x.payment_status==='partial').length;$("homeUnpaidCount").textContent=st.filter(x=>x.payment_status==='unpaid').length;renderMovements();}
 function renderMovements(){const memberMap=Object.fromEntries(appData.members.map(x=>[x.id,x.child_name])),collectionMap=Object.fromEntries(appData.collections.map(x=>[x.id,x.title]));const c=appData.contributions.map(x=>({kind:'income',title:memberMap[x.member_id]||'Төлөлт',sub:collectionMap[x.collection_id]||'Фондын төлөлт',amount:Number(x.amount),date:x.created_at})),t=appData.transactions.map(x=>({kind:x.transaction_type,title:x.title,sub:x.description||'Сангийн хөдөлгөөн',amount:Number(x.amount),date:x.created_at}));const all=[...c,...t].sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,10);$("movementCount").textContent=all.length;$("recentMovements").innerHTML=all.length?all.map(x=>`<div class="list-item"><div class="list-avatar">${x.kind==='expense'?'🧾':'💳'}</div><div class="list-main"><div class="list-title">${esc(x.title)}</div><div class="list-sub">${esc(x.sub)} · ${dateText(x.date.slice(0,10))}</div></div><div class="amount ${x.kind==='expense'?'red':'green'}">${x.kind==='expense'?'-':'+'}${money(x.amount)}</div></div>`).join(""):'<div class="empty"><div class="empty-icon">📒</div>Одоогоор хөдөлгөөн алга.</div>';}
@@ -1084,6 +1160,99 @@ async function lookupInviteCode(btn){const code=$("joinInviteCode").value.trim()
 async function sendJoinRequest(btn){const code=$("joinInviteCode").value.trim().toUpperCase();if(!code)return toast("Урилгын кодоо оруулна уу.");setBusy(btn,true,"Илгээж байна...");const {error}=await supabaseClient.rpc("request_to_join_group",{p_invite_code:code});setBusy(btn,false);if(error)return toast("Хүсэлт илгээх алдаа: "+error.message);closeModal("joinGroupModal");toast("Нэгдэх хүсэлт илгээгдлээ. Админы зөвшөөрөл хүлээнэ үү.");await bootApp();}
 async function loadJoinRequests(){if(!currentGroup||currentRole==="parent")return;const {data,error}=await supabaseClient.from("group_memberships").select("id,user_id,role,status,created_at").eq("group_id",currentGroup.id).eq("role","parent").order("created_at",{ascending:false});if(error)return toast("Хүсэлт унших алдаа: "+error.message);const a=data||[];$("joinRequestCount").textContent=a.filter(x=>x.status==="pending").length;$("joinRequests").innerHTML=a.length?a.map(x=>`<div class="request-card"><div class="list-avatar">👨‍👩‍👧</div><div class="list-main"><div class="list-title">Эцэг эхийн хүсэлт</div><div class="list-sub">${dateText(x.created_at.slice(0,10))}</div><span class="status ${x.status}">${x.status==="pending"?"Хүлээгдэж байна":x.status==="approved"?"Зөвшөөрсөн":"Татгалзсан"}</span></div>${x.status==="pending"?`<div class="row-actions"><button class="approve-btn" onclick="reviewJoin('${x.id}','approved')">✓</button><button class="reject-btn" onclick="reviewJoin('${x.id}','rejected')">×</button></div>`:""}</div>`).join(""):'<div class="empty">Одоогоор нэгдэх хүсэлт алга.</div>'; }
 async function reviewJoin(id,status){const {error}=await supabaseClient.rpc("review_join_request",{p_membership_id:id,p_status:status});if(error)return toast("Хүсэлт шинэчлэх алдаа: "+error.message);toast(status==="approved"?"Эцэг эхийг зөвшөөрлөө.":"Хүсэлтийг татгалзлаа.");await loadJoinRequests();}
+
+async function loadParentChildLinks(){
+ if(currentRole!=="parent"||!currentGroup)return;
+ const {data,error}=await supabaseClient
+   .from("parent_children")
+   .select("id,group_id,member_id,parent_user_id,relationship,status,created_at")
+   .eq("group_id",currentGroup.id)
+   .eq("parent_user_id",currentUser.id)
+   .order("created_at",{ascending:false});
+ if(error)return toast("Хүүхдийн холбоос унших алдаа: "+error.message);
+ appData.parentChildren=data||[];
+ renderParentChildLinks();
+ renderStatuses();
+ renderDashboard();
+}
+
+function renderParentReadOnly(){
+ document.querySelectorAll("#paymentsPage .two-buttons").forEach(x=>x.style.display="none");
+ const memberMap=Object.fromEntries(appData.members.map(x=>[x.id,x]));
+ const links=appData.parentChildren||[];
+ const approved=links.filter(x=>x.status==="approved");
+ const pending=links.filter(x=>x.status==="pending");
+ if($("myChildLinkStatus")) $("myChildLinkStatus").textContent=approved.length?"Холбогдсон":pending.length?"Хүлээгдэж байна":"Холбоогүй";
+ if($("myLinkedChildren")) $("myLinkedChildren").innerHTML=approved.length
+   ?approved.map(x=>`<div class="list-item"><div class="list-avatar">👧</div><div class="list-main"><div class="list-title">${esc(memberMap[x.member_id]?.child_name||"Хүүхэд")}</div><div class="list-sub">Таны хүүхэдтэй холбогдсон</div><span class="status approved">Баталгаажсан</span></div></div>`).join("")
+   :pending.length
+     ?pending.map(x=>`<div class="list-item"><div class="list-avatar">⏳</div><div class="list-main"><div class="list-title">${esc(memberMap[x.member_id]?.child_name||"Хүүхэд")}</div><div class="list-sub">Админы баталгаажуулалт хүлээж байна</div><span class="status pending">Хүлээгдэж байна</span></div></div>`).join("")
+     :'<div class="empty">Хүүхэд хараахан холбогдоогүй байна.</div>';
+
+ const requested=new Set(links.filter(x=>x.status!=="rejected").map(x=>x.member_id));
+ const options=appData.members.filter(x=>!requested.has(x.id));
+ if($("parentChildSelect")) $("parentChildSelect").innerHTML=options.length
+   ?options.map(x=>`<option value="${x.id}">${esc(x.child_name)}</option>`).join("")
+   :'<option value="">Сонгох хүүхэд алга</option>';
+ if($("childLinkForm")) $("childLinkForm").style.display=approved.length||pending.length?"none":"block";
+}
+
+async function requestChildLink(btn){
+ if(currentRole!=="parent"||!currentGroup)return;
+ const member_id=$("parentChildSelect")?.value;
+ if(!member_id)return toast("Хүүхдээ сонгоно уу.");
+ setBusy(btn,true,"Илгээж байна...");
+ const {error}=await supabaseClient.from("parent_children").upsert({
+   group_id:currentGroup.id,
+   member_id,
+   parent_user_id:currentUser.id,
+   relationship:"parent",
+   status:"pending",
+   approved_at:null,
+   approved_by:null
+ },{onConflict:"member_id,parent_user_id"});
+ setBusy(btn,false);
+ if(error)return toast("Хүсэлт илгээх алдаа: "+error.message);
+ toast("Хүүхэд холбох хүсэлт илгээгдлээ.");
+ await loadParentChildLinks();
+}
+
+async function loadChildLinkRequests(){
+ if(currentRole!=="admin"||!currentGroup)return;
+ const {data,error}=await supabaseClient
+   .from("parent_children")
+   .select("id,member_id,parent_user_id,status,created_at")
+   .eq("group_id",currentGroup.id)
+   .order("created_at",{ascending:false});
+ if(error)return toast("Хүүхэд холбох хүсэлт унших алдаа: "+error.message);
+
+ const a=data||[];
+ const memberMap=Object.fromEntries(appData.members.map(x=>[x.id,x.child_name]));
+ $("childLinkRequestCount").textContent=a.filter(x=>x.status==="pending").length;
+ $("childLinkRequests").innerHTML=a.length?a.map(x=>`
+   <div class="request-card">
+     <div class="list-avatar">👧</div>
+     <div class="list-main">
+       <div class="list-title">${esc(memberMap[x.member_id]||"Хүүхэд")}</div>
+       <div class="list-sub">Эцэг эхийн хүүхэд холбох хүсэлт · ${dateText(x.created_at.slice(0,10))}</div>
+       <span class="status ${x.status}">${x.status==="pending"?"Хүлээгдэж байна":x.status==="approved"?"Зөвшөөрсөн":"Татгалзсан"}</span>
+     </div>
+     ${x.status==="pending"?`<div class="row-actions"><button class="approve-btn" onclick="reviewChildLink('${x.id}','approved')">✓</button><button class="reject-btn" onclick="reviewChildLink('${x.id}','rejected')">×</button></div>`:""}
+   </div>`).join(""):'<div class="empty">Одоогоор хүүхэд холбох хүсэлт алга.</div>';
+}
+
+async function reviewChildLink(id,status){
+ const row={
+   status,
+   approved_at:status==="approved"?new Date().toISOString():null,
+   approved_by:status==="approved"?currentUser.id:null
+ };
+ const {error}=await supabaseClient.from("parent_children").update(row).eq("id",id);
+ if(error)return toast("Хүүхэд холбох хүсэлт шинэчлэх алдаа: "+error.message);
+ toast(status==="approved"?"Хүүхдийн холбоосыг зөвшөөрлөө.":"Хүүхдийн холбоосыг татгалзлаа.");
+ await loadChildLinkRequests();
+}
+
 function copyInviteCode(){const code=currentGroup?.invite_code;if(!code)return toast("Урилгын код алга.");navigator.clipboard?.writeText(code);toast("Урилгын код хуулагдлаа: "+code);}
 document.querySelectorAll(".modal").forEach(m=>m.addEventListener("click",e=>{if(e.target===m&&m.id!=="groupSetupModal")m.classList.add("hidden");}));
 supabaseClient.auth.onAuthStateChange((event)=>{if(event==="SIGNED_OUT")showLoggedOut();});
