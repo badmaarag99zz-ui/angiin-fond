@@ -561,7 +561,8 @@ function classCoverHTML(){
 
         const scale =
             Number(G.cover_image_scale || 1);
-
+const posY =
+    Number(G.cover_image_y ?? 50);
         return `
             <div
                 class="class-cover-bg"
@@ -572,7 +573,10 @@ function classCoverHTML(){
                 src="${url}"
                 class="class-cover-image"
                 alt="Ангийн зураг"
-                style="transform:scale(${scale})"
+               style="
+    transform:scale(${scale});
+    object-position:center ${posY}%;
+"
             >
 
             ${
@@ -627,7 +631,8 @@ function openCoverUpload(){
 
     const scale =
         Number(G.cover_image_scale || 1);
-
+const posY =
+    Number(G.cover_image_y ?? 50);
     modal(`
         <h3>Ангийн зураг</h3>
 
@@ -645,7 +650,10 @@ function openCoverUpload(){
                     <img
                         id="coverPreviewImage"
                         src="${currentImage}"
-                        style="transform:scale(${scale})"
+                      style="
+    transform:scale(${scale});
+    object-position:center ${posY}%;
+"
                     >
 
                 </div>
@@ -716,7 +724,39 @@ function openCoverUpload(){
             </div>
 
         </div>
+<div class="cover-scale-box">
 
+    <label>
+        Зургийн дээш / доош байрлал
+    </label>
+
+    <div class="cover-scale-row">
+
+        <span>⬆️</span>
+
+        <input
+            id="coverPosY"
+            type="range"
+            min="0"
+            max="100"
+            step="1"
+            value="${posY}"
+            oninput="updateCoverPosition(this.value)"
+        >
+
+        <span>⬇️</span>
+
+    </div>
+
+    <div
+        id="coverPosYText"
+        class="muted"
+        style="text-align:center;margin-top:5px"
+    >
+        ${Math.round(posY)}%
+    </div>
+
+</div>
         <button
             class="btn primary"
             style="width:100%"
@@ -816,7 +856,28 @@ function updateCoverScale(value){
             ) + "%";
     }
 }
+function updateCoverPosition(value){
 
+    const img =
+        document.getElementById(
+            "coverPreviewImage"
+        );
+
+    if(img){
+        img.style.objectPosition =
+            `center ${value}%`;
+    }
+
+    const text =
+        document.getElementById(
+            "coverPosYText"
+        );
+
+    if(text){
+        text.textContent =
+            Math.round(Number(value)) + "%";
+    }
+}
 
 async function saveClassCover(){
 
@@ -835,7 +896,12 @@ async function saveClassCover(){
                 "coverScale"
             ).value
         );
-
+const posY =
+    Number(
+        document.getElementById(
+            "coverPosY"
+        ).value
+    );
 
     try{
 
@@ -927,15 +993,18 @@ async function saveClassCover(){
         } =
             await sb
                 .from("af_groups")
-                .update({
+              .update({
 
-                    cover_image_path:
-                        imagePath,
+    cover_image_path:
+        imagePath,
 
-                    cover_image_scale:
-                        scale
+    cover_image_scale:
+        scale,
 
-                })
+    cover_image_y:
+        posY
+
+})
                 .eq(
                     "id",
                     G.id
