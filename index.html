@@ -928,7 +928,7 @@ button{
  <div class="brand"><div class="logo">🐷</div><div><h1>Ангийн фонд</h1><p>Анги, бүлгийн сангаа<br>ил тод удирд.</p></div></div>
  <div class="auth-tabs"><button class="auth-tab active" id="loginTab" onclick="showAuth('login')">Нэвтрэх</button><button class="auth-tab" id="registerTab" onclick="showAuth('register')">Бүртгүүлэх</button></div>
  <div id="loginForm"><div class="field"><label>И-мэйл</label><input type="email" id="loginEmail" placeholder="name@example.com"></div><div class="field"><label>Нууц үг</label><input type="password" id="loginPassword" placeholder="••••••••"></div><button class="primary-btn" onclick="loginUser(this)">Нэвтрэх</button></div>
- <div id="registerForm" class="hidden"><div class="field"><label>Таны нэр</label><input id="registerName" placeholder="Нэр"></div><div class="field"><label>И-мэйл</label><input type="email" id="registerEmail" placeholder="name@example.com"></div><div class="field"><label>Нууц үг</label><input type="password" id="registerPassword" placeholder="6-аас дээш тэмдэгт"></div><button class="primary-btn" onclick="openRoleModal()">Үргэлжлүүлэх</button></div>
+ <div id="registerForm" class="hidden"><div class="field"><label>Таны нэр</label><input id="registerName" placeholder="Нэр"></div><div class="field"><label>И-мэйл</label><input type="email" id="registerEmail" placeholder="name@example.com"></div><div class="field"><label>Нууц үг</label><input type="password" id="registerPassword" placeholder="6-аас дээш тэмдэгт"></div><button class="primary-btn" onclick="registerUser(this)">Бүртгүүлэх</button></div>
  <div class="demo-note">Supabase-д холбогдсон бодит өгөгдлийн хувилбар.</div>
 </div></div>
 
@@ -967,7 +967,6 @@ button{
 <nav class="bottom-nav"><button class="nav-btn active" data-page="home" onclick="switchPage('home',this)"><span class="nav-icon">⌂</span>Нүүр</button><button class="nav-btn" data-page="children" onclick="switchPage('children',this)"><span class="nav-icon">👥</span>Хүүхэд</button><button class="nav-btn" data-page="payments" onclick="switchPage('payments',this)"><span class="nav-icon">₮</span>Төлбөр</button><button class="nav-btn" data-page="report" onclick="switchPage('report',this)"><span class="nav-icon">▥</span>Тайлан</button><button class="nav-btn" data-page="settings" onclick="switchPage('settings',this)"><span class="nav-icon">⚙</span>Тохиргоо</button></nav>
 </div>
 
-<div id="roleModal" class="modal hidden"><div class="modal-box"><div class="modal-head"><div><h3>Та ямар эрхээр ашиглах вэ?</h3><p>Админ анги үүсгэнэ. Эцэг эх урилгын кодоор ангид нэгдэнэ.</p></div><button class="close-btn" onclick="closeModal('roleModal')">×</button></div><button class="primary-btn" onclick="registerAs('admin')">👨‍💼 Анги / бүлгийн админ</button><button class="secondary-btn" style="width:100%;margin-top:10px" onclick="registerAs('parent')">👨‍👩‍👧 Эцэг эх / асран хамгаалагч</button></div></div>
 <div id="groupSetupModal" class="modal hidden"><div class="modal-box"><div class="modal-head"><div><h3>Анги / бүлгээ үүсгэх</h3><p>Эхний үндсэн мэдээллээ оруулна.</p></div></div><div class="field"><label>Төрөл</label><select id="setupGroupType"><option value="school">ЕБС</option><option value="kindergarten">Цэцэрлэг</option></select></div><div class="field"><label>Сургууль / цэцэрлэгийн нэр</label><input id="setupInstitutionName" placeholder="Жишээ: 1-р сургууль"></div><div class="field"><label>Анги / бүлгийн нэр</label><input id="setupGroupName" placeholder="Жишээ: 3А анги"></div><div class="field"><label>Хичээлийн жил</label><input id="setupAcademicYear" value="2026–2027"></div><button class="primary-btn" onclick="createGroup(this)">Үүсгэх</button></div></div>
 <div id="childModal" class="modal hidden"><div class="modal-box"><div class="modal-head"><div><h3>Хүүхэд нэмэх</h3><p>Ангийн хүүхдийн мэдээлэл.</p></div><button class="close-btn" onclick="closeModal('childModal')">×</button></div><div class="field"><label>Хүүхдийн нэр *</label><input id="childName" placeholder="Овог нэр"></div><div class="field"><label>Эцэг эх / асран хамгаалагч</label><input id="parentName" placeholder="Нэр"></div><div class="field"><label>Утас</label><input id="parentPhone" type="tel" maxlength="8" placeholder="99112233"></div><button class="primary-btn" onclick="addMember(this)">Хадгалах</button></div></div>
 <div id="collectionModal" class="modal hidden"><div class="modal-box"><div class="modal-head"><div><h3>Шинэ хураалт</h3><p>Хүүхэд бүрээс авах дүнг тохируулна.</p></div><button class="close-btn" onclick="closeModal('collectionModal')">×</button></div><div class="field"><label>Хураалтын нэр *</label><input id="collectionTitle" placeholder="Жишээ: I улирлын фонд"></div><div class="field"><label>Хүүхэд бүрийн дүн *</label><input id="collectionAmount" type="number" min="1" placeholder="30000"></div><div class="field"><label>Төлөх эцсийн өдөр</label><input id="collectionDueDate" type="date"></div><div class="field"><label>Тайлбар</label><textarea id="collectionDescription" rows="3"></textarea></div><button class="primary-btn" onclick="createCollection(this)">Хураалт үүсгэх</button></div></div>
@@ -1002,101 +1001,78 @@ function closeModal(id){$ (id)?.classList.add("hidden");}
 function showAuth(type){$("loginTab").classList.toggle("active",type==="login");$("registerTab").classList.toggle("active",type==="register");$("loginForm").classList.toggle("hidden",type!=="login");$("registerForm").classList.toggle("hidden",type!=="register");}
 function switchPage(page,btn){document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));$(page+"Page")?.classList.add("active");document.querySelectorAll(".nav-btn").forEach(x=>x.classList.remove("active"));(btn||document.querySelector(`.nav-btn[data-page="${page}"]`))?.classList.add("active");window.scrollTo({top:0,behavior:"smooth"});}
 async function loginUser(btn){const email=$("loginEmail").value.trim(),password=$("loginPassword").value;if(!email||!password)return toast("И-мэйл болон нууц үгээ оруулна уу.");setBusy(btn,true,"Нэвтэрч байна...");const {error}=await supabaseClient.auth.signInWithPassword({email,password});setBusy(btn,false);if(error)return toast("Нэвтрэхэд алдаа: "+error.message);await bootApp();}
-function openRoleModal(){const n=$("registerName").value.trim(),e=$("registerEmail").value.trim(),p=$("registerPassword").value;if(!n||!e.includes("@")||p.length<6)return toast("Нэр, зөв и-мэйл, 6+ тэмдэгттэй нууц үг оруулна уу.");openModal("roleModal");}
-async function registerAs(role){closeModal("roleModal");const full_name=$("registerName").value.trim(),email=$("registerEmail").value.trim(),password=$("registerPassword").value;const {data,error}=await supabaseClient.auth.signUp({email,password,options:{data:{full_name,role}}});if(error)return toast("Бүртгэлийн алдаа: "+error.message);if(!data.session){$("loginEmail").value=email;showAuth("login");return toast("Бүртгэл үүслээ. И-мэйлээ баталгаажуулаад нэвтэрнэ үү.");}await bootApp();}
+async function registerUser(btn){
+ const full_name=$("registerName").value.trim();
+ const email=$("registerEmail").value.trim();
+ const password=$("registerPassword").value;
+
+ if(!full_name)return toast("Нэрээ оруулна уу.");
+ if(!email||!email.includes("@"))return toast("Зөв и-мэйл хаяг оруулна уу.");
+ if(password.length<6)return toast("Нууц үг хамгийн багадаа 6 тэмдэгт байна.");
+
+ setBusy(btn,true,"Бүртгэж байна...");
+
+ const {data,error}=await supabaseClient.auth.signUp({
+   email,
+   password,
+   options:{data:{full_name}}
+ });
+
+ setBusy(btn,false);
+
+ if(error)return toast("Бүртгэлийн алдаа: "+error.message);
+
+ if(!data.session){
+   $("loginEmail").value=email;
+   showAuth("login");
+   return toast("Бүртгэл үүслээ. И-мэйлээ баталгаажуулаад нэвтэрнэ үү.");
+ }
+
+ await bootApp();
+ toast("Бүртгэл амжилттай үүслээ.");
+}
+
 async function bootApp(){
  const {data:{session}}=await supabaseClient.auth.getSession();
  if(!session)return showLoggedOut();
- currentUser=session.user;
- const {data:p}=await supabaseClient.from("profiles").select("*").eq("id",currentUser.id).maybeSingle(); currentProfile=p;
- $("userAvatar").textContent=((p?.full_name||currentUser.email||"?").trim()[0]||"?").toUpperCase();
- const metaRole=currentUser.user_metadata?.role==="parent"?"parent":"admin";
 
- // ROLE ROUTING:
- // Parent metadata always enters the parent flow.
- // An old group owned by this account must not silently turn a parent back into admin.
- currentRole=metaRole;
+ currentUser=session.user;
+
+ const {data:p,error:profileError}=await supabaseClient
+   .from("profiles")
+   .select("*")
+   .eq("id",currentUser.id)
+   .maybeSingle();
+
+ if(profileError) toast("Профайл унших алдаа: "+profileError.message);
+ currentProfile=p;
+
+ $("userAvatar").textContent=
+   ((p?.full_name||currentUser.user_metadata?.full_name||currentUser.email||"?").trim()[0]||"?").toUpperCase();
+
+ // Account itself has NO global Admin/Parent role.
+ // Role will come from the selected group's membership.
+ currentRole=null;
  currentGroup=null;
  currentMembership=null;
 
- if(currentRole==="admin"){
-   const {data:owned,error:ownedError}=await supabaseClient
-     .from("groups")
-     .select("*")
-     .eq("owner_id",currentUser.id)
-     .order("created_at",{ascending:true})
-     .limit(1);
+ $("roleLabel").textContent="—";
 
-   if(ownedError) toast("Анги унших алдаа: "+ownedError.message);
-   currentGroup=owned?.length?owned[0]:null;
- }else{
-   const {data:ms,error:membershipError}=await supabaseClient
-     .from("group_memberships")
-     .select("id,group_id,user_id,role,status,created_at")
-     .eq("user_id",currentUser.id)
-     .eq("role","parent")
-     .order("created_at",{ascending:false});
+ document.querySelectorAll(".admin-only,.parent-only")
+   .forEach(x=>x.style.display="none");
 
-   if(membershipError) toast("Эцэг эхийн эрх унших алдаа: "+membershipError.message);
+ // Feature 1 intentionally does not force the user into
+ // "create group" or "join group" immediately after login.
+ $("authScreen").classList.add("hidden");
+ $("mainApp").classList.remove("hidden");
 
-   currentMembership=(ms||[]).find(x=>x.status==="approved")
-     ||(ms||[]).find(x=>x.status==="pending")
-     ||(ms||[])[0]
-     ||null;
-
-   if(currentMembership?.status==="approved"){
-     const {data:g,error:groupError}=await supabaseClient
-       .from("groups")
-       .select("*")
-       .eq("id",currentMembership.group_id)
-       .maybeSingle();
-
-     if(groupError) toast("Ангийн мэдээлэл унших алдаа: "+groupError.message);
-
-     currentGroup=g||{
-       id:currentMembership.group_id,
-       group_name:"Холбогдсон анги",
-       institution_name:"",
-       academic_year:"",
-       invite_code:null
-     };
-   }
- }
-
- $("roleLabel").textContent=currentRole==="parent"?"Эцэг эх":"Админ";
- document.querySelectorAll(".admin-only").forEach(x=>x.style.display=currentRole==="parent"?"none":"block");
- document.querySelectorAll(".parent-only").forEach(x=>x.style.display=currentRole==="parent"?"block":"none");
-
- // Until parent read-only dashboard/RLS is opened, keep admin mutation screens inaccessible.
- document.querySelectorAll(".actions").forEach(x=>x.style.display=currentRole==="parent"?"none":"grid");
- const childNav=document.querySelector('.nav-btn[data-page="children"]');
- const paymentNav=document.querySelector('.nav-btn[data-page="payments"]');
- if(childNav) childNav.style.display=currentRole==="parent"?"none":"block";
- if(paymentNav) paymentNav.style.display="block";
-
- renderCurrentGroup(); $("authScreen").classList.add("hidden"); $("mainApp").classList.remove("hidden");
-
- if(currentGroup && currentRole==="admin"){
-   await loadAppData();
-   await loadJoinRequests();
-   await loadChildLinkRequests();
- }else if(!currentGroup && currentRole==="admin"){
-   openModal("groupSetupModal");
- }else if(currentMembership?.status==="approved" && currentGroup){
-   await loadAppData();
-   await loadParentChildLinks();
- }else if(currentMembership?.status==="pending"){
-   toast("Таны нэгдэх хүсэлт админы зөвшөөрөл хүлээж байна.");
-   openModal("joinGroupModal");
- }else if(!currentMembership){
-   openModal("joinGroupModal");
- }
+ renderCurrentGroup();
+ switchPage("home");
 }
-
-function renderCurrentGroup(){$("currentGroupName").textContent=currentGroup?.group_name||"Анги / бүлэг үүсгээгүй";$("currentGroupYear").textContent=currentGroup?`${currentGroup.institution_name} · ${currentGroup.academic_year||"—"}`:"Эхлээд анги / бүлгээ үүсгэнэ үү";if(currentGroup){if($("groupInviteCode"))$("groupInviteCode").textContent=currentGroup.invite_code||"—";$ ("settingsInstitution").value=currentGroup.institution_name||"";$("settingsGroupName").value=currentGroup.group_name||"";$("settingsType").value=currentGroup.type||"school";$("settingsYear").value=currentGroup.academic_year||"";$("reportYear").textContent=currentGroup.academic_year||"—";}}
+function renderCurrentGroup(){$("currentGroupName").textContent=currentGroup?.group_name||"Анги / бүлэг үүсгээгүй";$("currentGroupYear").textContent=currentGroup?`${currentGroup.institution_name} · ${currentGroup.academic_year||"—"}`:"Миний анги / бүлгүүд хэсгээс анги үүсгэх эсвэл нэгдэнэ үү";if(currentGroup){if($("groupInviteCode"))$("groupInviteCode").textContent=currentGroup.invite_code||"—";$ ("settingsInstitution").value=currentGroup.institution_name||"";$("settingsGroupName").value=currentGroup.group_name||"";$("settingsType").value=currentGroup.type||"school";$("settingsYear").value=currentGroup.academic_year||"";$("reportYear").textContent=currentGroup.academic_year||"—";}}
 async function createGroup(btn){const row={owner_id:currentUser.id,type:$("setupGroupType").value,institution_name:$("setupInstitutionName").value.trim(),group_name:$("setupGroupName").value.trim(),academic_year:$("setupAcademicYear").value.trim()};if(!row.institution_name||!row.group_name)return toast("Байгууллага болон анги / бүлгийн нэрээ оруулна уу.");setBusy(btn,true);const {data,error}=await supabaseClient.from("groups").insert(row).select().single();setBusy(btn,false);if(error)return toast("Анги үүсгэхэд алдаа: "+error.message);currentGroup=data;closeModal("groupSetupModal");renderCurrentGroup();await loadAppData();await loadJoinRequests();await loadChildLinkRequests();toast("Анги / бүлэг үүслээ.");}
 async function saveGroupSettings(btn){if(!currentGroup)return;const row={institution_name:$("settingsInstitution").value.trim(),group_name:$("settingsGroupName").value.trim(),type:$("settingsType").value,academic_year:$("settingsYear").value.trim()};if(!row.institution_name||!row.group_name)return toast("Нэрийн талбаруудыг бөглөнө үү.");setBusy(btn,true);const {data,error}=await supabaseClient.from("groups").update(row).eq("id",currentGroup.id).select().single();setBusy(btn,false);if(error)return toast("Хадгалах алдаа: "+error.message);currentGroup=data;renderCurrentGroup();toast("Тохиргоо хадгалагдлаа.");}
-async function logoutUser(){await supabaseClient.auth.signOut();currentUser=currentProfile=currentGroup=null;showLoggedOut();}
+async function logoutUser(){await supabaseClient.auth.signOut();currentUser=currentProfile=currentGroup=currentMembership=null;currentRole=null;showLoggedOut();}
 function showLoggedOut(){$("mainApp").classList.add("hidden");$("authScreen").classList.remove("hidden");switchPage("home");}
 async function loadAppData(){
  if(!currentGroup)return;
