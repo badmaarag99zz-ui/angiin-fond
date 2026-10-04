@@ -996,23 +996,62 @@ async function bootApp(){
  currentUser=session.user;
  const {data:p}=await supabaseClient.from("profiles").select("*").eq("id",currentUser.id).maybeSingle(); currentProfile=p;
  $("userAvatar").textContent=((p?.full_name||currentUser.email||"?").trim()[0]||"?").toUpperCase();
- const metaRole=currentUser.user_metadata?.role||"admin";
- const {data:owned}=await supabaseClient.from("groups").select("*").eq("owner_id",currentUser.id).order("created_at",{ascending:true}).limit(1);
- currentGroup=owned?.length?owned[0]:null; currentMembership=null; currentRole=currentGroup?"admin":metaRole;
- if(!currentGroup){
-   const {data:ms}=await supabaseClient.from("group_memberships").select("*").eq("user_id",currentUser.id).order("created_at",{ascending:false});
-   currentMembership=(ms||[]).find(x=>x.status==="approved")||(ms||[])[0]||null;
+ const metaRole=currentUser.user_metadata?.role==="parent"?"parent":"admin";
+
+ // ROLE ROUTING:
+ // Parent metadata always enters the parent flow.
+ // An old group owned by this account must not silently turn a parent back into admin.
+ currentRole=metaRole;
+ currentGroup=null;
+ currentMembership=null;
+
+ if(currentRole==="admin"){
+   const {data:owned,error:ownedError}=await supabaseClient
+     .from("groups")
+     .select("*")
+     .eq("owner_id",currentUser.id)
+     .order("created_at",{ascending:true})
+     .limit(1);
+
+   if(ownedError) toast("Анги унших алдаа: "+ownedError.message);
+   currentGroup=owned?.length?owned[0]:null;
+ }else{
+   const {data:ms,error:membershipError}=await supabaseClient
+     .from("group_memberships")
+     .select("id,group_id,user_id,role,status,created_at")
+     .eq("user_id",currentUser.id)
+     .eq("role","parent")
+     .order("created_at",{ascending:false});
+
+   if(membershipError) toast("Эцэг эхийн эрх унших алдаа: "+membershipError.message);
+
+   currentMembership=(ms||[]).find(x=>x.status==="approved")
+     ||(ms||[]).find(x=>x.status==="pending")
+     ||(ms||[])[0]
+     ||null;
+
    if(currentMembership?.status==="approved"){
-     const {data:found}=await supabaseClient.rpc("find_group_by_invite_code",{p_invite_code:""});
-     const {data:g}=await supabaseClient.from("group_memberships").select("group_id,role,status").eq("id",currentMembership.id).single();
-     currentMembership=g||currentMembership;
-     // Parent cannot select groups under the old owner-only policy yet; group details are loaded after the next read-only RLS step.
-     currentGroup={id:currentMembership.group_id,group_name:"Холбогдсон анги",institution_name:"",academic_year:"",invite_code:null};
+     currentGroup={
+       id:currentMembership.group_id,
+       group_name:"Холбогдсон анги",
+       institution_name:"",
+       academic_year:"",
+       invite_code:null
+     };
    }
  }
+
  $("roleLabel").textContent=currentRole==="parent"?"Эцэг эх":"Админ";
  document.querySelectorAll(".admin-only").forEach(x=>x.style.display=currentRole==="parent"?"none":"block");
  document.querySelectorAll(".parent-only").forEach(x=>x.style.display=currentRole==="parent"?"block":"none");
+
+ // Until parent read-only dashboard/RLS is opened, keep admin mutation screens inaccessible.
+ document.querySelectorAll(".actions").forEach(x=>x.style.display=currentRole==="parent"?"none":"grid");
+ const childNav=document.querySelector('.nav-btn[data-page="children"]');
+ const paymentNav=document.querySelector('.nav-btn[data-page="payments"]');
+ if(childNav) childNav.style.display=currentRole==="parent"?"none":"block";
+ if(paymentNav) paymentNav.style.display=currentRole==="parent"?"none":"block";
+
  renderCurrentGroup(); $("authScreen").classList.add("hidden"); $("mainApp").classList.remove("hidden");
  if(currentGroup && currentRole!=="parent"){await loadAppData();await loadJoinRequests();}
  else if(!currentGroup && currentRole!=="parent") openModal("groupSetupModal");
