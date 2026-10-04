@@ -1,17 +1,106 @@
 <!doctype html><html lang="mn"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ангийн фонд</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
-<style>*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f3f6f8;color:#17202a}button,input,select,textarea{font:inherit}.hidden{display:none!important}.wrap{max-width:900px;margin:auto;padding:18px}.card{background:#fff;border:1px solid #e3e8ee;border-radius:18px;padding:16px;margin:12px 0;box-shadow:0 5px 18px #0000000b}.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.between{justify-content:space-between}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}.btn{border:0;border-radius:12px;padding:11px 14px;font-weight:700;cursor:pointer}.primary{background:#13795b;color:#fff}.soft{background:#eaf7f2;color:#12664d}.danger{background:#fee2e2;color:#991b1b}.muted{color:#68727d;font-size:13px}.field{margin:10px 0}.field label{display:block;font-size:12px;font-weight:700;margin-bottom:5px}.field input,.field select,.field textarea{width:100%;padding:11px;border:1px solid #d9e0e7;border-radius:11px;background:#fff}.top{background:#fff;border-bottom:1px solid #e5e7eb;position:sticky;top:0;z-index:5}.top .wrap{display:flex;justify-content:space-between;align-items:center}.brand{font-weight:900;font-size:20px}.tabs{display:flex;gap:6px;overflow:auto;padding-bottom:6px}.tabs button{white-space:nowrap}.pill{display:inline-block;padding:4px 8px;border-radius:999px;background:#eef2f7;font-size:11px;font-weight:700}.ok{background:#dcfce7;color:#166534}.warn{background:#ffedd5;color:#9a3412}.bad{background:#fee2e2;color:#991b1b}.money{font-size:24px;font-weight:900}.item{padding:12px 0;border-bottom:1px solid #edf0f3}.item:last-child{border:0}.modal{position:fixed;inset:0;background:#0008;display:flex;align-items:center;justify-content:center;padding:16px;z-index:30}.modalbox{background:#fff;border-radius:18px;padding:18px;max-width:600px;width:100%;max-height:90vh;overflow:auto}.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#111827;color:white;padding:10px 14px;border-radius:10px;z-index:99}.checklist{max-height:240px;overflow:auto;border:1px solid #e5e7eb;border-radius:10px;padding:8px}.link{color:#13795b;text-decoration:underline;cursor:pointer}.sectiontitle{margin:4px 0 10px}.proof{max-width:220px;max-height:180px;border-radius:10px;margin-top:8px}.locked{opacity:.55;pointer-events:none}@media(max-width:600px){.wrap{padding:12px}.row.mobilecol{align-items:stretch;flex-direction:column}.btn{min-height:44px}}</style></head><body>
+<style>
+*{box-sizing:border-box}
+:root{
+ --primary:#0f8a67;--primary-dark:#087256;--primary-soft:#e9f8f2;
+ --bg:#f3f7f6;--card:#fff;--text:#12211d;--muted:#71807b;
+ --border:#e0e9e6;--danger:#dc2626;--warning:#d97706;
+}
+body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}
+button,input,select,textarea{font:inherit}.hidden{display:none!important}
+.wrap{max-width:1080px;margin:auto;padding:22px 24px}
+.top{background:rgba(255,255,255,.96);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10;backdrop-filter:blur(12px)}
+.top .wrap{display:flex;justify-content:space-between;align-items:center;min-height:76px}
+.brand{font-weight:900;font-size:22px;display:flex;align-items:center;gap:10px}
+.brand:before{content:"🐷";width:38px;height:38px;border-radius:12px;background:var(--primary-soft);display:grid;place-items:center;font-size:21px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px;margin:14px 0;box-shadow:0 8px 28px rgba(15,35,28,.045)}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.between{justify-content:space-between}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
+.btn{border:0;border-radius:13px;padding:12px 16px;font-weight:800;cursor:pointer;transition:.18s}
+.btn:hover{transform:translateY(-1px)}.primary{background:var(--primary);color:#fff;box-shadow:0 7px 18px rgba(15,138,103,.16)}
+.soft{background:var(--primary-soft);color:var(--primary-dark)}.danger{background:#fee2e2;color:#991b1b}
+.muted{color:var(--muted);font-size:13px;line-height:1.55}
+.field{margin:13px 0}.field label{display:block;font-size:12px;font-weight:800;margin-bottom:7px;color:#52615c}
+.field input,.field select,.field textarea{width:100%;padding:13px 14px;border:1px solid #d7e2de;border-radius:13px;background:#fff;outline:none}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(15,138,103,.09)}
+.tabs{display:flex;gap:7px;overflow:auto;padding:5px 0 8px}.tabs button{white-space:nowrap}
+.pill{display:inline-block;padding:6px 10px;border-radius:999px;background:#eef4f2;font-size:11px;font-weight:800}
+.ok{background:#dcfce7;color:#166534}.warn{background:#ffedd5;color:#9a3412}.bad{background:#fee2e2;color:#991b1b}
+.money{font-size:26px;font-weight:900;letter-spacing:-.5px}.item{padding:13px 0;border-bottom:1px solid #edf2f0}.item:last-child{border:0}
+.modal{position:fixed;inset:0;background:rgba(15,23,20,.56);display:flex;align-items:center;justify-content:center;padding:16px;z-index:30;backdrop-filter:blur(3px)}
+.modalbox{background:#fff;border-radius:22px;padding:22px;max-width:620px;width:100%;max-height:90vh;overflow:auto;box-shadow:0 24px 70px rgba(0,0,0,.22)}
+.modalbox h3{margin:0 0 16px;font-size:21px}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#111827;color:#fff;padding:12px 16px;border-radius:12px;z-index:99;box-shadow:0 10px 30px #0003}
+.checklist{max-height:250px;overflow:auto;border:1px solid var(--border);border-radius:13px;padding:9px;background:#fbfdfc}
+.link{color:var(--primary-dark);text-decoration:none;cursor:pointer;font-weight:800}.sectiontitle{margin:4px 0 10px}.proof{max-width:240px;max-height:190px;border-radius:12px;margin-top:8px}.locked{opacity:.55;pointer-events:none}
+
+/* auth */
+#auth{max-width:470px!important;padding-top:7vh!important}
+#auth .card{padding:28px;border-radius:26px}
+#auth h1{font-size:28px;margin:0 0 7px}
+#auth h1:before{content:"🐷";margin-right:10px}
+#auth .tabs{background:#edf3f1;padding:5px;border-radius:14px;margin:20px 0 16px}
+#auth .tabs .btn{flex:1}
+
+/* groups */
+.groups-hero{padding:28px 0 10px}
+.groups-hero h2{font-size:27px;margin:0 0 7px;letter-spacing:-.5px}
+.groups-toolbar{display:flex;justify-content:space-between;gap:16px;align-items:flex-end;flex-wrap:wrap}
+.groups-actions{display:flex;gap:9px;flex-wrap:wrap}
+#groups{margin-top:18px}
+#groups>.card{padding:18px 20px;border-radius:19px}
+#groups>.card b{font-size:16px}
+.empty-state{background:#fff;border:1px dashed #cbd9d4;border-radius:20px;padding:34px;text-align:center;color:var(--muted)}
+.empty-state .empty-icon{font-size:36px;margin-bottom:9px}
+
+/* workspace */
+.workspace-head{background:linear-gradient(135deg,#0b7b5d,#13a178);color:#fff;border-radius:24px;padding:22px 24px;margin:8px 0 14px;box-shadow:0 14px 34px rgba(15,138,103,.16)}
+.workspace-head .link{color:#d9fff1}.workspace-head h2{margin:8px 0 5px;font-size:25px}.workspace-head .muted{color:#d9eee7}
+.workspace-head .pill{background:#ffffff22;color:#fff;border:1px solid #ffffff35}
+#accessBanner{margin:0 0 14px}
+#nav{background:#fff;border:1px solid var(--border);border-radius:16px;padding:7px;box-shadow:0 5px 18px rgba(15,35,28,.035);margin-bottom:15px}
+#nav .btn{flex:1;min-width:100px}
+.page>h3,.page>.row h3{font-size:22px;margin:8px 0}
+.page .grid .card{min-height:110px}
+.page .grid .card .muted{font-weight:700}
+.page .grid .card .money{margin-top:8px}
+.page>.card,.page>.grid{animation:fadein .18s ease}
+@keyframes fadein{from{opacity:.3;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+@media(max-width:700px){
+ .wrap{padding:14px}.top .wrap{min-height:66px}.brand{font-size:19px}.brand:before{width:34px;height:34px}
+ .groups-toolbar{align-items:stretch}.groups-actions{width:100%}.groups-actions .btn{flex:1}
+ .workspace-head{border-radius:18px;padding:18px}.workspace-head h2{font-size:22px}
+ #nav{display:grid;grid-template-columns:repeat(3,1fr);overflow:visible}.tabs button{white-space:normal}
+ .row.mobilecol{align-items:stretch;flex-direction:column}.btn{min-height:44px}
+ .money{font-size:23px}
+}
+</style></head><body>
 <div id="toast" class="toast hidden"></div>
 <section id="auth" class="wrap" style="max-width:480px;padding-top:8vh"><div class="card"><h1>Ангийн фонд</h1><p class="muted">Анги, бүлгийн сангийн ил тод бүртгэл.</p><div class="tabs"><button class="btn primary" onclick="authTab('login')">Нэвтрэх</button><button class="btn soft" onclick="authTab('register')">Бүртгүүлэх</button></div><div id="loginBox"><div class="field"><label>Email</label><input id="le" type="email"></div><div class="field"><label>Нууц үг</label><input id="lp" type="password"></div><button class="btn primary" onclick="login()">Нэвтрэх</button></div><div id="registerBox" class="hidden"><div class="field"><label>Нэр</label><input id="rn"></div><div class="field"><label>Email</label><input id="re" type="email"></div><div class="field"><label>Нууц үг</label><input id="rp" type="password"></div><button class="btn primary" onclick="register()">Бүртгүүлэх</button></div></div></section>
 <section id="app" class="hidden"><div class="top"><div class="wrap"><div class="brand">🐷 Ангийн фонд</div><button class="btn soft" onclick="logout()">Гарах</button></div></div><div class="wrap">
-<div id="groupsView"><div class="row between"><div><h2>Миний анги / бүлгүүд</h2><div class="muted">Нэг account олон ангид өөр өөр role-той байж болно.</div></div><div class="row"><button class="btn primary" onclick="openCreateGroup()">＋ Анги / бүлэг үүсгэх</button><button class="btn soft" onclick="openJoin()">🔗 Нэгдэх</button></div></div><div id="groups"></div></div>
-<div id="workspace" class="hidden"><div class="row between"><div><span class="link" onclick="backGroups()">← Миний ангиуд</span><h2 id="gTitle"></h2><div id="gSub" class="muted"></div></div><span id="role" class="pill"></span></div><div id="accessBanner" class="card"></div><div class="tabs" id="nav"><button class="btn primary" onclick="tab('home',this)">Нүүр</button><button class="btn soft admin" onclick="tab('children',this)">Хүүхэд</button><button class="btn soft" onclick="tab('funds',this)">Фонд</button><button class="btn soft" onclick="tab('payments',this)">Төлөлт</button><button class="btn soft" onclick="tab('report',this)">Тайлан</button><button class="btn soft admin" onclick="tab('settings',this)">Тохиргоо</button></div>
+<div id="groupsView">
+  <div class="groups-hero">
+    <div class="groups-toolbar">
+      <div><h2>Миний анги / бүлгүүд</h2><div class="muted">Өөрийн удирддаг болон эцэг эхээр нэгдсэн бүх анги, бүлэг энд харагдана.</div></div>
+      <div class="groups-actions"><button class="btn primary" onclick="openCreateGroup()">＋ Анги / бүлэг үүсгэх</button><button class="btn soft" onclick="openJoin()">🔗 Ангид / бүлэгт нэгдэх</button></div>
+    </div>
+  </div>
+  <div id="groups"></div>
+</div>
+<div id="workspace" class="hidden">
+  <div class="workspace-head row between">
+    <div><span class="link" onclick="backGroups()">← Миний анги / бүлгүүд</span><h2 id="gTitle"></h2><div id="gSub" class="muted"></div></div>
+    <span id="role" class="pill"></span>
+  </div>
+  <div id="accessBanner" class="card"></div><div class="tabs" id="nav"><button class="btn primary" onclick="tab('home',this)">Нүүр</button><button class="btn soft admin" onclick="tab('children',this)">Хүүхэд</button><button class="btn soft" onclick="tab('funds',this)">Фонд</button><button class="btn soft" onclick="tab('payments',this)">Төлөлт</button><button class="btn soft" onclick="tab('report',this)">Тайлан</button><button class="btn soft admin" onclick="tab('settings',this)">Тохиргоо</button></div>
 <div id="home" class="page"></div><div id="children" class="page hidden"></div><div id="funds" class="page hidden"></div><div id="payments" class="page hidden"></div><div id="report" class="page hidden"></div><div id="settings" class="page hidden"></div></div></div></section><div id="modal" class="modal hidden" onclick="if(event.target===this)closeModal()"><div id="modalBody" class="modalbox"></div></div>
 <script>
 const SUPABASE_URL="https://fjvjtujwnbsonycgxuuu.supabase.co";const SUPABASE_KEY="sb_publishable_0QwVZZJsw_J0iHTov07o5A_ykK11Uai";const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 let U=null,G=null,M=null,DATA={};const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const money=n=>new Intl.NumberFormat('mn-MN').format(Number(n||0))+'₮';function toast(s){$('toast').textContent=s;$('toast').classList.remove('hidden');setTimeout(()=>$('toast').classList.add('hidden'),2500)}function modal(h){$('modalBody').innerHTML=h;$('modal').classList.remove('hidden')}function closeModal(){$('modal').classList.add('hidden')}function ay(){let d=new Date(),y=d.getFullYear();return d.getMonth()>=8?`${y}–${y+1}`:`${y-1}–${y}`}
 function authTab(x){$('loginBox').classList.toggle('hidden',x!=='login');$('registerBox').classList.toggle('hidden',x!=='register')}async function register(){let n=$('rn').value.trim(),e=$('re').value.trim(),p=$('rp').value;if(!n||!e||p.length<6)return toast('Мэдээллээ бүрэн оруулна уу');let{data,error}=await sb.auth.signUp({email:e,password:p,options:{data:{full_name:n}}});if(error)return toast(error.message);toast(data.session?'Бүртгэгдлээ':'Email баталгаажуулна уу');if(data.session)boot()}async function login(){let{error}=await sb.auth.signInWithPassword({email:$('le').value.trim(),password:$('lp').value});if(error)return toast(error.message);boot()}async function logout(){await sb.auth.signOut();location.reload()}
-async function boot(){let{data:{session}}=await sb.auth.getSession();if(!session)return;$('auth').classList.add('hidden');$('app').classList.remove('hidden');U=session.user;loadGroups()}async function loadGroups(){G=M=null;$('groupsView').classList.remove('hidden');$('workspace').classList.add('hidden');let{data,error}=await sb.from('af_memberships').select('id,role,status,group_id,af_groups(*)').eq('user_id',U.id).eq('status','approved');if(error)return toast(error.message);$('groups').innerHTML=(data||[]).length?(data||[]).map((m,i)=>`<div class="card row between"><div><b>${esc(m.af_groups.group_name)}</b><div class="muted">${esc(m.af_groups.institution_name)} · ${esc(m.af_groups.academic_year)}</div></div><div><span class="pill">${m.role==='owner'?'Эзэмшигч':m.role==='admin'?'Админ':'Эцэг эх'}</span> <button class="btn soft" onclick='enter(${JSON.stringify(JSON.stringify(m))})'>Нээх</button></div></div>`).join(''):'<div class="card muted">Одоогоор анги / бүлэг алга.</div>'}
+async function boot(){let{data:{session}}=await sb.auth.getSession();if(!session)return;$('auth').classList.add('hidden');$('app').classList.remove('hidden');U=session.user;loadGroups()}async function loadGroups(){G=M=null;$('groupsView').classList.remove('hidden');$('workspace').classList.add('hidden');let{data,error}=await sb.from('af_memberships').select('id,role,status,group_id,af_groups(*)').eq('user_id',U.id).eq('status','approved');if(error)return toast(error.message);$('groups').innerHTML=(data||[]).length?(data||[]).map((m,i)=>`<div class="card row between"><div class="row"><div style="width:48px;height:48px;border-radius:15px;background:#e9f8f2;display:grid;place-items:center;font-size:23px">🏫</div><div><b>${esc(m.af_groups.group_name)}</b><div class="muted">${esc(m.af_groups.institution_name)} · ${esc(m.af_groups.academic_year)}</div></div></div><div class="row"><span class="pill">${m.role==='owner'?'Эзэмшигч':m.role==='admin'?'Админ':'Эцэг эх'}</span><button class="btn soft" onclick='enter(${JSON.stringify(JSON.stringify(m))})'>Нээх →</button></div></div>`).join(''):'<div class="empty-state"><div class="empty-icon">🏫</div><b style="color:#24352f">Одоогоор анги / бүлэг алга</b><div style="margin-top:7px">Шинээр анги үүсгэх эсвэл урилгын кодоор нэгдээрэй.</div></div>'}
 function openCreateGroup(){modal(`<h3>Анги / бүлэг үүсгэх</h3><div class="field"><label>Байгууллагын нэр</label><input id="ci" placeholder="23-р сургууль"></div><div class="field"><label>Анги / бүлгийн нэр</label><input id="cg" placeholder="5А"></div><div class="field"><label>Хичээлийн жил</label><input value="${ay()}" readonly></div><button class="btn primary" onclick="createGroup()">Үүсгэх</button>`)}async function createGroup(){let i=$('ci').value.trim(),g=$('cg').value.trim();if(!i||!g)return toast('Мэдээллээ бөглөнө үү');let{error}=await sb.rpc('af_create_group',{p_institution:i,p_group:g,p_year:ay()});if(error)return toast(error.message);closeModal();await loadGroups();toast('Анги үүслээ')}
 function openJoin(){modal(`<h3>Урилгын код</h3><div class="field"><input id="jc" placeholder="Код"></div><button class="btn primary" onclick="findInvite()">Үргэлжлүүлэх</button>`)}async function findInvite(){let code=$('jc').value.trim();let{data,error}=await sb.rpc('af_find_invite',{p_code:code});if(error||!data?.length)return toast('Код олдсонгүй');let g=data[0];modal(`<h3>${esc(g.institution_name)} — ${esc(g.group_name)}</h3><p class="muted">${esc(g.academic_year)} · Хариуцагч: ${esc(g.admin_name||'—')} ${esc(g.admin_phone||'')}</p><div class="field"><label>Хүүхдийн овог, нэр</label><input id="ch"></div><h4>Үндсэн холбоо барих хүн</h4><div class="field"><input id="n1" placeholder="Нэр"></div><div class="field"><input id="p1" maxlength="8" placeholder="Утас"></div><div class="field"><select id="r1">${rels()}</select></div><h4>Нэмэлт холбоо барих хүн *</h4><div class="field"><input id="n2" placeholder="Нэр"></div><div class="field"><input id="p2" maxlength="8" placeholder="Утас"></div><div class="field"><select id="r2">${rels()}</select></div><button class="btn primary" onclick="submitChild('${esc(code)}')">Хүсэлт илгээх</button>`)}function rels(){return ['Аав','Ээж','Өвөө','Эмээ','Ах','Эгч','Асран хамгаалагч','Бусад'].map(x=>`<option>${x}</option>`).join('')}async function submitChild(code){let a=['ch','n1','p1','n2','p2'].map(x=>$(x).value.trim());if(a.some(x=>!x))return toast('Бүх шаардлагатай мэдээллийг бөглөнө үү');let{error}=await sb.rpc('af_submit_child_request',{p_code:code,p_child:a[0],p_n1:a[1],p_p1:a[2],p_r1:$('r1').value,p_n2:a[3],p_p2:a[4],p_r2:$('r2').value});if(error)return toast(error.message);closeModal();toast('Хүсэлт илгээгдлээ')}
 async function enter(raw){M=JSON.parse(raw);G=M.af_groups;$('groupsView').classList.add('hidden');$('workspace').classList.remove('hidden');$('gTitle').textContent=G.group_name;$('gSub').textContent=G.institution_name+' · '+G.academic_year;$('role').textContent=M.role==='owner'?'Эзэмшигч':M.role==='admin'?'Админ':'Эцэг эх';document.querySelectorAll('.admin').forEach(x=>x.classList.toggle('hidden',M.role==='parent'));await refresh();tab('home',document.querySelector('#nav button'))}function backGroups(){loadGroups()}function tab(id,b){document.querySelectorAll('.page').forEach(x=>x.classList.add('hidden'));$(id).classList.remove('hidden');document.querySelectorAll('#nav button').forEach(x=>{x.classList.remove('primary');x.classList.add('soft')});if(b){b.classList.add('primary');b.classList.remove('soft')}render(id)}
