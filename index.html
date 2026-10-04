@@ -819,6 +819,29 @@ h4{
 
     border:1px solid #bfe8d5 !important;
 }
+ .groups-actions{
+    display:grid !important;
+    grid-template-columns:1fr 1fr !important;
+    gap:10px !important;
+    width:100% !important;
+}
+
+.groups-actions .btn{
+    width:100% !important;
+    height:58px !important;
+
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+
+    padding:8px 10px !important;
+
+    font-size:14px !important;
+    font-weight:900 !important;
+    line-height:1.25 !important;
+
+    text-align:center !important;
+}
 </style></head><body>
 <div id="toast" class="toast hidden"></div>
 <section id="auth" class="wrap" style="max-width:480px;padding-top:8vh"><div class="card"><h1>Ангийн фонд</h1><p class="muted">Анги, бүлгийн сангийн ил тод бүртгэл.</p><div class="tabs"><button class="btn primary" onclick="authTab('login')">Нэвтрэх</button><button class="btn soft" onclick="authTab('register')">Бүртгүүлэх</button></div><div id="loginBox"><div class="field"><label>Email</label><input id="le" type="email"></div><div class="field"><label>Нууц үг</label><input id="lp" type="password"></div><button class="btn primary" onclick="login()">Нэвтрэх</button></div><div id="registerBox" class="hidden"><div class="field"><label>Нэр</label><input id="rn"></div><div class="field"><label>Email</label><input id="re" type="email"></div><div class="field"><label>Нууц үг</label><input id="rp" type="password"></div><button class="btn primary" onclick="register()">Бүртгүүлэх</button></div></div></section>
