@@ -927,6 +927,53 @@ h4{
         margin-top:14px !important;
     }
 }
+ /* ===== COMPACT CLICKABLE GROUP CARD ===== */
+
+#groups > .card{
+    padding:14px 16px !important;
+    min-height:0 !important;
+
+    border-radius:18px !important;
+
+    cursor:pointer !important;
+
+    transition:
+        transform .15s ease,
+        box-shadow .15s ease !important;
+}
+
+#groups > .card:hover{
+    transform:translateY(-2px);
+    box-shadow:0 7px 18px rgba(20,90,65,.10) !important;
+}
+
+#groups > .card:active{
+    transform:scale(.985);
+}
+
+/* Card доторх илүү босоо зайг багасгана */
+#groups > .card .row{
+    margin:0 !important;
+}
+
+/* Доод тайлбар */
+#groups > .card > .muted{
+    margin-top:10px !important;
+    margin-bottom:0 !important;
+}
+
+/* Нээх товч үлдсэн тохиолдолд нуух */
+#groups > .card .open-group-btn{
+    display:none !important;
+}
+
+@media(max-width:500px){
+
+    #groups > .card{
+        padding:13px 14px !important;
+        border-radius:17px !important;
+    }
+}
 </style></head><body>
 <div id="toast" class="toast hidden"></div>
 <section id="auth" class="wrap" style="max-width:480px;padding-top:8vh"><div class="card"><h1>Ангийн фонд</h1><p class="muted">Анги, бүлгийн сангийн ил тод бүртгэл.</p><div class="tabs"><button class="btn primary" onclick="authTab('login')">Нэвтрэх</button><button class="btn soft" onclick="authTab('register')">Бүртгүүлэх</button></div><div id="loginBox"><div class="field"><label>Email</label><input id="le" type="email"></div><div class="field"><label>Нууц үг</label><input id="lp" type="password"></div><button class="btn primary" onclick="login()">Нэвтрэх</button></div><div id="registerBox" class="hidden"><div class="field"><label>Нэр</label><input id="rn"></div><div class="field"><label>Email</label><input id="re" type="email"></div><div class="field"><label>Нууц үг</label><input id="rp" type="password"></div><button class="btn primary" onclick="register()">Бүртгүүлэх</button></div></div></section>
@@ -955,7 +1002,7 @@ h4{
 const SUPABASE_URL="https://fjvjtujwnbsonycgxuuu.supabase.co";const SUPABASE_KEY="sb_publishable_0QwVZZJsw_J0iHTov07o5A_ykK11Uai";const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 let U=null,G=null,M=null,DATA={};const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const money=n=>new Intl.NumberFormat('mn-MN').format(Number(n||0))+'₮';function toast(s){$('toast').textContent=s;$('toast').classList.remove('hidden');setTimeout(()=>$('toast').classList.add('hidden'),2500)}function modal(h){$('modalBody').innerHTML=h;$('modal').classList.remove('hidden')}function closeModal(){$('modal').classList.add('hidden')}function ay(){let d=new Date(),y=d.getFullYear();return d.getMonth()>=8?`${y}–${y+1}`:`${y-1}–${y}`}
 function authTab(x){$('loginBox').classList.toggle('hidden',x!=='login');$('registerBox').classList.toggle('hidden',x!=='register')}async function register(){let n=$('rn').value.trim(),e=$('re').value.trim(),p=$('rp').value;if(!n||!e||p.length<6)return toast('Мэдээллээ бүрэн оруулна уу');let{data,error}=await sb.auth.signUp({email:e,password:p,options:{data:{full_name:n}}});if(error)return toast(error.message);toast(data.session?'Бүртгэгдлээ':'Email баталгаажуулна уу');if(data.session)boot()}async function login(){let{error}=await sb.auth.signInWithPassword({email:$('le').value.trim(),password:$('lp').value});if(error)return toast(error.message);boot()}async function logout(){await sb.auth.signOut();location.reload()}
-async function boot(){let{data:{session}}=await sb.auth.getSession();if(!session)return;$('auth').classList.add('hidden');$('app').classList.remove('hidden');U=session.user;loadGroups()}async function loadGroups(){G=M=null;$('groupsView').classList.remove('hidden');$('workspace').classList.add('hidden');let{data,error}=await sb.from('af_memberships').select('id,role,status,group_id,af_groups(*)').eq('user_id',U.id).eq('status','approved');if(error)return toast(error.message);$('groups').innerHTML=(data||[]).length?(data||[]).map((m,i)=>`<div class="card"><div class="row between"><div class="row"><div style="width:52px;height:52px;border-radius:16px;background:${i%2?'#dceeff':'#dcf8e7'};display:grid;place-items:center;font-size:25px">${i%2?'🎒':'🏫'}</div><div><b>${esc(m.af_groups.group_name)}</b><div class="muted">${esc(m.af_groups.institution_name)} · ${esc(m.af_groups.academic_year)}</div></div></div><span class="pill">${m.role==='owner'?'👑 Фонд хариуцагч':m.role==='admin'?'⭐ Админ':'👨‍👩‍👧 Эцэг эх'}</span></div><div class="row between" style="margin-top:18px"><span class="muted">${m.role==='parent'?'Хүүхдийн төлөлт, тайлан':'Ангийн сан, төлөлт, тайлан'}</span><button class="btn ${i%2?'soft':'primary'}" onclick='enter(${JSON.stringify(JSON.stringify(m))})'>Нээх →</button></div></div>`).join(''):'<div class="empty-state"><div class="empty-icon">🏫</div><b style="color:#24352f">Одоогоор анги / бүлэг алга</b><div style="margin-top:7px">Шинээр анги үүсгэх эсвэл урилгын кодоор нэгдээрэй.</div></div>'}
+async function boot(){let{data:{session}}=await sb.auth.getSession();if(!session)return;$('auth').classList.add('hidden');$('app').classList.remove('hidden');U=session.user;loadGroups()}async function loadGroups(){G=M=null;$('groupsView').classList.remove('hidden');$('workspace').classList.add('hidden');let{data,error}=await sb.from('af_memberships').select('id,role,status,group_id,af_groups(*)').eq('user_id',U.id).eq('status','approved');if(error)return toast(error.message);$('groups').innerHTML=(data||[]).length?(data||[]).map((m,i)=>`<div class="card"><div class="row between"><div class="row"><div style="width:52px;height:52px;border-radius:16px;background:${i%2?'#dceeff':'#dcf8e7'};display:grid;place-items:center;font-size:25px">${i%2?'🎒':'🏫'}</div><div><b>${esc(m.af_groups.group_name)}</b><div class="muted">${esc(m.af_groups.institution_name)} · ${esc(m.af_groups.academic_year)}</div></div></div><span class="pill">${m.role==='owner'?'👑 Фонд хариуцагч':m.role==='admin'?'⭐ Админ':'👨‍👩‍👧 Эцэг эх'}</span></div><div class="row between" style="margin-top:18px"><span class="muted">${m.role==='parent'?'Хүүхдийн төлөлт, тайлан':'Ангийн сан, төлөлт, тайлан'}</span></div></div>`).join(''):'<div class="empty-state"><div class="empty-icon">🏫</div><b style="color:#24352f">Одоогоор анги / бүлэг алга</b><div style="margin-top:7px">Шинээр анги үүсгэх эсвэл урилгын кодоор нэгдээрэй.</div></div>'}
 function openCreateGroup(){modal(`<h3>Анги / бүлэг үүсгэх</h3><div class="field"><label>Байгууллагын нэр *</label><input id="ci" placeholder="23-р сургууль / 123-р цэцэрлэг"></div><div class="two"><div class="field"><label>Анги / бүлэг *</label><input id="cg" placeholder="5А"></div><div class="field"><label>Хичээлийн жил</label><input value="${ay()}" readonly></div></div><div class="field"><label>Тайлбар (заавал биш)</label><input placeholder="Жишээ: Манай 5А анги" disabled></div><button class="btn primary" style="width:100%" onclick="createGroup()">Үүсгэх</button>`)}async function createGroup(){let i=$('ci').value.trim(),g=$('cg').value.trim();if(!i||!g)return toast('Мэдээллээ бөглөнө үү');let{data:gid,error}=await sb.rpc('af_create_group',{p_institution:i,p_group:g,p_year:ay()});if(error)return toast(error.message);closeModal();toast('Анги үүслээ');let{data:m,error:me}=await sb.from('af_memberships').select('id,role,status,group_id,af_groups(*)').eq('user_id',U.id).eq('group_id',gid).single();if(me||!m){await loadGroups();return}await enter(JSON.stringify(m));setTimeout(()=>adminInfoModal(),250)}
 function adminInfoModal(){
  if(!G||M?.role==='parent')return;
