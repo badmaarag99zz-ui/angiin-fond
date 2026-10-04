@@ -974,6 +974,35 @@ h4{
         border-radius:17px !important;
     }
 }
+ /* ===== COMPACT CLASS TOP AREA ===== */
+
+#accessBanner{
+    margin:-4px 0 8px !important;
+    padding:0 12px 10px !important;
+
+    background:#ffffff !important;
+    border:0 !important;
+    border-left:1px solid #dce8f2 !important;
+    border-right:1px solid #dce8f2 !important;
+    border-bottom:1px solid #dce8f2 !important;
+
+    border-radius:0 0 14px 14px !important;
+    box-shadow:none !important;
+}
+
+.workspace-head{
+    margin-bottom:0 !important;
+    border-radius:14px 14px 0 0 !important;
+    border-bottom:0 !important;
+}
+
+#accessBanner b{
+    font-size:13px !important;
+}
+
+#accessBanner .muted{
+    font-size:12px !important;
+}
 </style></head><body>
 <div id="toast" class="toast hidden"></div>
 <section id="auth" class="wrap" style="max-width:480px;padding-top:8vh"><div class="card"><h1>Ангийн фонд</h1><p class="muted">Анги, бүлгийн сангийн ил тод бүртгэл.</p><div class="tabs"><button class="btn primary" onclick="authTab('login')">Нэвтрэх</button><button class="btn soft" onclick="authTab('register')">Бүртгүүлэх</button></div><div id="loginBox"><div class="field"><label>Email</label><input id="le" type="email"></div><div class="field"><label>Нууц үг</label><input id="lp" type="password"></div><button class="btn primary" onclick="login()">Нэвтрэх</button></div><div id="registerBox" class="hidden"><div class="field"><label>Нэр</label><input id="rn"></div><div class="field"><label>Email</label><input id="re" type="email"></div><div class="field"><label>Нууц үг</label><input id="rp" type="password"></div><button class="btn primary" onclick="register()">Бүртгүүлэх</button></div></div></section>
