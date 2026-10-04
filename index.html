@@ -7,6 +7,8 @@
 
 <title>Ангийн фонд</title>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 *{
     box-sizing:border-box;
@@ -970,7 +972,7 @@ button{
 
     <input
         type="email"
-        id="registerEmail"
+        id="loginEmail"
         placeholder="name@example.com"
         autocomplete="email"
     >
@@ -987,7 +989,7 @@ button{
 
             <button
                 class="primary-btn"
-                onclick="demoLogin()"
+                onclick="loginUser()"
             >
                 Нэвтрэх
             </button>
@@ -1017,7 +1019,7 @@ button{
 
     <input
         type="email"
-        id="loginEmail"
+        id="registerEmail"
         placeholder="name@example.com"
         autocomplete="email"
     >
@@ -1043,8 +1045,8 @@ button{
         </div>
 
         <div class="demo-note">
-            Одоогоор UI туршилтын хувилбар.<br>
-            Supabase authentication дараагийн шатанд холбогдоно.
+            Supabase-д холбогдсон хувилбар.<br>
+            Бүртгэл болон нэвтрэлт бодитоор ажиллана.
         </div>
 
     </div>
@@ -1081,9 +1083,7 @@ button{
 
             </div>
 
-            <div class="avatar">
-                Б
-            </div>
+            <div class="avatar" id="userAvatar">?</div>
 
         </div>
 
@@ -1094,13 +1094,9 @@ button{
 
                 <div>
 
-                    <div class="class-name">
-                        3А анги
-                    </div>
+                    <div class="class-name" id="currentGroupName">Анги / бүлэг үүсгээгүй</div>
 
-                    <div class="class-school">
-                        2026–2027 оны хичээлийн жил
-                    </div>
+                    <div class="class-school" id="currentGroupYear">Эхлээд анги / бүлгээ үүсгэнэ үү</div>
 
                 </div>
 
@@ -1708,7 +1704,7 @@ button{
                     width:100%;
                     margin-top:12px;
                 "
-                onclick="logoutDemo()"
+                onclick="logoutUser()"
             >
                 Гарах
             </button>
@@ -2180,6 +2176,18 @@ button{
 </div>
 
 
+<!-- GROUP SETUP MODAL -->
+<div id="groupSetupModal" class="modal hidden">
+  <div class="modal-box">
+    <div class="modal-head"><div><h3>Анги / бүлгээ үүсгэх</h3><p>Эхний удаа үндсэн мэдээллээ оруулна.</p></div></div>
+    <div class="field"><label>Төрөл</label><select id="setupGroupType"><option value="school">Ерөнхий боловсролын сургууль</option><option value="kindergarten">Цэцэрлэг</option></select></div>
+    <div class="field"><label>Сургууль / цэцэрлэгийн нэр</label><input id="setupInstitutionName" placeholder="Жишээ: 1-р сургууль"></div>
+    <div class="field"><label>Анги / бүлгийн нэр</label><input id="setupGroupName" placeholder="Жишээ: 3А анги"></div>
+    <div class="field"><label>Хичээлийн жил</label><input id="setupAcademicYear" value="2026–2027"></div>
+    <button class="primary-btn" onclick="createGroup()">Үүсгэх</button>
+  </div>
+</div>
+
 <!-- ==========================================
      TOAST
 ========================================== -->
@@ -2191,368 +2199,74 @@ button{
 
 
 <script>
-
-/* ==========================================
-   AUTH UI
-========================================== */
-
-function showAuth(type){
-
-    const loginForm =
-        document.getElementById("loginForm");
-
-    const registerForm =
-        document.getElementById("registerForm");
-
-    const loginTab =
-        document.getElementById("loginTab");
-
-    const registerTab =
-        document.getElementById("registerTab");
-
-
-    if(type === "login"){
-
-        loginForm.classList.remove("hidden");
-        registerForm.classList.add("hidden");
-
-        loginTab.classList.add("active");
-        registerTab.classList.remove("active");
-
-    }else{
-
-        loginForm.classList.add("hidden");
-        registerForm.classList.remove("hidden");
-
-        loginTab.classList.remove("active");
-        registerTab.classList.add("active");
-
-    }
-
-}
-
-
-/* ==========================================
-   DEMO LOGIN
-========================================== */
-
-function demoLogin(){
-
-    document
-        .getElementById("authScreen")
-        .classList
-        .add("hidden");
-
-    document
-        .getElementById("mainApp")
-        .classList
-        .remove("hidden");
-
-}
-
-
-/* ==========================================
-   REGISTER
-========================================== */
-
-function openRoleModal(){
-
-    const name =
-        document
-            .getElementById("registerName")
-            .value
-            .trim();
-
-   const email =
-    document
-        .getElementById("registerEmail")
-        .value
-        .trim();
-
-    const password =
-        document
-            .getElementById("registerPassword")
-            .value;
-
-
-  if(
-    !name ||
-    !email ||
-    !email.includes("@") ||
-    password.length < 6
-){
-
-    toast(
-        "Нэр, зөв и-мэйл хаяг, 6-аас дээш тэмдэгттэй нууц үг оруулна уу."
-    );
-
-    return;
-}
-
-
-    openModal("roleModal");
-
-}
-
-
-function registerAs(role){
-
-    closeModal("roleModal");
-
-    document
-        .getElementById("roleLabel")
-        .textContent =
-        role === "admin"
-        ? "Админ"
-        : "Эцэг эх";
-
-
-    document
-        .getElementById("authScreen")
-        .classList
-        .add("hidden");
-
-    document
-        .getElementById("mainApp")
-        .classList
-        .remove("hidden");
-
-
-    toast(
-        role === "admin"
-        ? "Админ эрхээр демо бүртгэл үүслээ."
-        : "Эцэг эхийн эрхээр демо бүртгэл үүслээ."
-    );
-
-}
-
-
-/* ==========================================
-   PAGE SWITCH
-========================================== */
-
-function switchPage(page,button){
-
-    document
-        .querySelectorAll(".page")
-        .forEach(function(item){
-
-            item.classList.remove("active");
-
-        });
-
-
-    const pageElement =
-        document.getElementById(
-            page + "Page"
-        );
-
-
-    if(pageElement){
-
-        pageElement
-            .classList
-            .add("active");
-
-    }
-
-
-    document
-        .querySelectorAll(".nav-btn")
-        .forEach(function(item){
-
-            item.classList.remove("active");
-
-        });
-
-
-    if(button){
-
-        button
-            .classList
-            .add("active");
-
-    }else{
-
-        const targetButton =
-            document.querySelector(
-                '.nav-btn[data-page="' +
-                page +
-                '"]'
-            );
-
-        if(targetButton){
-
-            targetButton
-                .classList
-                .add("active");
-
-        }
-
-    }
-
-
-    window.scrollTo({
-        top:0,
-        behavior:"smooth"
-    });
-
-}
-
-
-/* ==========================================
-   MODALS
-========================================== */
-
-function openModal(id){
-
-    const modal =
-        document.getElementById(id);
-
-    if(modal){
-
-        modal
-            .classList
-            .remove("hidden");
-
-    }
-
-}
-
-
-function closeModal(id){
-
-    const modal =
-        document.getElementById(id);
-
-    if(modal){
-
-        modal
-            .classList
-            .add("hidden");
-
-    }
-
-}
-
-
-/* ==========================================
-   COPY INVITE
-========================================== */
-
-async function copyInviteCode(){
-
-    const code =
-        "3A-K7P4";
-
-
-    try{
-
-        await navigator
-            .clipboard
-            .writeText(code);
-
-        toast(
-            "Ангийн код хуулагдлаа: " +
-            code
-        );
-
-    }catch(error){
-
-        toast(
-            "Ангийн код: " +
-            code
-        );
-
-    }
-
-}
-
-
-/* ==========================================
-   LOGOUT
-========================================== */
-
-function logoutDemo(){
-
-    document
-        .getElementById("mainApp")
-        .classList
-        .add("hidden");
-
-    document
-        .getElementById("authScreen")
-        .classList
-        .remove("hidden");
-
-    switchPage("home");
-
-}
-
-
-/* ==========================================
-   TOAST
-========================================== */
-
+const SUPABASE_URL = "https://fjvjtujwnbsonycgxuuu.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_0QwVZZJsw_J0iHTov07o5A_ykK11Uai";
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+let currentUser = null;
+let currentProfile = null;
+let currentGroup = null;
+let pendingRole = "admin";
 let toastTimer = null;
 
-
-function toast(message){
-
-    const element =
-        document.getElementById("toast");
-
-
-    element.textContent =
-        message;
-
-    element
-        .classList
-        .remove("hidden");
-
-
-    clearTimeout(
-        toastTimer
-    );
-
-
-    toastTimer =
-        setTimeout(function(){
-
-            element
-                .classList
-                .add("hidden");
-
-        },2600);
-
+function showAuth(type){
+ const login= document.getElementById("loginForm"), reg=document.getElementById("registerForm");
+ document.getElementById("loginTab").classList.toggle("active",type==="login");
+ document.getElementById("registerTab").classList.toggle("active",type==="register");
+ login.classList.toggle("hidden",type!=="login"); reg.classList.toggle("hidden",type!=="register");
 }
-
-
-/* ==========================================
-   CLOSE MODAL BY BACKDROP
-========================================== */
-
-document
-    .querySelectorAll(".modal")
-    .forEach(function(modal){
-
-        modal.addEventListener(
-            "click",
-            function(event){
-
-                if(event.target === modal){
-
-                    modal
-                        .classList
-                        .add("hidden");
-
-                }
-
-            }
-        );
-
-    });
-
+function setBusy(button,busy,label){ if(!button)return; if(!button.dataset.label)button.dataset.label=button.textContent.trim(); button.disabled=busy; button.textContent=busy?label:button.dataset.label; }
+async function loginUser(){
+ const email=document.getElementById("loginEmail").value.trim(); const password=document.getElementById("loginPassword").value;
+ if(!email||!password){toast("И-мэйл болон нууц үгээ оруулна уу.");return;}
+ const btn=event?.currentTarget; setBusy(btn,true,"Нэвтэрч байна...");
+ const {error}=await supabaseClient.auth.signInWithPassword({email,password}); setBusy(btn,false);
+ if(error){toast("Нэвтрэхэд алдаа: "+error.message);return;} await bootApp();
+}
+function openRoleModal(){
+ const name=document.getElementById("registerName").value.trim(); const email=document.getElementById("registerEmail").value.trim(); const password=document.getElementById("registerPassword").value;
+ if(!name||!email||!email.includes("@")||password.length<6){toast("Нэр, зөв и-мэйл хаяг, 6-аас дээш тэмдэгттэй нууц үг оруулна уу.");return;}
+ openModal("roleModal");
+}
+async function registerAs(role){
+ pendingRole=role; closeModal("roleModal");
+ const full_name=document.getElementById("registerName").value.trim(); const email=document.getElementById("registerEmail").value.trim(); const password=document.getElementById("registerPassword").value;
+ const {data,error}=await supabaseClient.auth.signUp({email,password,options:{data:{full_name,role}}});
+ if(error){toast("Бүртгэл үүсгэхэд алдаа: "+error.message);return;}
+ if(!data.session){toast("Бүртгэл үүслээ. И-мэйлээ баталгаажуулаад нэвтэрнэ үү."); showAuth("login"); document.getElementById("loginEmail").value=email; return;}
+ await bootApp(); toast("Бүртгэл амжилттай үүслээ.");
+}
+async function bootApp(){
+ const {data:{session}}=await supabaseClient.auth.getSession();
+ if(!session){showLoggedOut();return;}
+ currentUser=session.user;
+ let {data:profile}=await supabaseClient.from("profiles").select("*").eq("id",currentUser.id).maybeSingle(); currentProfile=profile;
+ document.getElementById("userAvatar").textContent=((profile?.full_name||currentUser.email||"?").trim().charAt(0)||"?").toUpperCase();
+ document.getElementById("roleLabel").textContent=(currentUser.user_metadata?.role==="parent")?"Эцэг эх":"Админ";
+ const {data:groups,error}=await supabaseClient.from("groups").select("*").eq("owner_id",currentUser.id).order("created_at",{ascending:true}).limit(1);
+ if(!error&&groups?.length){ currentGroup=groups[0]; renderCurrentGroup(); }
+ else { currentGroup=null; renderCurrentGroup(); if(currentUser.user_metadata?.role!=="parent") openModal("groupSetupModal"); }
+ document.getElementById("authScreen").classList.add("hidden"); document.getElementById("mainApp").classList.remove("hidden");
+}
+function renderCurrentGroup(){
+ document.getElementById("currentGroupName").textContent=currentGroup?.group_name||"Анги / бүлэг үүсгээгүй";
+ document.getElementById("currentGroupYear").textContent=currentGroup?`${currentGroup.institution_name} · ${currentGroup.academic_year||"Хичээлийн жил"}`:"Эхлээд анги / бүлгээ үүсгэнэ үү";
+}
+async function createGroup(){
+ const type=document.getElementById("setupGroupType").value, institution_name=document.getElementById("setupInstitutionName").value.trim(), group_name=document.getElementById("setupGroupName").value.trim(), academic_year=document.getElementById("setupAcademicYear").value.trim();
+ if(!institution_name||!group_name){toast("Байгууллага болон анги / бүлгийн нэрээ оруулна уу.");return;}
+ const {data,error}=await supabaseClient.from("groups").insert({owner_id:currentUser.id,type,institution_name,group_name,academic_year}).select().single();
+ if(error){toast("Анги / бүлэг үүсгэхэд алдаа: "+error.message);return;} currentGroup=data; renderCurrentGroup(); closeModal("groupSetupModal"); toast("Анги / бүлэг амжилттай үүслээ.");
+}
+async function logoutUser(){ await supabaseClient.auth.signOut(); currentUser=currentProfile=currentGroup=null; showLoggedOut(); }
+function showLoggedOut(){ document.getElementById("mainApp").classList.add("hidden"); document.getElementById("authScreen").classList.remove("hidden"); switchPage("home"); }
+function switchPage(page,button){ document.querySelectorAll(".page").forEach(x=>x.classList.remove("active")); document.getElementById(page+"Page")?.classList.add("active"); document.querySelectorAll(".nav-btn").forEach(x=>x.classList.remove("active")); if(button)button.classList.add("active"); else document.querySelector(`.nav-btn[data-page="${page}"]`)?.classList.add("active"); window.scrollTo({top:0,behavior:"smooth"}); }
+function openModal(id){document.getElementById(id)?.classList.remove("hidden");}
+function closeModal(id){document.getElementById(id)?.classList.add("hidden");}
+async function copyInviteCode(){const code="3A-K7P4";try{await navigator.clipboard.writeText(code);toast("Ангийн код хуулагдлаа: "+code);}catch{toast("Ангийн код: "+code);}}
+function toast(message){const el=document.getElementById("toast");el.textContent=message;el.classList.remove("hidden");clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.add("hidden"),3000);}
+document.querySelectorAll(".modal").forEach(modal=>modal.addEventListener("click",e=>{if(e.target===modal)modal.classList.add("hidden");}));
+supabaseClient.auth.onAuthStateChange((event,session)=>{if(event==="SIGNED_OUT")showLoggedOut();});
+document.addEventListener("DOMContentLoaded",bootApp);
 </script>
 
 </body>
