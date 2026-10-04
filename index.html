@@ -1285,93 +1285,22 @@ button{
          CHILDREN
     ======================================= -->
 
-    <main
-        id="childrenPage"
-        class="page"
-    >
-
+    <main id="childrenPage" class="page">
         <div class="content">
-
             <div class="section-title">
                 <h3>Хүүхдүүд</h3>
-                <span>30 хүүхэд</span>
+                <span id="childrenCountLabel">0 хүүхэд</span>
             </div>
 
-
-            <div class="list">
-
-                <div class="list-item">
-
-                    <div class="list-avatar">
-                        👧
-                    </div>
-
-                    <div class="list-main">
-
-                        <div class="list-title">
-                            Батмаа
-                        </div>
-
-                        <div class="list-sub">
-                            Ээж: Сараа · 9911••••
-                        </div>
-
-                        <span class="status approved">
-                            Баталгаажсан
-                        </span>
-
-                    </div>
-
-                </div>
-
-
-                <div class="list-item">
-
-                    <div class="list-avatar">
-                        👦
-                    </div>
-
-                    <div class="list-main">
-
-                        <div class="list-title">
-                            Тэмүүлэн
-                        </div>
-
-                        <div class="list-sub">
-                            Аав: Бат · 8811••••
-                        </div>
-
-                        <span class="status pending">
-                            Баталгаажуулах
-                        </span>
-
-                    </div>
-
-                    <button
-                        class="approve-btn"
-                        onclick="toast('Хүүхдийн бүртгэлийг баталгаажууллаа.')"
-                    >
-                        ✓
-                    </button>
-
-                </div>
-
+            <div class="list" id="childrenList">
+                <div class="empty"><div class="empty-icon">👥</div>Хүүхэд бүртгэгдээгүй байна.</div>
             </div>
-
 
             <div class="section-title">
                 <h3>Шинэ бүртгэл</h3>
             </div>
-
-            <button
-                class="primary-btn"
-                onclick="openModal('childModal')"
-            >
-                + Хүүхэд нэмэх
-            </button>
-
+            <button class="primary-btn" onclick="openModal('childModal')">+ Хүүхэд нэмэх</button>
         </div>
-
     </main>
 
 
@@ -1379,119 +1308,22 @@ button{
          PAYMENTS
     ======================================= -->
 
-    <main
-        id="paymentsPage"
-        class="page"
-    >
-
+    <main id="paymentsPage" class="page">
         <div class="content">
+            <div class="section-title">
+                <h3>Фондын хураалт</h3>
+                <span>Бодит мэдээлэл</span>
+            </div>
+
+            <div class="list" id="collectionsList">
+                <div class="empty"><div class="empty-icon">💰</div>Хураалт үүсгээгүй байна.</div>
+            </div>
 
             <div class="section-title">
-                <h3>Фондын төлбөр</h3>
-                <span>2026</span>
+                <h3>Шинэ хураалт</h3>
             </div>
-
-
-            <div class="list">
-
-                <div class="list-item">
-
-                    <div class="list-avatar">
-                        💰
-                    </div>
-
-                    <div class="list-main">
-
-                        <div class="list-title">
-                            I улирлын фонд
-                        </div>
-
-                        <div class="list-sub">
-                            Төлөх дүн: 30,000 ₮
-                        </div>
-
-                        <span class="status approved">
-                            Төлсөн
-                        </span>
-
-                    </div>
-
-                    <strong class="green">
-                        30,000 ₮
-                    </strong>
-
-                </div>
-
-
-                <div class="list-item">
-
-                    <div class="list-avatar">
-                        💰
-                    </div>
-
-                    <div class="list-main">
-
-                        <div class="list-title">
-                            II улирлын фонд
-                        </div>
-
-                        <div class="list-sub">
-                            Төлөх дүн: 30,000 ₮
-                        </div>
-
-                        <span class="status pending">
-                            Төлөөгүй
-                        </span>
-
-                    </div>
-
-                    <button
-                        class="approve-btn"
-                        onclick="openModal('paymentModal')"
-                    >
-                        Төлөх
-                    </button>
-
-                </div>
-
-            </div>
-
-
-            <div class="section-title">
-                <h3>Төлөлтийн хүсэлтүүд</h3>
-            </div>
-
-
-            <div class="list">
-
-                <div class="list-item">
-
-                    <div class="list-avatar">
-                        🧾
-                    </div>
-
-                    <div class="list-main">
-
-                        <div class="list-title">
-                            Тэмүүлэн
-                        </div>
-
-                        <div class="list-sub">
-                            30,000 ₮ · I улирлын фонд
-                        </div>
-
-                        <span class="status pending">
-                            Шалгаж байна
-                        </span>
-
-                    </div>
-
-                </div>
-
-            </div>
-
+            <button class="primary-btn" onclick="openModal('collectionModal')">+ Шинэ хураалт үүсгэх</button>
         </div>
-
     </main>
 
 
