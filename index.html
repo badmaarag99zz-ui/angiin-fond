@@ -103,12 +103,49 @@ button,input,select,textarea{font:inherit}.hidden{display:none!important}
  #nav{display:grid;grid-template-columns:repeat(3,1fr);overflow:visible}.tabs button{white-space:normal}
  .row.mobilecol{align-items:stretch;flex-direction:column}.btn{min-height:44px}.money{font-size:23px}
 }
+
+/* ===== FINAL APPROVED SCHOOL-FRIENDLY APP SHELL ===== */
+body{min-height:100vh;background:radial-gradient(circle at 10% 0%,#dff5ff 0,transparent 25%),radial-gradient(circle at 90% 0%,#e4faed 0,transparent 25%),#eef6fb}
+body>.top,body>#app{width:min(100%,500px);margin-left:auto;margin-right:auto}
+body>.top{border-left:1px solid #dfeaf2;border-right:1px solid #dfeaf2;box-shadow:0 0 38px rgba(42,76,105,.09)}
+body>#app{min-height:calc(100vh - 72px);background:#fbfdff;border-left:1px solid #dfeaf2;border-right:1px solid #dfeaf2;box-shadow:0 20px 48px rgba(42,76,105,.10)}
+.top .wrap,#app.wrap{max-width:none;width:100%}.top .wrap{padding:14px 18px}#app.wrap{padding:16px 16px 28px}
+.brand{font-size:18px}.brand:before{width:36px;height:36px;font-size:19px}.top .btn{padding:10px 13px}
+.groups-hero{position:relative;padding:17px 0 10px}
+.groups-hero:before{content:none!important}
+.groups-hero:after{content:"🏫";position:absolute;right:6px;top:10px;width:74px;height:74px;display:grid;place-items:center;border-radius:24px;background:linear-gradient(145deg,#e8f9ff,#e7faee);font-size:39px;box-shadow:inset 0 0 0 1px #dcecf1}
+.groups-hero h2{font-size:13px;margin:0 0 4px;color:#62758a;font-weight:750;max-width:300px}
+.groups-toolbar{display:block}.groups-toolbar>div:first-child{padding-right:78px}
+.groups-actions{position:absolute;left:0;right:0;margin-top:26px}
+#groups{display:block;margin-top:92px}
+#groups>.card{margin:0 0 12px;min-height:160px;padding:17px;border-radius:22px}
+#groups>.card:nth-child(odd){background:linear-gradient(135deg,#effff3,#dcf8e7);border-color:#caeed8}
+#groups>.card:nth-child(even){background:linear-gradient(135deg,#eff8ff,#dfefff);border-color:#cee3f8}
+#groups>.card:after{font-size:25px}.groups-actions .btn{flex:1;min-height:48px}.empty-state{margin-top:0;padding:38px 18px}
+.workspace-head{margin:0 0 10px;padding:13px 14px;border-radius:18px;background:#fff;box-shadow:none}
+.workspace-head h2{font-size:18px;margin:5px 0 2px}.workspace-head .muted{font-size:11px}
+#accessBanner{padding:11px 13px;border-radius:15px;font-size:12px}
+#nav{position:sticky;top:65px;z-index:8;display:grid;grid-template-columns:repeat(5,1fr);gap:2px;padding:5px;border-radius:15px}
+#nav .btn{min-width:0;padding:10px 3px;font-size:10px;min-height:39px;border-radius:11px}
+#nav .btn.primary{background:#dcf8e7;color:#087d52}
+.page>h3,.page>.row h3{font-size:19px}.page .grid{grid-template-columns:repeat(2,1fr);gap:9px}
+.page .grid .card{min-height:98px;padding:14px;margin:0;border-radius:17px}.page .grid .card .money{font-size:22px}
+.page>.card{border-radius:18px;padding:15px;margin:11px 0}.item{padding:12px 2px}
+.modalbox{max-width:470px;border-radius:25px}.modalbox .btn{min-height:45px}.checklist{max-height:220px}
+#auth{max-width:500px!important;padding:0!important;margin:0 auto!important}
+#auth>.card{display:block;min-height:calc(100vh - 32px);border-radius:0;border:0;margin:0;box-shadow:none}
+#auth>.card:before{min-height:245px;content:"🎒   🏫   📚";font-size:45px;background:radial-gradient(circle at 18% 16%,#fff6a8 0 5%,transparent 6%),radial-gradient(circle at 84% 22%,#fff 0 5%,transparent 6%),linear-gradient(160deg,#9ddcff,#c8f3d5 62%,#fff0b7)}
+#auth>.card>*{margin-left:24px;margin-right:24px}#auth>.card>h1{margin-top:25px}#auth h1{font-size:25px}
+#funds .card:nth-of-type(3n+1){border-left:4px solid #20ad78}#funds .card:nth-of-type(3n+2){border-left:4px solid #2f8fed}#funds .card:nth-of-type(3n+3){border-left:4px solid #f5a623}
+@media(max-width:500px){body{background:#fbfdff}body>.top,body>#app{width:100%;border-left:0;border-right:0;box-shadow:none}.top .wrap{padding:12px 14px}#app.wrap{padding:14px}.groups-hero:after{width:66px;height:66px;font-size:34px}#nav{top:61px}}
+
 </style></head><body>
 <div id="toast" class="toast hidden"></div>
 <section id="auth" class="wrap" style="max-width:480px;padding-top:8vh"><div class="card"><h1>Ангийн фонд</h1><p class="muted">Анги, бүлгийн сангийн ил тод бүртгэл.</p><div class="tabs"><button class="btn primary" onclick="authTab('login')">Нэвтрэх</button><button class="btn soft" onclick="authTab('register')">Бүртгүүлэх</button></div><div id="loginBox"><div class="field"><label>Email</label><input id="le" type="email"></div><div class="field"><label>Нууц үг</label><input id="lp" type="password"></div><button class="btn primary" onclick="login()">Нэвтрэх</button></div><div id="registerBox" class="hidden"><div class="field"><label>Нэр</label><input id="rn"></div><div class="field"><label>Email</label><input id="re" type="email"></div><div class="field"><label>Нууц үг</label><input id="rp" type="password"></div><button class="btn primary" onclick="register()">Бүртгүүлэх</button></div></div></section>
 <section id="app" class="hidden"><div class="top"><div class="wrap"><div class="brand">Ангийн фонд</div><button class="btn soft" onclick="logout()">Гарах</button></div></div><div class="wrap">
 <div id="groupsView">
   <div class="groups-hero">
+    <div id="friendlyGreeting" style="font-size:25px;font-weight:950;letter-spacing:-.7px;margin-bottom:4px;padding-right:78px">Сайн байна уу 👋</div>
     <div class="groups-toolbar">
       <div><h2>Миний анги / бүлгүүд</h2><div class="muted">Өөрийн удирддаг болон эцэг эхээр нэгдсэн бүх анги, бүлэг энд харагдана.</div></div>
       <div class="groups-actions"><button class="btn primary" onclick="openCreateGroup()">＋ Анги / бүлэг үүсгэх</button><button class="btn soft" onclick="openJoin()">🔗 Ангид / бүлэгт нэгдэх</button></div>
