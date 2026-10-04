@@ -66,7 +66,7 @@ button,input,select,textarea{font:inherit}.hidden{display:none!important}
 #groups>.card{margin:0;padding:18px 20px;border-radius:22px;min-height:145px;position:relative;overflow:hidden}
 #groups>.card:nth-child(odd){background:linear-gradient(135deg,#effff4,#e7faef)}
 #groups>.card:nth-child(even){background:linear-gradient(135deg,#eef8ff,#e6f2ff)}
-#groups>.card:after{content:"✏️  📚";position:absolute;right:16px;bottom:10px;font-size:22px;opacity:.18}
+
 #groups>.card b{font-size:17px}
 .empty-state{grid-column:1/-1;background:linear-gradient(135deg,#fff,#f5fbff);border:1px dashed #cbdce9;border-radius:23px;padding:42px;text-align:center;color:var(--muted)}
 .empty-state .empty-icon{font-size:45px;margin-bottom:9px}
@@ -222,7 +222,99 @@ body>#app{background:var(--bg);min-height:calc(100vh - 65px);box-shadow:0 20px 5
 .danger-zone{background:#fff3f3;border-color:#ffd6d8}
 .chart{height:145px;display:flex;align-items:flex-end;gap:12px;padding:15px 8px 5px}.barcol{flex:1;text-align:center;font-size:8px;color:#73859b}.bar{width:100%;max-width:24px;margin:auto;border-radius:5px 5px 2px 2px;background:#28ad79}.bar.red{background:#ff6b70}
 @media(max-width:500px){body{background:var(--bg)}body>.top,body>#app{width:100%;box-shadow:none}.page .grid{grid-template-columns:repeat(4,1fr)}}
+/* =========================================
+   GLOBAL FONT SIZE FIX
+   ========================================= */
 
+body {
+    font-size: 16px;
+}
+
+/* Энгийн бичвэрүүд */
+p,
+span,
+label,
+input,
+select,
+textarea,
+button {
+    font-size: 14px;
+}
+
+/* Жижиг тайлбарууд */
+.muted,
+.statlabel,
+.fund-sub,
+.workspace-head .muted {
+    font-size: 12px;
+}
+
+/* Card доторх үндсэн бичиг */
+.card,
+.list-card,
+.fund-card {
+    font-size: 14px;
+}
+
+/* Гарчиг */
+h1 {
+    font-size: 26px;
+}
+
+h2 {
+    font-size: 22px;
+}
+
+h3,
+.page > h3,
+.page > .row h3 {
+    font-size: 20px;
+}
+
+h4 {
+    font-size: 16px;
+}
+
+/* Ангийн нэр / фондын нэр */
+.fund-title {
+    font-size: 14px;
+}
+
+/* Дүн */
+.money {
+    font-size: 24px;
+}
+
+/* Статистикийн тоонууд */
+.statnum {
+    font-size: 23px;
+}
+
+/* Дээд navigation */
+#nav .btn {
+    font-size: 11px !important;
+}
+
+/* Badge / төлөв */
+.pill {
+    font-size: 11px;
+}
+
+/* Input */
+.field label {
+    font-size: 12px;
+}
+
+.field input,
+.field select,
+.field textarea {
+    font-size: 14px;
+}
+
+/* Миний ангиудын товч */
+.btn {
+    font-size: 14px;
+}
 </style></head><body>
 <div id="toast" class="toast hidden"></div>
 <section id="auth" class="wrap" style="max-width:480px;padding-top:8vh"><div class="card"><h1>Ангийн фонд</h1><p class="muted">Анги, бүлгийн сангийн ил тод бүртгэл.</p><div class="tabs"><button class="btn primary" onclick="authTab('login')">Нэвтрэх</button><button class="btn soft" onclick="authTab('register')">Бүртгүүлэх</button></div><div id="loginBox"><div class="field"><label>Email</label><input id="le" type="email"></div><div class="field"><label>Нууц үг</label><input id="lp" type="password"></div><button class="btn primary" onclick="login()">Нэвтрэх</button></div><div id="registerBox" class="hidden"><div class="field"><label>Нэр</label><input id="rn"></div><div class="field"><label>Email</label><input id="re" type="email"></div><div class="field"><label>Нууц үг</label><input id="rp" type="password"></div><button class="btn primary" onclick="register()">Бүртгүүлэх</button></div></div></section>
