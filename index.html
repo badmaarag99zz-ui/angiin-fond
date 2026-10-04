@@ -683,6 +683,86 @@ h4{
 
     box-shadow:0 2px 7px rgba(0,0,0,.10);
 }
+ /* ===== MY GROUPS HERO BOX ===== */
+
+.groups-hero{
+    position:relative !important;
+
+    background:linear-gradient(
+        135deg,
+        #ffffff 0%,
+        #f3fbff 55%,
+        #f0fff6 100%
+    ) !important;
+
+    border:1px solid #dce8f2 !important;
+    border-radius:20px !important;
+
+    padding:20px 92px 20px 18px !important;
+    margin:4px 0 16px !important;
+
+    box-shadow:
+        0 5px 18px rgba(45,84,117,.07) !important;
+}
+
+
+/* Сайн байна уу */
+#friendlyGreeting{
+    font-size:24px !important;
+    font-weight:950 !important;
+    color:#14253b !important;
+
+    margin:0 0 6px !important;
+    padding:0 !important;
+}
+
+
+/* Миний анги / бүлгүүд */
+.groups-hero h2{
+    font-size:20px !important;
+    font-weight:900 !important;
+
+    color:#536b86 !important;
+
+    margin:0 0 5px !important;
+}
+
+
+/* Доорх тайлбар */
+.groups-hero .muted{
+    font-size:13px !important;
+    line-height:1.5 !important;
+    color:#72839a !important;
+}
+
+
+/* Баруун талын сургуулийн icon */
+.groups-hero:after{
+    content:"🏫" !important;
+
+    position:absolute !important;
+
+    right:16px !important;
+    top:50% !important;
+
+    transform:translateY(-50%) !important;
+
+    width:62px !important;
+    height:62px !important;
+
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+
+    font-size:32px !important;
+
+    background:#e9faf3 !important;
+
+    border:1px solid #d3ece2 !important;
+    border-radius:18px !important;
+
+    box-shadow:none !important;
+}
 </style></head><body>
 <div id="toast" class="toast hidden"></div>
 <section id="auth" class="wrap" style="max-width:480px;padding-top:8vh"><div class="card"><h1>Ангийн фонд</h1><p class="muted">Анги, бүлгийн сангийн ил тод бүртгэл.</p><div class="tabs"><button class="btn primary" onclick="authTab('login')">Нэвтрэх</button><button class="btn soft" onclick="authTab('register')">Бүртгүүлэх</button></div><div id="loginBox"><div class="field"><label>Email</label><input id="le" type="email"></div><div class="field"><label>Нууц үг</label><input id="lp" type="password"></div><button class="btn primary" onclick="login()">Нэвтрэх</button></div><div id="registerBox" class="hidden"><div class="field"><label>Нэр</label><input id="rn"></div><div class="field"><label>Email</label><input id="re" type="email"></div><div class="field"><label>Нууц үг</label><input id="rp" type="password"></div><button class="btn primary" onclick="register()">Бүртгүүлэх</button></div></div></section>
