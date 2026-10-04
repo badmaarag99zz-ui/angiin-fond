@@ -3,83 +3,110 @@
 <style>
 *{box-sizing:border-box}
 :root{
- --primary:#0f8a67;--primary-dark:#087256;--primary-soft:#e9f8f2;
- --bg:#f3f7f6;--card:#fff;--text:#12211d;--muted:#71807b;
- --border:#e0e9e6;--danger:#dc2626;--warning:#d97706;
+ --green:#12a56f;--green2:#078b5c;--green-soft:#e9fbf3;
+ --blue:#2488ee;--blue-soft:#eaf5ff;--red:#ef5350;--red-soft:#fff0ef;
+ --orange:#f6a623;--orange-soft:#fff6df;--purple:#9b5de5;--purple-soft:#f4edff;
+ --ink:#14253b;--muted:#72839a;--line:#e5edf5;--bg:#f6fbff;--white:#fff;
 }
-body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}
+html{background:var(--bg)}
+body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;background:
+ radial-gradient(circle at 12% 4%,#eaf9ff 0,transparent 28%),
+ radial-gradient(circle at 92% 2%,#effff4 0,transparent 24%),var(--bg);color:var(--ink)}
 button,input,select,textarea{font:inherit}.hidden{display:none!important}
-.wrap{max-width:1080px;margin:auto;padding:22px 24px}
-.top{background:rgba(255,255,255,.96);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10;backdrop-filter:blur(12px)}
-.top .wrap{display:flex;justify-content:space-between;align-items:center;min-height:76px}
-.brand{font-weight:900;font-size:22px;display:flex;align-items:center;gap:10px}
-.brand:before{content:"🐷";width:38px;height:38px;border-radius:12px;background:var(--primary-soft);display:grid;place-items:center;font-size:21px}
-.card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px;margin:14px 0;box-shadow:0 8px 28px rgba(15,35,28,.045)}
+.wrap{max-width:1160px;margin:auto;padding:22px 24px}
+.top{background:rgba(255,255,255,.92);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10;backdrop-filter:blur(14px)}
+.top .wrap{display:flex;justify-content:space-between;align-items:center;min-height:72px}
+.brand{font-weight:900;font-size:22px;display:flex;align-items:center;gap:10px;color:#10253a}
+.brand:before{content:"📗";width:40px;height:40px;border-radius:13px;background:linear-gradient(135deg,#dff9ea,#e8f4ff);display:grid;place-items:center;font-size:22px;box-shadow:inset 0 0 0 1px #d9eee6}
+.card{background:rgba(255,255,255,.97);border:1px solid var(--line);border-radius:20px;padding:18px;margin:14px 0;box-shadow:0 9px 30px rgba(45,84,117,.065)}
 .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.between{justify-content:space-between}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
-.btn{border:0;border-radius:13px;padding:12px 16px;font-weight:800;cursor:pointer;transition:.18s}
-.btn:hover{transform:translateY(-1px)}.primary{background:var(--primary);color:#fff;box-shadow:0 7px 18px rgba(15,138,103,.16)}
-.soft{background:var(--primary-soft);color:var(--primary-dark)}.danger{background:#fee2e2;color:#991b1b}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(205px,1fr));gap:13px}
+.btn{border:0;border-radius:13px;padding:12px 16px;font-weight:850;cursor:pointer;transition:.18s;letter-spacing:-.1px}
+.btn:hover{transform:translateY(-1px);filter:saturate(1.04)}
+.primary{background:linear-gradient(135deg,var(--green),var(--green2));color:#fff;box-shadow:0 8px 20px rgba(18,165,111,.20)}
+.soft{background:#eef8f5;color:#087b56}.danger{background:var(--red-soft);color:#d62e2e}
 .muted{color:var(--muted);font-size:13px;line-height:1.55}
-.field{margin:13px 0}.field label{display:block;font-size:12px;font-weight:800;margin-bottom:7px;color:#52615c}
-.field input,.field select,.field textarea{width:100%;padding:13px 14px;border:1px solid #d7e2de;border-radius:13px;background:#fff;outline:none}
-.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(15,138,103,.09)}
+.field{margin:13px 0}.field label{display:block;font-size:12px;font-weight:850;margin-bottom:7px;color:#53677e}
+.field input,.field select,.field textarea{width:100%;padding:13px 14px;border:1px solid #dce7f0;border-radius:13px;background:#fff;outline:none;color:var(--ink)}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:#66b7f6;box-shadow:0 0 0 3px #e5f4ff}
 .tabs{display:flex;gap:7px;overflow:auto;padding:5px 0 8px}.tabs button{white-space:nowrap}
-.pill{display:inline-block;padding:6px 10px;border-radius:999px;background:#eef4f2;font-size:11px;font-weight:800}
-.ok{background:#dcfce7;color:#166534}.warn{background:#ffedd5;color:#9a3412}.bad{background:#fee2e2;color:#991b1b}
-.money{font-size:26px;font-weight:900;letter-spacing:-.5px}.item{padding:13px 0;border-bottom:1px solid #edf2f0}.item:last-child{border:0}
-.modal{position:fixed;inset:0;background:rgba(15,23,20,.56);display:flex;align-items:center;justify-content:center;padding:16px;z-index:30;backdrop-filter:blur(3px)}
-.modalbox{background:#fff;border-radius:22px;padding:22px;max-width:620px;width:100%;max-height:90vh;overflow:auto;box-shadow:0 24px 70px rgba(0,0,0,.22)}
-.modalbox h3{margin:0 0 16px;font-size:21px}
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#111827;color:#fff;padding:12px 16px;border-radius:12px;z-index:99;box-shadow:0 10px 30px #0003}
-.checklist{max-height:250px;overflow:auto;border:1px solid var(--border);border-radius:13px;padding:9px;background:#fbfdfc}
-.link{color:var(--primary-dark);text-decoration:none;cursor:pointer;font-weight:800}.sectiontitle{margin:4px 0 10px}.proof{max-width:240px;max-height:190px;border-radius:12px;margin-top:8px}.locked{opacity:.55;pointer-events:none}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:6px 10px;border-radius:999px;background:#eef5fa;font-size:11px;font-weight:850}
+.ok{background:#dcfae9;color:#087b4d}.warn{background:#fff2cf;color:#b46a00}.bad{background:#ffe7e5;color:#d53232}
+.money{font-size:27px;font-weight:950;letter-spacing:-.8px}.item{padding:13px 0;border-bottom:1px solid #edf2f7}.item:last-child{border:0}
+.modal{position:fixed;inset:0;background:rgba(17,34,52,.48);display:flex;align-items:center;justify-content:center;padding:16px;z-index:30;backdrop-filter:blur(5px)}
+.modalbox{background:#fff;border-radius:24px;padding:22px;max-width:620px;width:100%;max-height:90vh;overflow:auto;box-shadow:0 28px 80px rgba(14,39,64,.24);border:1px solid #edf3f8}
+.modalbox h3{margin:0 0 16px;font-size:21px}.modalbox h3:before{content:"";display:inline-block;width:5px;height:22px;border-radius:8px;background:linear-gradient(var(--green),var(--blue));vertical-align:-4px;margin-right:9px}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#14253b;color:#fff;padding:12px 16px;border-radius:12px;z-index:99;box-shadow:0 10px 30px #0003}
+.checklist{max-height:250px;overflow:auto;border:1px solid var(--line);border-radius:13px;padding:9px;background:#fbfdff}
+.link{color:#1680d9;text-decoration:none;cursor:pointer;font-weight:850}.sectiontitle{margin:4px 0 10px}.proof{max-width:240px;max-height:190px;border-radius:12px;margin-top:8px}.locked{opacity:.55;pointer-events:none}
 
-/* auth */
-#auth{max-width:470px!important;padding-top:7vh!important}
-#auth .card{padding:28px;border-radius:26px}
-#auth h1{font-size:28px;margin:0 0 7px}
-#auth h1:before{content:"🐷";margin-right:10px}
-#auth .tabs{background:#edf3f1;padding:5px;border-radius:14px;margin:20px 0 16px}
+/* LOGIN — school friendly */
+#auth{max-width:940px!important;padding-top:5vh!important}
+#auth>.card{padding:0;overflow:hidden;border-radius:30px;display:grid;grid-template-columns:1.02fr .98fr;min-height:590px;box-shadow:0 25px 70px rgba(47,93,130,.13)}
+#auth>.card:before{content:"🎒  🏫  📚";display:flex;align-items:center;justify-content:center;font-size:72px;letter-spacing:16px;color:#fff;background:
+ linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.35)),
+ radial-gradient(circle at 25% 20%,#fff8b8 0 7%,transparent 8%),
+ linear-gradient(145deg,#9edcff,#b9f0ce 58%,#fff1b5);min-height:590px}
+#auth>.card>*{grid-column:2;margin-left:28px;margin-right:28px}
+#auth>.card>h1{margin-top:55px}
+#auth h1{font-size:30px;margin-bottom:6px}
+#auth h1:before{content:"📗";margin-right:10px}
+#auth .tabs{background:#f0f6fa;padding:5px;border-radius:14px;margin-top:18px}
 #auth .tabs .btn{flex:1}
+#loginBox,#registerBox{padding-bottom:34px}
+#loginBox>.btn,#registerBox>.btn{width:100%;margin-top:8px}
 
-/* groups */
-.groups-hero{padding:28px 0 10px}
-.groups-hero h2{font-size:27px;margin:0 0 7px;letter-spacing:-.5px}
+/* MY CLASSES */
+.groups-hero{padding:24px 0 7px}
+.groups-hero:before{content:"Сайн байна уу 👋";display:block;font-size:27px;font-weight:950;letter-spacing:-.7px;margin-bottom:3px}
+.groups-hero h2{font-size:15px;margin:0 0 4px;color:#62758a;font-weight:750}
 .groups-toolbar{display:flex;justify-content:space-between;gap:16px;align-items:flex-end;flex-wrap:wrap}
 .groups-actions{display:flex;gap:9px;flex-wrap:wrap}
-#groups{margin-top:18px}
-#groups>.card{padding:18px 20px;border-radius:19px}
-#groups>.card b{font-size:16px}
-.empty-state{background:#fff;border:1px dashed #cbd9d4;border-radius:20px;padding:34px;text-align:center;color:var(--muted)}
-.empty-state .empty-icon{font-size:36px;margin-bottom:9px}
+#groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:14px;margin-top:16px}
+#groups>.card{margin:0;padding:18px 20px;border-radius:22px;min-height:145px;position:relative;overflow:hidden}
+#groups>.card:nth-child(odd){background:linear-gradient(135deg,#effff4,#e7faef)}
+#groups>.card:nth-child(even){background:linear-gradient(135deg,#eef8ff,#e6f2ff)}
+#groups>.card:after{content:"✏️  📚";position:absolute;right:16px;bottom:10px;font-size:22px;opacity:.18}
+#groups>.card b{font-size:17px}
+.empty-state{grid-column:1/-1;background:linear-gradient(135deg,#fff,#f5fbff);border:1px dashed #cbdce9;border-radius:23px;padding:42px;text-align:center;color:var(--muted)}
+.empty-state .empty-icon{font-size:45px;margin-bottom:9px}
 
-/* workspace */
-.workspace-head{background:linear-gradient(135deg,#0b7b5d,#13a178);color:#fff;border-radius:24px;padding:22px 24px;margin:8px 0 14px;box-shadow:0 14px 34px rgba(15,138,103,.16)}
-.workspace-head .link{color:#d9fff1}.workspace-head h2{margin:8px 0 5px;font-size:25px}.workspace-head .muted{color:#d9eee7}
-.workspace-head .pill{background:#ffffff22;color:#fff;border:1px solid #ffffff35}
-#accessBanner{margin:0 0 14px}
-#nav{background:#fff;border:1px solid var(--border);border-radius:16px;padding:7px;box-shadow:0 5px 18px rgba(15,35,28,.035);margin-bottom:15px}
-#nav .btn{flex:1;min-width:100px}
+/* CLASS WORKSPACE */
+.workspace-head{background:linear-gradient(135deg,#f7fffb,#eef8ff);border:1px solid #dcecf2;border-radius:22px;padding:18px 20px;margin:8px 0 12px;box-shadow:0 9px 28px rgba(49,90,120,.055)}
+.workspace-head h2{margin:7px 0 4px;font-size:22px}.workspace-head .muted{color:#6c8095}
+.workspace-head .pill{background:#e3f9ed;color:#08784f}
+#accessBanner{margin:0 0 12px;background:linear-gradient(90deg,#f2fff7,#f4faff)}
+#nav{background:#fff;border:1px solid var(--line);border-radius:16px;padding:6px;box-shadow:0 5px 18px rgba(45,84,117,.04);margin-bottom:15px}
+#nav .btn{flex:1;min-width:95px;background:transparent;color:#6a7c90;box-shadow:none}
+#nav .btn.primary{background:#dff8ea;color:#078653;box-shadow:none}
 .page>h3,.page>.row h3{font-size:22px;margin:8px 0}
-.page .grid .card{min-height:110px}
-.page .grid .card .muted{font-weight:700}
+.page .grid .card{min-height:112px;position:relative;overflow:hidden}
+.page .grid .card:nth-child(1){background:linear-gradient(135deg,#edf7ff,#fff)}
+.page .grid .card:nth-child(2){background:linear-gradient(135deg,#f0fff5,#fff)}
+.page .grid .card:nth-child(3){background:linear-gradient(135deg,#fff8e8,#fff)}
+.page .grid .card:nth-child(4){background:linear-gradient(135deg,#fff0ef,#fff)}
+.page .grid .card .muted{font-weight:750}
 .page .grid .card .money{margin-top:8px}
 .page>.card,.page>.grid{animation:fadein .18s ease}
+#home>.card:nth-of-type(2){background:linear-gradient(135deg,#eafff2,#f5fbff)}
+#children>.card,#funds>.card,#payments>.card,#report>.card,#settings>.card{transition:.18s}
+#children>.card:hover,#funds>.card:hover,#payments>.card:hover{transform:translateY(-1px);box-shadow:0 12px 34px rgba(45,84,117,.09)}
 @keyframes fadein{from{opacity:.3;transform:translateY(4px)}to{opacity:1;transform:none}}
 
-@media(max-width:700px){
- .wrap{padding:14px}.top .wrap{min-height:66px}.brand{font-size:19px}.brand:before{width:34px;height:34px}
- .groups-toolbar{align-items:stretch}.groups-actions{width:100%}.groups-actions .btn{flex:1}
- .workspace-head{border-radius:18px;padding:18px}.workspace-head h2{font-size:22px}
+@media(max-width:760px){
+ .wrap{padding:14px}.top .wrap{min-height:64px}.brand{font-size:18px}.brand:before{width:35px;height:35px;font-size:19px}
+ #auth{padding:12px!important}#auth>.card{display:block;min-height:0}#auth>.card:before{min-height:190px;font-size:42px;border-radius:0}
+ #auth>.card>*{margin-left:18px;margin-right:18px}#auth>.card>h1{margin-top:24px}
+ .groups-hero:before{font-size:24px}.groups-toolbar{align-items:stretch}.groups-actions{width:100%}.groups-actions .btn{flex:1}
+ #groups{grid-template-columns:1fr}
+ .workspace-head{border-radius:18px;padding:15px}.workspace-head h2{font-size:20px}
  #nav{display:grid;grid-template-columns:repeat(3,1fr);overflow:visible}.tabs button{white-space:normal}
- .row.mobilecol{align-items:stretch;flex-direction:column}.btn{min-height:44px}
- .money{font-size:23px}
+ .row.mobilecol{align-items:stretch;flex-direction:column}.btn{min-height:44px}.money{font-size:23px}
 }
 </style></head><body>
 <div id="toast" class="toast hidden"></div>
 <section id="auth" class="wrap" style="max-width:480px;padding-top:8vh"><div class="card"><h1>Ангийн фонд</h1><p class="muted">Анги, бүлгийн сангийн ил тод бүртгэл.</p><div class="tabs"><button class="btn primary" onclick="authTab('login')">Нэвтрэх</button><button class="btn soft" onclick="authTab('register')">Бүртгүүлэх</button></div><div id="loginBox"><div class="field"><label>Email</label><input id="le" type="email"></div><div class="field"><label>Нууц үг</label><input id="lp" type="password"></div><button class="btn primary" onclick="login()">Нэвтрэх</button></div><div id="registerBox" class="hidden"><div class="field"><label>Нэр</label><input id="rn"></div><div class="field"><label>Email</label><input id="re" type="email"></div><div class="field"><label>Нууц үг</label><input id="rp" type="password"></div><button class="btn primary" onclick="register()">Бүртгүүлэх</button></div></div></section>
-<section id="app" class="hidden"><div class="top"><div class="wrap"><div class="brand">🐷 Ангийн фонд</div><button class="btn soft" onclick="logout()">Гарах</button></div></div><div class="wrap">
+<section id="app" class="hidden"><div class="top"><div class="wrap"><div class="brand">Ангийн фонд</div><button class="btn soft" onclick="logout()">Гарах</button></div></div><div class="wrap">
 <div id="groupsView">
   <div class="groups-hero">
     <div class="groups-toolbar">
@@ -94,13 +121,13 @@ button,input,select,textarea{font:inherit}.hidden{display:none!important}
     <div><span class="link" onclick="backGroups()">← Миний анги / бүлгүүд</span><h2 id="gTitle"></h2><div id="gSub" class="muted"></div></div>
     <span id="role" class="pill"></span>
   </div>
-  <div id="accessBanner" class="card"></div><div class="tabs" id="nav"><button class="btn primary" onclick="tab('home',this)">Нүүр</button><button class="btn soft admin" onclick="tab('children',this)">Хүүхэд</button><button class="btn soft" onclick="tab('funds',this)">Фонд</button><button class="btn soft" onclick="tab('payments',this)">Төлөлт</button><button class="btn soft" onclick="tab('report',this)">Тайлан</button><button class="btn soft admin" onclick="tab('settings',this)">Тохиргоо</button></div>
+  <div id="accessBanner" class="card"></div><div class="tabs" id="nav"><button class="btn primary" onclick="tab('home',this)">Нүүр</button><button class="btn soft admin" onclick="tab('children',this)">Хүүхдүүд</button><button class="btn soft" onclick="tab('funds',this)">Фонд</button><button class="btn soft" onclick="tab('payments',this)">Төлөлт</button><button class="btn soft" onclick="tab('report',this)">Тайлан</button><button class="btn soft admin" onclick="tab('settings',this)">Тохиргоо</button></div>
 <div id="home" class="page"></div><div id="children" class="page hidden"></div><div id="funds" class="page hidden"></div><div id="payments" class="page hidden"></div><div id="report" class="page hidden"></div><div id="settings" class="page hidden"></div></div></div></section><div id="modal" class="modal hidden" onclick="if(event.target===this)closeModal()"><div id="modalBody" class="modalbox"></div></div>
 <script>
 const SUPABASE_URL="https://fjvjtujwnbsonycgxuuu.supabase.co";const SUPABASE_KEY="sb_publishable_0QwVZZJsw_J0iHTov07o5A_ykK11Uai";const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 let U=null,G=null,M=null,DATA={};const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const money=n=>new Intl.NumberFormat('mn-MN').format(Number(n||0))+'₮';function toast(s){$('toast').textContent=s;$('toast').classList.remove('hidden');setTimeout(()=>$('toast').classList.add('hidden'),2500)}function modal(h){$('modalBody').innerHTML=h;$('modal').classList.remove('hidden')}function closeModal(){$('modal').classList.add('hidden')}function ay(){let d=new Date(),y=d.getFullYear();return d.getMonth()>=8?`${y}–${y+1}`:`${y-1}–${y}`}
 function authTab(x){$('loginBox').classList.toggle('hidden',x!=='login');$('registerBox').classList.toggle('hidden',x!=='register')}async function register(){let n=$('rn').value.trim(),e=$('re').value.trim(),p=$('rp').value;if(!n||!e||p.length<6)return toast('Мэдээллээ бүрэн оруулна уу');let{data,error}=await sb.auth.signUp({email:e,password:p,options:{data:{full_name:n}}});if(error)return toast(error.message);toast(data.session?'Бүртгэгдлээ':'Email баталгаажуулна уу');if(data.session)boot()}async function login(){let{error}=await sb.auth.signInWithPassword({email:$('le').value.trim(),password:$('lp').value});if(error)return toast(error.message);boot()}async function logout(){await sb.auth.signOut();location.reload()}
-async function boot(){let{data:{session}}=await sb.auth.getSession();if(!session)return;$('auth').classList.add('hidden');$('app').classList.remove('hidden');U=session.user;loadGroups()}async function loadGroups(){G=M=null;$('groupsView').classList.remove('hidden');$('workspace').classList.add('hidden');let{data,error}=await sb.from('af_memberships').select('id,role,status,group_id,af_groups(*)').eq('user_id',U.id).eq('status','approved');if(error)return toast(error.message);$('groups').innerHTML=(data||[]).length?(data||[]).map((m,i)=>`<div class="card row between"><div class="row"><div style="width:48px;height:48px;border-radius:15px;background:#e9f8f2;display:grid;place-items:center;font-size:23px">🏫</div><div><b>${esc(m.af_groups.group_name)}</b><div class="muted">${esc(m.af_groups.institution_name)} · ${esc(m.af_groups.academic_year)}</div></div></div><div class="row"><span class="pill">${m.role==='owner'?'Эзэмшигч':m.role==='admin'?'Админ':'Эцэг эх'}</span><button class="btn soft" onclick='enter(${JSON.stringify(JSON.stringify(m))})'>Нээх →</button></div></div>`).join(''):'<div class="empty-state"><div class="empty-icon">🏫</div><b style="color:#24352f">Одоогоор анги / бүлэг алга</b><div style="margin-top:7px">Шинээр анги үүсгэх эсвэл урилгын кодоор нэгдээрэй.</div></div>'}
+async function boot(){let{data:{session}}=await sb.auth.getSession();if(!session)return;$('auth').classList.add('hidden');$('app').classList.remove('hidden');U=session.user;loadGroups()}async function loadGroups(){G=M=null;$('groupsView').classList.remove('hidden');$('workspace').classList.add('hidden');let{data,error}=await sb.from('af_memberships').select('id,role,status,group_id,af_groups(*)').eq('user_id',U.id).eq('status','approved');if(error)return toast(error.message);$('groups').innerHTML=(data||[]).length?(data||[]).map((m,i)=>`<div class="card"><div class="row between"><div class="row"><div style="width:52px;height:52px;border-radius:16px;background:${i%2?'#dceeff':'#dcf8e7'};display:grid;place-items:center;font-size:25px">${i%2?'🎒':'🏫'}</div><div><div class="muted">${esc(m.af_groups.institution_name)}</div><b>${esc(m.af_groups.group_name)}</b><div class="muted">${esc(m.af_groups.academic_year)}</div></div></div><span class="pill">${m.role==='owner'?'👑 Фонд хариуцагч':m.role==='admin'?'⭐ Админ':'👨‍👩‍👧 Эцэг эх'}</span></div><div class="row between" style="margin-top:18px"><span class="muted">Ангийн сан, төлөлт, тайлан</span><button class="btn ${i%2?'soft':'primary'}" onclick='enter(${JSON.stringify(JSON.stringify(m))})'>Нээх →</button></div></div>`).join(''):'<div class="empty-state"><div class="empty-icon">🏫</div><b style="color:#24352f">Таны ангиуд энд харагдана</b><div style="margin-top:7px">Шинээр анги үүсгэх эсвэл урилгын кодоор нэгдээрэй.</div></div>'}
 function openCreateGroup(){modal(`<h3>Анги / бүлэг үүсгэх</h3><div class="field"><label>Байгууллагын нэр</label><input id="ci" placeholder="23-р сургууль"></div><div class="field"><label>Анги / бүлгийн нэр</label><input id="cg" placeholder="5А"></div><div class="field"><label>Хичээлийн жил</label><input value="${ay()}" readonly></div><button class="btn primary" onclick="createGroup()">Үүсгэх</button>`)}async function createGroup(){let i=$('ci').value.trim(),g=$('cg').value.trim();if(!i||!g)return toast('Мэдээллээ бөглөнө үү');let{error}=await sb.rpc('af_create_group',{p_institution:i,p_group:g,p_year:ay()});if(error)return toast(error.message);closeModal();await loadGroups();toast('Анги үүслээ')}
 function openJoin(){modal(`<h3>Урилгын код</h3><div class="field"><input id="jc" placeholder="Код"></div><button class="btn primary" onclick="findInvite()">Үргэлжлүүлэх</button>`)}async function findInvite(){let code=$('jc').value.trim();let{data,error}=await sb.rpc('af_find_invite',{p_code:code});if(error||!data?.length)return toast('Код олдсонгүй');let g=data[0];modal(`<h3>${esc(g.institution_name)} — ${esc(g.group_name)}</h3><p class="muted">${esc(g.academic_year)} · Хариуцагч: ${esc(g.admin_name||'—')} ${esc(g.admin_phone||'')}</p><div class="field"><label>Хүүхдийн овог, нэр</label><input id="ch"></div><h4>Үндсэн холбоо барих хүн</h4><div class="field"><input id="n1" placeholder="Нэр"></div><div class="field"><input id="p1" maxlength="8" placeholder="Утас"></div><div class="field"><select id="r1">${rels()}</select></div><h4>Нэмэлт холбоо барих хүн *</h4><div class="field"><input id="n2" placeholder="Нэр"></div><div class="field"><input id="p2" maxlength="8" placeholder="Утас"></div><div class="field"><select id="r2">${rels()}</select></div><button class="btn primary" onclick="submitChild('${esc(code)}')">Хүсэлт илгээх</button>`)}function rels(){return ['Аав','Ээж','Өвөө','Эмээ','Ах','Эгч','Асран хамгаалагч','Бусад'].map(x=>`<option>${x}</option>`).join('')}async function submitChild(code){let a=['ch','n1','p1','n2','p2'].map(x=>$(x).value.trim());if(a.some(x=>!x))return toast('Бүх шаардлагатай мэдээллийг бөглөнө үү');let{error}=await sb.rpc('af_submit_child_request',{p_code:code,p_child:a[0],p_n1:a[1],p_p1:a[2],p_r1:$('r1').value,p_n2:a[3],p_p2:a[4],p_r2:$('r2').value});if(error)return toast(error.message);closeModal();toast('Хүсэлт илгээгдлээ')}
 async function enter(raw){M=JSON.parse(raw);G=M.af_groups;$('groupsView').classList.add('hidden');$('workspace').classList.remove('hidden');$('gTitle').textContent=G.group_name;$('gSub').textContent=G.institution_name+' · '+G.academic_year;$('role').textContent=M.role==='owner'?'Эзэмшигч':M.role==='admin'?'Админ':'Эцэг эх';document.querySelectorAll('.admin').forEach(x=>x.classList.toggle('hidden',M.role==='parent'));await refresh();tab('home',document.querySelector('#nav button'))}function backGroups(){loadGroups()}function tab(id,b){document.querySelectorAll('.page').forEach(x=>x.classList.add('hidden'));$(id).classList.remove('hidden');document.querySelectorAll('#nav button').forEach(x=>{x.classList.remove('primary');x.classList.add('soft')});if(b){b.classList.add('primary');b.classList.remove('soft')}render(id)}
