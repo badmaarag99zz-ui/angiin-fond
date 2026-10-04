@@ -922,6 +922,19 @@ button{
 .invite-code{font-size:24px;font-weight:900;letter-spacing:2px;color:#0e7490;margin:7px 0}
 .request-card{display:flex;align-items:center;gap:10px;padding:13px;background:#fff;border:1px solid #e2e8f0;border-radius:15px;margin-top:9px}
 .parent-only,.admin-only{display:none}
+
+/* ===== MY GROUPS ===== */
+.groups-landing{padding:18px 16px 28px}
+.groups-heading{margin:4px 2px 14px}
+.groups-heading h3{margin:0;font-size:20px}
+.groups-heading p{margin:5px 0 0;color:var(--muted);font-size:11px;line-height:1.5}
+.groups-list{display:flex;flex-direction:column;gap:10px}
+.group-item{width:100%;border:1px solid var(--border);background:#fff;border-radius:18px;padding:15px;text-align:left;display:flex;align-items:center;gap:12px;box-shadow:0 5px 18px rgba(15,23,42,.04)}
+.group-item-icon{width:46px;height:46px;min-width:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:#ecfeff;font-size:22px}
+.group-item-main{flex:1;min-width:0}.group-item-title{font-size:14px;font-weight:900}.group-item-sub{margin-top:4px;font-size:10px;color:var(--muted)}
+.group-role{padding:5px 8px;border-radius:999px;background:#f1f5f9;color:#475569;font-size:9px;font-weight:800}
+.groups-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}.groups-actions button{min-height:48px}
+
 </style>
 </head><body>
 <div id="authScreen"><div class="auth-card">
@@ -933,8 +946,17 @@ button{
 </div></div>
 
 <div id="mainApp" class="app hidden">
-<header class="header"><div class="header-top"><div class="header-brand"><div class="mini-logo">🐷</div><div><h2>Ангийн фонд</h2><div class="header-sub">Анги, бүлгийн сангаа ил тод удирд.</div></div></div><div class="avatar" id="userAvatar">?</div></div>
-<div class="class-card"><div class="class-card-top"><div><div class="class-name" id="currentGroupName">Анги / бүлэг үүсгээгүй</div><div class="class-school" id="currentGroupYear">Эхлээд анги / бүлгээ үүсгэнэ үү</div></div><div class="role-pill" id="roleLabel">Админ</div></div></div></header>
+<section id="groupsLanding">
+<header class="header"><div class="header-top"><div class="header-brand"><div class="mini-logo">🐷</div><div><h2>Ангийн фонд</h2><div class="header-sub">Анги, бүлгийн сангаа ил тод удирд.</div></div></div><div class="avatar" id="userAvatar">?</div></div></header>
+<div class="groups-landing">
+ <div class="groups-heading"><h3>Миний анги / бүлгүүд</h3><p>Өөрийн удирддаг болон гишүүнээр нэгдсэн анги, бүлгүүд.</p></div>
+ <div id="myGroupsList" class="groups-list"></div>
+ <div class="groups-actions"><button class="primary-btn" onclick="openCreateGroup()">＋ Анги / бүлэг үүсгэх</button><button class="secondary-btn" onclick="openModal('joinGroupModal')">🔗 Ангид / бүлэгт нэгдэх</button></div>
+ <button class="secondary-btn" style="width:100%;margin-top:12px" onclick="logoutUser()">Гарах</button>
+</div></section>
+<section id="groupWorkspace" class="hidden">
+<header class="header"><div class="header-top"><div class="header-brand"><div class="mini-logo">🐷</div><div><h2>Ангийн фонд</h2><div class="header-sub">Анги, бүлгийн сангаа ил тод удирд.</div></div></div><div class="avatar" id="workspaceAvatar">?</div></div>
+<div class="class-card"><div class="class-card-top"><div><div class="class-name" id="currentGroupName">Анги / бүлэг</div><div class="class-school" id="currentGroupYear">—</div></div><div class="role-pill" id="roleLabel">—</div></div></div></header>
 
 <main id="homePage" class="page active"><div class="content">
  <div class="balance-card"><div class="balance-label">Сангийн үлдэгдэл</div><div class="balance" id="homeBalance">0 ₮</div><div class="balance-meta"><div><small>Нийт орлого</small><strong id="homeIncome">0 ₮</strong></div><div><small>Нийт зарлага</small><strong id="homeExpense">0 ₮</strong></div></div></div>
@@ -951,7 +973,7 @@ button{
 
 <main id="settingsPage" class="page"><div class="content"><div class="section-title"><h3>Тохиргоо</h3></div>
 <div class="admin-only" id="adminSettings">
-<div class="field"><label>Сургууль / цэцэрлэг</label><input id="settingsInstitution"></div><div class="field"><label>Анги / бүлгийн нэр</label><input id="settingsGroupName"></div><div class="field"><label>Төрөл</label><select id="settingsType"><option value="school">ЕБС</option><option value="kindergarten">Цэцэрлэг</option></select></div><div class="field"><label>Хичээлийн жил</label><input id="settingsYear"></div><button class="primary-btn" onclick="saveGroupSettings(this)">Хадгалах</button>
+<div class="field"><label>Сургууль / цэцэрлэг</label><input id="settingsInstitution"></div><div class="field"><label>Анги / бүлгийн нэр</label><input id="settingsGroupName"></div><div class="field"><label>Хичээлийн жил</label><input id="settingsYear"></div><button class="primary-btn" onclick="saveGroupSettings(this)">Хадгалах</button>
 <div class="section-title"><h3>Эцэг эх урих</h3></div><div class="invite-box"><div>Ангийн урилгын код</div><div class="invite-code" id="groupInviteCode">—</div><button class="secondary-btn" style="width:100%" onclick="copyInviteCode()">Код хуулах</button></div>
 <div class="section-title"><h3>Нэгдэх хүсэлтүүд</h3><span id="joinRequestCount">0</span></div><div id="joinRequests" class="list"></div>
 <div class="section-title"><h3>Хүүхэд холбох хүсэлтүүд</h3><span id="childLinkRequestCount">0</span></div><div id="childLinkRequests" class="list"></div>
@@ -962,12 +984,13 @@ button{
   <div id="myLinkedChildren" class="list"></div>
   <button class="secondary-btn" style="width:100%;margin-top:14px" onclick="openModal('joinGroupModal')">Ангид нэгдэх хүсэлт</button>
 </div>
-<button class="secondary-btn" style="width:100%;margin-top:14px" onclick="logoutUser()">Гарах</button></div></main>
+<button class="secondary-btn" style="width:100%;margin-top:14px" onclick="backToMyGroups()">← Миний анги / бүлгүүд</button><button class="secondary-btn" style="width:100%;margin-top:10px" onclick="logoutUser()">Гарах</button></div></main>
 
 <nav class="bottom-nav"><button class="nav-btn active" data-page="home" onclick="switchPage('home',this)"><span class="nav-icon">⌂</span>Нүүр</button><button class="nav-btn" data-page="children" onclick="switchPage('children',this)"><span class="nav-icon">👥</span>Хүүхэд</button><button class="nav-btn" data-page="payments" onclick="switchPage('payments',this)"><span class="nav-icon">₮</span>Төлбөр</button><button class="nav-btn" data-page="report" onclick="switchPage('report',this)"><span class="nav-icon">▥</span>Тайлан</button><button class="nav-btn" data-page="settings" onclick="switchPage('settings',this)"><span class="nav-icon">⚙</span>Тохиргоо</button></nav>
+</section>
 </div>
 
-<div id="groupSetupModal" class="modal hidden"><div class="modal-box"><div class="modal-head"><div><h3>Анги / бүлгээ үүсгэх</h3><p>Эхний үндсэн мэдээллээ оруулна.</p></div></div><div class="field"><label>Төрөл</label><select id="setupGroupType"><option value="school">ЕБС</option><option value="kindergarten">Цэцэрлэг</option></select></div><div class="field"><label>Сургууль / цэцэрлэгийн нэр</label><input id="setupInstitutionName" placeholder="Жишээ: 1-р сургууль"></div><div class="field"><label>Анги / бүлгийн нэр</label><input id="setupGroupName" placeholder="Жишээ: 3А анги"></div><div class="field"><label>Хичээлийн жил</label><input id="setupAcademicYear" value="2026–2027"></div><button class="primary-btn" onclick="createGroup(this)">Үүсгэх</button></div></div>
+<div id="groupSetupModal" class="modal hidden"><div class="modal-box"><div class="modal-head"><div><h3>Анги / бүлэг үүсгэх</h3><p>Хичээлийн жил автоматаар сонгогдоно.</p></div><button class="close-btn" onclick="closeModal('groupSetupModal')">×</button></div><div class="field"><label>Байгууллагын нэр *</label><input id="setupInstitutionName" placeholder="Жишээ: 23-р сургууль"></div><div class="field"><label>Анги / бүлгийн нэр *</label><input id="setupGroupName" placeholder="Жишээ: 5А"></div><div class="field"><label>Хичээлийн жил</label><input id="setupAcademicYear" readonly></div><button class="primary-btn" onclick="createGroup(this)">Үүсгэх</button></div></div>
 <div id="childModal" class="modal hidden"><div class="modal-box"><div class="modal-head"><div><h3>Хүүхэд нэмэх</h3><p>Ангийн хүүхдийн мэдээлэл.</p></div><button class="close-btn" onclick="closeModal('childModal')">×</button></div><div class="field"><label>Хүүхдийн нэр *</label><input id="childName" placeholder="Овог нэр"></div><div class="field"><label>Эцэг эх / асран хамгаалагч</label><input id="parentName" placeholder="Нэр"></div><div class="field"><label>Утас</label><input id="parentPhone" type="tel" maxlength="8" placeholder="99112233"></div><button class="primary-btn" onclick="addMember(this)">Хадгалах</button></div></div>
 <div id="collectionModal" class="modal hidden"><div class="modal-box"><div class="modal-head"><div><h3>Шинэ хураалт</h3><p>Хүүхэд бүрээс авах дүнг тохируулна.</p></div><button class="close-btn" onclick="closeModal('collectionModal')">×</button></div><div class="field"><label>Хураалтын нэр *</label><input id="collectionTitle" placeholder="Жишээ: I улирлын фонд"></div><div class="field"><label>Хүүхэд бүрийн дүн *</label><input id="collectionAmount" type="number" min="1" placeholder="30000"></div><div class="field"><label>Төлөх эцсийн өдөр</label><input id="collectionDueDate" type="date"></div><div class="field"><label>Тайлбар</label><textarea id="collectionDescription" rows="3"></textarea></div><button class="primary-btn" onclick="createCollection(this)">Хураалт үүсгэх</button></div></div>
 <div id="paymentModal" class="modal hidden"><div class="modal-box"><div class="modal-head"><div><h3>Төлөлт бүртгэх</h3><p>Хэсэгчлэн төлөлт мөн бүртгэж болно.</p></div><button class="close-btn" onclick="closeModal('paymentModal')">×</button></div><div class="field"><label>Хураалт *</label><select id="paymentCollection"></select></div><div class="field"><label>Хүүхэд *</label><select id="paymentMember"></select></div><div class="field"><label>Төлсөн дүн *</label><input id="paymentAmount" type="number" min="1" placeholder="30000"></div><div class="field"><label>Огноо</label><input id="paymentDate" type="date"></div><div class="field"><label>Тэмдэглэл</label><input id="paymentNote" placeholder="Жишээ: Бэлнээр"></div><button class="primary-btn" onclick="savePayment(this)">Төлөлт хадгалах</button></div></div>
@@ -1035,43 +1058,55 @@ async function registerUser(btn){
 async function bootApp(){
  const {data:{session}}=await supabaseClient.auth.getSession();
  if(!session)return showLoggedOut();
-
  currentUser=session.user;
-
- const {data:p,error:profileError}=await supabaseClient
-   .from("profiles")
-   .select("*")
-   .eq("id",currentUser.id)
-   .maybeSingle();
-
- if(profileError) toast("Профайл унших алдаа: "+profileError.message);
+ const {data:p,error}=await supabaseClient.from("profiles").select("*").eq("id",currentUser.id).maybeSingle();
+ if(error)toast("Профайл унших алдаа: "+error.message);
  currentProfile=p;
-
- $("userAvatar").textContent=
-   ((p?.full_name||currentUser.user_metadata?.full_name||currentUser.email||"?").trim()[0]||"?").toUpperCase();
-
- // Account itself has NO global Admin/Parent role.
- // Role will come from the selected group's membership.
- currentRole=null;
- currentGroup=null;
- currentMembership=null;
-
- $("roleLabel").textContent="—";
-
- document.querySelectorAll(".admin-only,.parent-only")
-   .forEach(x=>x.style.display="none");
-
- // Feature 1 intentionally does not force the user into
- // "create group" or "join group" immediately after login.
- $("authScreen").classList.add("hidden");
- $("mainApp").classList.remove("hidden");
-
- renderCurrentGroup();
- switchPage("home");
+ const initial=((p?.full_name||currentUser.user_metadata?.full_name||currentUser.email||"?").trim()[0]||"?").toUpperCase();
+ $("userAvatar").textContent=initial;if($("workspaceAvatar"))$("workspaceAvatar").textContent=initial;
+ $("authScreen").classList.add("hidden");$("mainApp").classList.remove("hidden");
+ await loadMyGroups();
 }
-function renderCurrentGroup(){$("currentGroupName").textContent=currentGroup?.group_name||"Анги / бүлэг үүсгээгүй";$("currentGroupYear").textContent=currentGroup?`${currentGroup.institution_name} · ${currentGroup.academic_year||"—"}`:"Миний анги / бүлгүүд хэсгээс анги үүсгэх эсвэл нэгдэнэ үү";if(currentGroup){if($("groupInviteCode"))$("groupInviteCode").textContent=currentGroup.invite_code||"—";$ ("settingsInstitution").value=currentGroup.institution_name||"";$("settingsGroupName").value=currentGroup.group_name||"";$("settingsType").value=currentGroup.type||"school";$("settingsYear").value=currentGroup.academic_year||"";$("reportYear").textContent=currentGroup.academic_year||"—";}}
-async function createGroup(btn){const row={owner_id:currentUser.id,type:$("setupGroupType").value,institution_name:$("setupInstitutionName").value.trim(),group_name:$("setupGroupName").value.trim(),academic_year:$("setupAcademicYear").value.trim()};if(!row.institution_name||!row.group_name)return toast("Байгууллага болон анги / бүлгийн нэрээ оруулна уу.");setBusy(btn,true);const {data,error}=await supabaseClient.from("groups").insert(row).select().single();setBusy(btn,false);if(error)return toast("Анги үүсгэхэд алдаа: "+error.message);currentGroup=data;closeModal("groupSetupModal");renderCurrentGroup();await loadAppData();await loadJoinRequests();await loadChildLinkRequests();toast("Анги / бүлэг үүслээ.");}
-async function saveGroupSettings(btn){if(!currentGroup)return;const row={institution_name:$("settingsInstitution").value.trim(),group_name:$("settingsGroupName").value.trim(),type:$("settingsType").value,academic_year:$("settingsYear").value.trim()};if(!row.institution_name||!row.group_name)return toast("Нэрийн талбаруудыг бөглөнө үү.");setBusy(btn,true);const {data,error}=await supabaseClient.from("groups").update(row).eq("id",currentGroup.id).select().single();setBusy(btn,false);if(error)return toast("Хадгалах алдаа: "+error.message);currentGroup=data;renderCurrentGroup();toast("Тохиргоо хадгалагдлаа.");}
+function academicYearNow(){const d=new Date(),y=d.getFullYear();return d.getMonth()>=8?`${y}–${y+1}`:`${y-1}–${y}`;}
+function openCreateGroup(){$("setupAcademicYear").value=academicYearNow();openModal("groupSetupModal");}
+async function loadMyGroups(){
+ currentGroup=null;currentRole=null;currentMembership=null;
+ $("groupsLanding").classList.remove("hidden");$("groupWorkspace").classList.add("hidden");
+ const [o,m]=await Promise.all([
+  supabaseClient.from("groups").select("*").eq("owner_id",currentUser.id).order("created_at",{ascending:false}),
+  supabaseClient.from("group_memberships").select("id,group_id,user_id,role,status,created_at").eq("user_id",currentUser.id).eq("status","approved").order("created_at",{ascending:false})
+ ]);
+ if(o.error)toast("Өөрийн ангиудыг унших алдаа: "+o.error.message);
+ if(m.error)toast("Гишүүнчлэл унших алдаа: "+m.error.message);
+ const owned=o.data||[], memberships=m.data||[], ownedIds=new Set(owned.map(g=>g.id));
+ const ids=[...new Set(memberships.map(x=>x.group_id).filter(id=>id&&!ownedIds.has(id)))];
+ let joined=[];
+ if(ids.length){const r=await supabaseClient.from("groups").select("*").in("id",ids);if(r.error)toast("Нэгдсэн ангиудыг унших алдаа: "+r.error.message);joined=r.data||[];}
+ window.__myGroupRows=[...owned.map(g=>({group:g,role:"owner",membership:null})),...joined.map(g=>{const mm=memberships.find(x=>x.group_id===g.id);return{group:g,role:mm?.role||"parent",membership:mm||null};})];
+ renderMyGroups(window.__myGroupRows);
+}
+function renderMyGroups(rows){
+ $("myGroupsList").innerHTML=rows.length?rows.map((x,i)=>{const role=x.role==="owner"?"Эзэмшигч":x.role==="admin"?"Админ":"Эцэг эх";return `<button class="group-item" onclick="openMyGroup(${i})"><div class="group-item-icon">🏫</div><div class="group-item-main"><div class="group-item-title">${esc(x.group.group_name||"Анги / бүлэг")}</div><div class="group-item-sub">${esc(x.group.institution_name||"")}${x.group.academic_year?" · "+esc(x.group.academic_year):""}</div></div><span class="group-role">${role}</span></button>`}).join(""):'<div class="empty"><div class="empty-icon">🏫</div><strong>Одоогоор анги / бүлэг алга.</strong><div style="margin-top:6px;font-size:11px">Шинээр үүсгэх эсвэл урилгын кодоор нэгдэнэ үү.</div></div>';
+}
+async function openMyGroup(i){
+ const x=(window.__myGroupRows||[])[i];if(!x)return;
+ currentGroup=x.group;currentMembership=x.membership;currentRole=(x.role==="owner"||x.role==="admin")?"admin":"parent";
+ $("groupsLanding").classList.add("hidden");$("groupWorkspace").classList.remove("hidden");
+ $("roleLabel").textContent=x.role==="owner"?"Эзэмшигч":currentRole==="admin"?"Админ":"Эцэг эх";
+ document.querySelectorAll(".admin-only").forEach(e=>e.style.display=currentRole==="parent"?"none":"block");
+ document.querySelectorAll(".parent-only").forEach(e=>e.style.display=currentRole==="parent"?"block":"none");
+ document.querySelectorAll(".actions").forEach(e=>e.style.display=currentRole==="parent"?"none":"grid");
+ const cn=document.querySelector('.nav-btn[data-page="children"]');if(cn)cn.style.display=currentRole==="parent"?"none":"block";
+ renderCurrentGroup();switchPage("home");await loadAppData();
+ if(currentRole==="admin"){await loadJoinRequests();await loadChildLinkRequests();}else await loadParentChildLinks();
+}
+function backToMyGroups(){loadMyGroups();}
+function renderCurrentGroup(){
+ $("currentGroupName").textContent=currentGroup?.group_name||"Анги / бүлэг";$("currentGroupYear").textContent=currentGroup?`${currentGroup.institution_name||""} · ${currentGroup.academic_year||"—"}`:"—";if(!currentGroup)return;
+ if($("groupInviteCode"))$("groupInviteCode").textContent=currentGroup.invite_code||"—";if($("settingsInstitution"))$("settingsInstitution").value=currentGroup.institution_name||"";if($("settingsGroupName"))$("settingsGroupName").value=currentGroup.group_name||"";if($("settingsYear"))$("settingsYear").value=currentGroup.academic_year||"";if($("reportYear"))$("reportYear").textContent=currentGroup.academic_year||"—";
+}
+async function createGroup(btn){const institution_name=$("setupInstitutionName").value.trim(),group_name=$("setupGroupName").value.trim(),academic_year=academicYearNow();if(!institution_name||!group_name)return toast("Байгууллага болон анги / бүлгийн нэрээ оруулна уу.");setBusy(btn,true,"Үүсгэж байна...");const {data,error}=await supabaseClient.from("groups").insert({owner_id:currentUser.id,type:"school",institution_name,group_name,academic_year}).select().single();setBusy(btn,false);if(error)return toast("Анги үүсгэхэд алдаа: "+error.message);closeModal("groupSetupModal");$("setupInstitutionName").value="";$("setupGroupName").value="";toast("Анги / бүлэг амжилттай үүслээ.");await loadMyGroups();const i=(window.__myGroupRows||[]).findIndex(x=>x.group.id===data.id);if(i>=0)await openMyGroup(i);}
+async function saveGroupSettings(btn){if(!currentGroup)return;const row={institution_name:$("settingsInstitution").value.trim(),group_name:$("settingsGroupName").value.trim(),academic_year:$("settingsYear").value.trim()};if(!row.institution_name||!row.group_name)return toast("Нэрийн талбаруудыг бөглөнө үү.");setBusy(btn,true);const {data,error}=await supabaseClient.from("groups").update(row).eq("id",currentGroup.id).select().single();setBusy(btn,false);if(error)return toast("Хадгалах алдаа: "+error.message);currentGroup=data;renderCurrentGroup();toast("Тохиргоо хадгалагдлаа.");}
 async function logoutUser(){await supabaseClient.auth.signOut();currentUser=currentProfile=currentGroup=currentMembership=null;currentRole=null;showLoggedOut();}
 function showLoggedOut(){$("mainApp").classList.add("hidden");$("authScreen").classList.remove("hidden");switchPage("home");}
 async function loadAppData(){
@@ -1226,7 +1261,7 @@ async function loadChildLinkRequests(){
 }
 
 function copyInviteCode(){const code=currentGroup?.invite_code;if(!code)return toast("Урилгын код алга.");navigator.clipboard?.writeText(code);toast("Урилгын код хуулагдлаа: "+code);}
-document.querySelectorAll(".modal").forEach(m=>m.addEventListener("click",e=>{if(e.target===m&&m.id!=="groupSetupModal")m.classList.add("hidden");}));
+document.querySelectorAll(".modal").forEach(m=>m.addEventListener("click",e=>{if(e.target===m)m.classList.add("hidden");}));
 supabaseClient.auth.onAuthStateChange((event)=>{if(event==="SIGNED_OUT")showLoggedOut();});
 document.addEventListener("DOMContentLoaded",()=>{$("expenseDate").value=new Date().toISOString().slice(0,10);bootApp();});
 </script></body></html>
