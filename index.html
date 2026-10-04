@@ -565,18 +565,14 @@ function classCoverHTML(){
         return `
             <div
                 class="class-cover-bg"
-                style="
-                    background-image:url('${url}');
-                "
+                style="background-image:url('${url}')"
             ></div>
 
             <img
                 src="${url}"
                 class="class-cover-image"
                 alt="Ангийн зураг"
-                style="
-                    transform:scale(${scale});
-                "
+                style="transform:scale(${scale})"
             >
 
             ${
@@ -584,10 +580,7 @@ function classCoverHTML(){
                 ? `
                     <button
                         class="cover-edit-btn"
-                        onclick="
-                            event.stopPropagation();
-                            openCoverUpload();
-                        "
+                        onclick="event.stopPropagation();openCoverUpload()"
                     >
                         📷 Зураг тохируулах
                     </button>
@@ -596,30 +589,6 @@ function classCoverHTML(){
             }
         `;
     }
-
-
-    return `
-        <div class="class-cover-empty">
-            🏫
-        </div>
-
-        ${
-            M.role !== "parent"
-                ? `
-                    <button
-                        class="cover-edit-btn"
-                        onclick="
-                            event.stopPropagation();
-                            openCoverUpload();
-                        "
-                    >
-                        📷 Ангийн зураг оруулах
-                    </button>
-                `
-                : ""
-        }
-    `;
-}
 
     return `
         <div class="class-cover-empty">
@@ -643,6 +612,137 @@ function classCoverHTML(){
 
 
 function openCoverUpload(){
+
+    let currentImage = "";
+
+    if(G.cover_image_path){
+
+        const { data } = sb
+            .storage
+            .from("class-covers")
+            .getPublicUrl(G.cover_image_path);
+
+        currentImage = data.publicUrl;
+    }
+
+    const scale =
+        Number(G.cover_image_scale || 1);
+
+    modal(`
+        <h3>Ангийн зураг</h3>
+
+        ${
+            currentImage
+            ? `
+                <div class="cover-preview">
+
+                    <div
+                        id="coverPreviewBg"
+                        class="class-cover-bg"
+                        style="background-image:url('${currentImage}')"
+                    ></div>
+
+                    <img
+                        id="coverPreviewImage"
+                        src="${currentImage}"
+                        style="transform:scale(${scale})"
+                    >
+
+                </div>
+            `
+            : `
+                <div
+                    class="cover-preview"
+                    style="
+                        display:flex;
+                        align-items:center;
+                        justify-content:center;
+                        font-size:45px;
+                    "
+                >
+                    🏫
+                </div>
+            `
+        }
+
+        <div class="field">
+
+            <label>
+                Шинэ зураг сонгох
+            </label>
+
+            <input
+                id="classCoverFile"
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onchange="previewNewCover(this)"
+            >
+
+        </div>
+
+        <div class="cover-scale-box">
+
+            <label>
+                Зургийн хэмжээ
+            </label>
+
+            <div class="cover-scale-row">
+
+                <span>−</span>
+
+                <input
+                    id="coverScale"
+                    type="range"
+                    min="0.7"
+                    max="1.8"
+                    step="0.05"
+                    value="${scale}"
+                    oninput="updateCoverScale(this.value)"
+                >
+
+                <span>＋</span>
+
+            </div>
+
+            <div
+                id="coverScaleText"
+                class="muted"
+                style="
+                    text-align:center;
+                    margin-top:5px;
+                "
+            >
+                ${Math.round(scale * 100)}%
+            </div>
+
+        </div>
+
+        <button
+            class="btn primary"
+            style="width:100%"
+            onclick="saveClassCover()"
+        >
+            Хадгалах
+        </button>
+
+        ${
+            G.cover_image_path
+            ? `
+                <button
+                    class="btn danger"
+                    style="
+                        width:100%;
+                        margin-top:8px;
+                    "
+                    onclick="removeClassCover()"
+                >
+                    Зураг устгах
+                </button>
+            `
+            : ""
+        }
+    `);
+}
 function previewNewCover(input){
 
     const file =
