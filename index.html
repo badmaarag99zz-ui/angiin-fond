@@ -605,6 +605,25 @@ h4{
 .section-label{
     font-size:14px !important;
 }
+ /* ===== MOBILE NAV 3 + 3 ===== */
+
+@media(max-width:500px){
+
+    #nav{
+        display:grid !important;
+        grid-template-columns:repeat(3, 1fr) !important;
+        gap:5px !important;
+        overflow:visible !important;
+    }
+
+    #nav .btn{
+        width:100% !important;
+        min-width:0 !important;
+        font-size:13px !important;
+        padding:10px 4px !important;
+        min-height:42px !important;
+    }
+}
 </style></head><body>
 <div id="toast" class="toast hidden"></div>
 <section id="auth" class="wrap" style="max-width:480px;padding-top:8vh"><div class="card"><h1>Ангийн фонд</h1><p class="muted">Анги, бүлгийн сангийн ил тод бүртгэл.</p><div class="tabs"><button class="btn primary" onclick="authTab('login')">Нэвтрэх</button><button class="btn soft" onclick="authTab('register')">Бүртгүүлэх</button></div><div id="loginBox"><div class="field"><label>Email</label><input id="le" type="email"></div><div class="field"><label>Нууц үг</label><input id="lp" type="password"></div><button class="btn primary" onclick="login()">Нэвтрэх</button></div><div id="registerBox" class="hidden"><div class="field"><label>Нэр</label><input id="rn"></div><div class="field"><label>Email</label><input id="re" type="email"></div><div class="field"><label>Нууц үг</label><input id="rp" type="password"></div><button class="btn primary" onclick="register()">Бүртгүүлэх</button></div></div></section>
