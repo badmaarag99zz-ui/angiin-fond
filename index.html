@@ -315,6 +315,51 @@ h4 {
 .btn {
     font-size: 14px;
 }
+ /* ===== CLASS COVER IMAGE ===== */
+
+.hero-ill{
+    position: relative;
+    height: 150px;
+    overflow: hidden;
+    background: linear-gradient(135deg,#dff8e9,#d9efff);
+}
+
+.class-cover-image{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.class-cover-empty{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+}
+
+.cover-edit-btn{
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+
+    border: none;
+    border-radius: 10px;
+
+    padding: 8px 12px;
+
+    background: rgba(255,255,255,.92);
+    color: #087b50;
+
+    font-size: 12px;
+    font-weight: 800;
+
+    cursor: pointer;
+
+    box-shadow: 0 3px 10px rgba(0,0,0,.12);
+}
 </style></head><body>
 <div id="toast" class="toast hidden"></div>
 <section id="auth" class="wrap" style="max-width:480px;padding-top:8vh"><div class="card"><h1>Ангийн фонд</h1><p class="muted">Анги, бүлгийн сангийн ил тод бүртгэл.</p><div class="tabs"><button class="btn primary" onclick="authTab('login')">Нэвтрэх</button><button class="btn soft" onclick="authTab('register')">Бүртгүүлэх</button></div><div id="loginBox"><div class="field"><label>Email</label><input id="le" type="email"></div><div class="field"><label>Нууц үг</label><input id="lp" type="password"></div><button class="btn primary" onclick="login()">Нэвтрэх</button></div><div id="registerBox" class="hidden"><div class="field"><label>Нэр</label><input id="rn"></div><div class="field"><label>Email</label><input id="re" type="email"></div><div class="field"><label>Нууц үг</label><input id="rp" type="password"></div><button class="btn primary" onclick="register()">Бүртгүүлэх</button></div></div></section>
@@ -418,14 +463,255 @@ function filterChildren(mode='all'){
   el.classList.toggle('hidden',!ok);
  });
 }
+function classCoverHTML(){
 
+    if(G.cover_image_path){
+
+        const { data } = sb
+            .storage
+            .from("class-covers")
+            .getPublicUrl(G.cover_image_path);
+
+        return `
+            <img
+                src="${data.publicUrl}"
+                class="class-cover-image"
+                alt="Ангийн зураг"
+            >
+
+            ${
+                M.role !== "parent"
+                ? `
+                    <button
+                        class="cover-edit-btn"
+                        onclick="event.stopPropagation();openCoverUpload()"
+                    >
+                        📷 Зураг солих
+                    </button>
+                `
+                : ""
+            }
+        `;
+    }
+
+    return `
+        <div class="class-cover-empty">
+            🏫
+        </div>
+
+        ${
+            M.role !== "parent"
+            ? `
+                <button
+                    class="cover-edit-btn"
+                    onclick="event.stopPropagation();openCoverUpload()"
+                >
+                    📷 Ангийн зураг оруулах
+                </button>
+            `
+            : ""
+        }
+    `;
+}
+
+
+function openCoverUpload(){
+
+    modal(`
+        <h3>Ангийн зураг</h3>
+
+        <p class="muted">
+            Ангийн хамт олны зураг эсвэл ангийн cover зураг оруулна уу.
+        </p>
+
+        <div class="field">
+            <label>Зураг сонгох</label>
+
+            <input
+                id="classCoverFile"
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+            >
+        </div>
+
+        <button
+            class="btn primary"
+            style="width:100%"
+            onclick="uploadClassCover()"
+        >
+            Зураг хадгалах
+        </button>
+
+        ${
+            G.cover_image_path
+            ? `
+                <button
+                    class="btn danger"
+                    style="width:100%;margin-top:8px"
+                    onclick="removeClassCover()"
+                >
+                    Зураг устгах
+                </button>
+            `
+            : ""
+        }
+    `);
+}
+
+
+async function uploadClassCover(){
+
+    const input =
+        document.getElementById("classCoverFile");
+
+    const file =
+        input?.files?.[0];
+
+    if(!file){
+        return toast("Зураг сонгоно уу");
+    }
+
+    if(file.size > 5 * 1024 * 1024){
+        return toast("Зураг 5MB-аас бага байна.");
+    }
+
+    try{
+
+        const ext =
+            file.name
+                .split(".")
+                .pop()
+                .toLowerCase();
+
+        const path =
+            `${G.id}/cover-${Date.now()}.${ext}`;
+
+        const { error: uploadError } =
+            await sb
+                .storage
+                .from("class-covers")
+                .upload(
+                    path,
+                    file,
+                    {
+                        cacheControl: "3600",
+                        upsert: false
+                    }
+                );
+
+        if(uploadError){
+            throw uploadError;
+        }
+
+
+        /* Хуучин зураг байвал устгана */
+
+        if(G.cover_image_path){
+
+            await sb
+                .storage
+                .from("class-covers")
+                .remove([
+                    G.cover_image_path
+                ]);
+        }
+
+
+        /* Group дээр шинэ path хадгална */
+
+        const { data, error } =
+            await sb
+                .from("af_groups")
+                .update({
+                    cover_image_path: path
+                })
+                .eq("id", G.id)
+                .select()
+                .single();
+
+        if(error){
+            throw error;
+        }
+
+        G = data;
+
+        closeModal();
+
+        home();
+
+        toast("Ангийн зураг хадгалагдлаа");
+
+    }
+    catch(e){
+
+        console.error(e);
+
+        toast(
+            e.message ||
+            "Зураг хадгалахад алдаа гарлаа"
+        );
+    }
+}
+
+
+async function removeClassCover(){
+
+    if(!G.cover_image_path){
+        return;
+    }
+
+    try{
+
+        const oldPath =
+            G.cover_image_path;
+
+        const { error } =
+            await sb
+                .from("af_groups")
+                .update({
+                    cover_image_path: null
+                })
+                .eq("id", G.id);
+
+        if(error){
+            throw error;
+        }
+
+        await sb
+            .storage
+            .from("class-covers")
+            .remove([
+                oldPath
+            ]);
+
+        G.cover_image_path = null;
+
+        closeModal();
+
+        home();
+
+        toast("Ангийн зураг устгагдлаа");
+
+    }
+    catch(e){
+
+        console.error(e);
+
+        toast(
+            e.message ||
+            "Зураг устгахад алдаа гарлаа"
+        );
+    }
+}
 function home(){
  let total=DATA.funds.reduce((a,f)=>a+fstats(f).paid,0),ex=DATA.funds.reduce((a,f)=>a+fstats(f).exp,0);
  let paidKids=DATA.children.filter(c=>childStatus(c.id)[0]==='Төлсөн').length,unpaid=Math.max(0,DATA.children.length-paidKids);
  let mf=DATA.funds.find(f=>f.status==='active'&&f.kind==='monthly')||DATA.funds.find(f=>f.status==='active');
  let ms=mf?fstats(mf):{paid:0,balance:0,paidCount:0,count:0},pct=ms.count?Math.round(ms.paidCount/ms.count*100):0;
  $('home').innerHTML=`
- <div class="hero-class"><div class="hero-ill">🧑‍🎓 👩‍🎓</div><div class="hero-body"><div class="row between"><div><b>${esc(G.group_name)} ангийн фонд</b><div class="muted">Хамтдаа хүүхдүүдийнхээ төлөө 💚</div></div></div></div></div>
+ <div class="hero-class"><div class="hero-ill">
+    ${classCoverHTML()}
+</div><div class="hero-body"><div class="row between"><div><b>${esc(G.group_name)} ангийн фонд</b><div class="muted">Хамтдаа хүүхдүүдийнхээ төлөө 💚</div></div></div></div></div>
  <div class="grid">
   <div class="card"><div class="statnum" style="color:#147ce5">${DATA.children.length}</div><div class="statlabel">Хүүхэд</div></div>
   <div class="card"><div class="statnum" style="color:#7357df">${DATA.funds.filter(f=>f.status==='active').length}</div><div class="statlabel">Фонд</div></div>
