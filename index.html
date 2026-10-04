@@ -1003,6 +1003,46 @@ h4{
 #accessBanner .muted{
     font-size:12px !important;
 }
+ /* ===== ACCESS STATUS UNDER ROLE ===== */
+
+.workspace-head{
+    position:relative !important;
+    min-height:88px !important;
+    padding-right:120px !important;
+}
+
+#role{
+    position:absolute !important;
+    right:12px !important;
+    top:10px !important;
+}
+
+#accessBanner{
+    position:absolute !important;
+    right:12px !important;
+    top:43px !important;
+
+    width:auto !important;
+    margin:0 !important;
+    padding:0 !important;
+
+    background:transparent !important;
+    border:0 !important;
+    box-shadow:none !important;
+
+    text-align:right !important;
+}
+
+#accessBanner b{
+    display:block !important;
+    font-size:12px !important;
+    line-height:1.2 !important;
+}
+
+#accessBanner .muted{
+    font-size:11px !important;
+    line-height:1.2 !important;
+}
 </style></head><body>
 <div id="toast" class="toast hidden"></div>
 <section id="auth" class="wrap" style="max-width:480px;padding-top:8vh"><div class="card"><h1>Ангийн фонд</h1><p class="muted">Анги, бүлгийн сангийн ил тод бүртгэл.</p><div class="tabs"><button class="btn primary" onclick="authTab('login')">Нэвтрэх</button><button class="btn soft" onclick="authTab('register')">Бүртгүүлэх</button></div><div id="loginBox"><div class="field"><label>Email</label><input id="le" type="email"></div><div class="field"><label>Нууц үг</label><input id="lp" type="password"></div><button class="btn primary" onclick="login()">Нэвтрэх</button></div><div id="registerBox" class="hidden"><div class="field"><label>Нэр</label><input id="rn"></div><div class="field"><label>Email</label><input id="re" type="email"></div><div class="field"><label>Нууц үг</label><input id="rp" type="password"></div><button class="btn primary" onclick="register()">Бүртгүүлэх</button></div></div></section>
@@ -1024,8 +1064,9 @@ h4{
   <div class="workspace-head row between">
     <div><span class="link" onclick="backGroups()">← Миний анги / бүлгүүд</span><h2 id="gTitle"></h2><div id="gSub" class="muted"></div></div>
     <span id="role" class="pill"></span>
-  </div>
-  <div id="accessBanner" class="card"></div><div class="tabs" id="nav"><button class="btn primary" onclick="tab('home',this)">Нүүр</button><button class="btn soft admin" onclick="tab('children',this)">Хүүхдүүд</button><button class="btn soft" onclick="tab('funds',this)">Фонд</button><button class="btn soft" onclick="tab('payments',this)">Төлөлт</button><button class="btn soft" onclick="tab('report',this)">Тайлан</button><button class="btn soft admin" onclick="tab('settings',this)">Тохиргоо</button></div>
+ <div id="accessBanner" class="card"></div>
+</div>
+<div class="tabs" id="nav"><button class="btn primary" onclick="tab('home',this)">Нүүр</button><button class="btn soft admin" onclick="tab('children',this)">Хүүхдүүд</button><button class="btn soft" onclick="tab('funds',this)">Фонд</button><button class="btn soft" onclick="tab('payments',this)">Төлөлт</button><button class="btn soft" onclick="tab('report',this)">Тайлан</button><button class="btn soft admin" onclick="tab('settings',this)">Тохиргоо</button></div>
 <div id="home" class="page"></div><div id="children" class="page hidden"></div><div id="funds" class="page hidden"></div><div id="payments" class="page hidden"></div><div id="report" class="page hidden"></div><div id="settings" class="page hidden"></div></div></div></section><div id="modal" class="modal hidden" onclick="if(event.target===this)closeModal()"><div id="modalBody" class="modalbox"></div></div>
 <script>
 const SUPABASE_URL="https://fjvjtujwnbsonycgxuuu.supabase.co";const SUPABASE_KEY="sb_publishable_0QwVZZJsw_J0iHTov07o5A_ykK11Uai";const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
