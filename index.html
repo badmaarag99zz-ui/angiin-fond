@@ -659,10 +659,37 @@ h4{
         font-weight:900 !important;
     }
 }
+ /* ===== APP LOGO ===== */
+
+.brand::before{
+    display:none !important;
+}
+
+.brand{
+    display:flex !important;
+    align-items:center !important;
+    gap:9px !important;
+}
+
+.brand-logo{
+    width:42px;
+    height:42px;
+
+    object-fit:cover;
+
+    border-radius:12px;
+
+    flex-shrink:0;
+
+    box-shadow:0 2px 7px rgba(0,0,0,.10);
+}
 </style></head><body>
 <div id="toast" class="toast hidden"></div>
 <section id="auth" class="wrap" style="max-width:480px;padding-top:8vh"><div class="card"><h1>Ангийн фонд</h1><p class="muted">Анги, бүлгийн сангийн ил тод бүртгэл.</p><div class="tabs"><button class="btn primary" onclick="authTab('login')">Нэвтрэх</button><button class="btn soft" onclick="authTab('register')">Бүртгүүлэх</button></div><div id="loginBox"><div class="field"><label>Email</label><input id="le" type="email"></div><div class="field"><label>Нууц үг</label><input id="lp" type="password"></div><button class="btn primary" onclick="login()">Нэвтрэх</button></div><div id="registerBox" class="hidden"><div class="field"><label>Нэр</label><input id="rn"></div><div class="field"><label>Email</label><input id="re" type="email"></div><div class="field"><label>Нууц үг</label><input id="rp" type="password"></div><button class="btn primary" onclick="register()">Бүртгүүлэх</button></div></div></section>
-<section id="app" class="hidden"><div class="top"><div class="wrap"><div class="brand">Ангийн фонд</div><button class="btn soft" onclick="logout()">Гарах</button></div></div><div class="wrap">
+<section id="app" class="hidden"><div class="top"><div class="wrap"><div class="brand">
+    <img src="angiin-fond-logo.png" class="brand-logo" alt="Ангийн фонд">
+    Ангийн фонд
+</div><button class="btn soft" onclick="logout()">Гарах</button></div></div><div class="wrap">
 <div id="groupsView">
   <div class="groups-hero">
     <div id="friendlyGreeting" style="font-size:25px;font-weight:950;letter-spacing:-.7px;margin-bottom:4px;padding-right:78px">Сайн байна уу 👋</div>
