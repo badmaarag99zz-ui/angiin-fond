@@ -1054,7 +1054,96 @@ h4{
         maxlength="8"
         placeholder="99112233"
     >
-</div><div class="field"><label>Нууц үг</label><input id="lp" type="password"></div><button class="btn primary" onclick="login()">Нэвтрэх</button></div><div id="registerBox" class="hidden"><div class="field"><label>Нэр</label><input id="rn"></div><div class="field"><label>Email</label><input id="re" type="email"></div><div class="field"><label>Нууц үг</label><input id="rp" type="password"></div><button class="btn primary" onclick="register()">Бүртгүүлэх</button></div></div></section>
+</div><div class="field"><label>Нууц үг</label><input id="lp" type="password"></div><button class="btn primary" onclick="login()">Нэвтрэх</button></div><div id="registerBox" class="hidden">
+
+    <div id="registerForm">
+
+        <div class="field">
+            <label>Овог нэр</label>
+            <input
+                id="rn"
+                type="text"
+                placeholder="Овог нэр"
+            >
+        </div>
+
+        <div class="field">
+            <label>Утасны дугаар</label>
+            <input
+                id="rpPhone"
+                type="tel"
+                inputmode="numeric"
+                maxlength="8"
+                placeholder="99112233"
+            >
+        </div>
+
+        <div class="field">
+            <label>Нууц үг</label>
+            <input
+                id="rp"
+                type="password"
+                minlength="6"
+                placeholder="6-аас дээш тэмдэгт"
+            >
+        </div>
+
+        <button
+            id="registerStartBtn"
+            class="btn primary"
+            style="width:100%"
+            onclick="startPhoneRegistration()"
+        >
+            Утас баталгаажуулах
+        </button>
+
+    </div>
+
+    <div id="verifyBox" class="hidden">
+
+        <div class="card" style="background:#f0fff6">
+
+            <b>📱 Утас баталгаажуулах</b>
+
+            <p
+                id="verifyInstruction"
+                class="muted"
+                style="margin-bottom:8px"
+            ></p>
+
+            <div
+                id="verifyCode"
+                style="
+                    font-size:28px;
+                    font-weight:950;
+                    letter-spacing:4px;
+                    text-align:center;
+                    padding:12px;
+                "
+            ></div>
+
+        </div>
+
+        <button
+            id="verifyCheckBtn"
+            class="btn primary"
+            style="width:100%;margin-top:10px"
+            onclick="finishPhoneRegistration()"
+        >
+            Баталгаажуулсан — шалгах
+        </button>
+
+        <button
+            class="btn soft"
+            style="width:100%;margin-top:8px"
+            onclick="cancelPhoneRegistration()"
+        >
+            ← Буцах
+        </button>
+
+    </div>
+
+</div></div></section>
 <section id="app" class="hidden"><div class="top"><div class="wrap"><div class="brand">
     <img src="angiin-fond-logo.png" class="brand-logo" alt="Ангийн фонд">
     Ангийн фонд
@@ -1080,7 +1169,316 @@ h4{
 <script>
 const SUPABASE_URL="https://fjvjtujwnbsonycgxuuu.supabase.co";const SUPABASE_KEY="sb_publishable_0QwVZZJsw_J0iHTov07o5A_ykK11Uai";const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 let U=null,G=null,M=null,DATA={};const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const money=n=>new Intl.NumberFormat('mn-MN').format(Number(n||0))+'₮';function toast(s){$('toast').textContent=s;$('toast').classList.remove('hidden');setTimeout(()=>$('toast').classList.add('hidden'),2500)}function modal(h){$('modalBody').innerHTML=h;$('modal').classList.remove('hidden')}function closeModal(){$('modal').classList.add('hidden')}function ay(){let d=new Date(),y=d.getFullYear();return d.getMonth()>=8?`${y}–${y+1}`:`${y-1}–${y}`}
-function authTab(x){$('loginBox').classList.toggle('hidden',x!=='login');$('registerBox').classList.toggle('hidden',x!=='register')}async function register(){let n=$('rn').value.trim(),e=$('re').value.trim(),p=$('rp').value;if(!n||!e||p.length<6)return toast('Мэдээллээ бүрэн оруулна уу');let{data,error}=await sb.auth.signUp({email:e,password:p,options:{data:{full_name:n}}});if(error)return toast(error.message);toast(data.session?'Бүртгэгдлээ':'Email баталгаажуулна уу');if(data.session)boot()}async function login(){
+function authTab(x){$('loginBox').classList.toggle('hidden',x!=='login');$('registerBox').classList.toggle('hidden',x!=='register')}let PHONE_VERIFY_SESSION = null;
+let PHONE_REGISTER_DATA = null;
+
+async function startPhoneRegistration(){
+
+    const fullName =
+        $('rn').value.trim();
+
+    const phone =
+        $('rpPhone').value.trim();
+
+    const password =
+        $('rp').value;
+
+    if(!fullName){
+        return toast('Овог нэрээ оруулна уу');
+    }
+
+    if(!/^\d{8}$/.test(phone)){
+        return toast(
+            '8 оронтой утасны дугаараа оруулна уу'
+        );
+    }
+
+    if(!password || password.length < 6){
+        return toast(
+            'Нууц үг хамгийн багадаа 6 тэмдэгт байна'
+        );
+    }
+
+    const btn =
+        $('registerStartBtn');
+
+    btn.disabled = true;
+    btn.textContent =
+        'Түр хүлээнэ үү...';
+
+    try{
+
+        const response = await fetch(
+            SUPABASE_URL +
+            '/functions/v1/verify-start',
+            {
+                method:'POST',
+
+                headers:{
+                    'Content-Type':
+                        'application/json',
+
+                    'apikey':
+                        SUPABASE_KEY,
+
+                    'Authorization':
+                        'Bearer ' +
+                        SUPABASE_KEY
+                },
+
+                body:JSON.stringify({
+                    phone:phone
+                })
+            }
+        );
+
+        const result =
+            await response.json();
+
+        if(
+            !response.ok ||
+            !result.success
+        ){
+            throw new Error(
+                result.error ||
+                'Баталгаажуулалт эхлүүлж чадсангүй'
+            );
+        }
+
+        const session =
+            result.session;
+
+        PHONE_VERIFY_SESSION =
+            session.sessionId;
+
+        PHONE_REGISTER_DATA = {
+            fullName,
+            phone,
+            password
+        };
+
+        $('registerForm')
+            .classList.add('hidden');
+
+        $('verifyBox')
+            .classList.remove('hidden');
+
+        $('verifyInstruction')
+            .textContent =
+                session.displayInstruction ||
+                `${phone} дугаараасаа ${session.shortcode} дугаарт доорх кодыг SMS-ээр илгээнэ үү.`;
+
+        $('verifyCode')
+            .textContent =
+                session.text || '';
+
+        toast(
+            'SMS илгээсний дараа шалгах товчийг дарна уу'
+        );
+
+    }catch(error){
+
+        console.error(error);
+
+        toast(
+            error.message ||
+            'Алдаа гарлаа'
+        );
+
+    }finally{
+
+        btn.disabled = false;
+
+        btn.textContent =
+            'Утас баталгаажуулах';
+    }
+}
+
+
+async function finishPhoneRegistration(){
+
+    if(
+        !PHONE_VERIFY_SESSION ||
+        !PHONE_REGISTER_DATA
+    ){
+        return toast(
+            'Баталгаажуулалтаа дахин эхлүүлнэ үү'
+        );
+    }
+
+    const btn =
+        $('verifyCheckBtn');
+
+    btn.disabled = true;
+
+    btn.textContent =
+        'Шалгаж байна...';
+
+    try{
+
+        // =========================
+        // VERIFY STATUS
+        // =========================
+
+        const checkResponse =
+            await fetch(
+                SUPABASE_URL +
+                '/functions/v1/verify-check',
+                {
+                    method:'POST',
+
+                    headers:{
+                        'Content-Type':
+                            'application/json',
+
+                        'apikey':
+                            SUPABASE_KEY,
+
+                        'Authorization':
+                            'Bearer ' +
+                            SUPABASE_KEY
+                    },
+
+                    body:JSON.stringify({
+                        sessionId:
+                            PHONE_VERIFY_SESSION
+                    })
+                }
+            );
+
+        const check =
+            await checkResponse.json();
+
+        if(
+            !checkResponse.ok ||
+            !check.success
+        ){
+            throw new Error(
+                check.error ||
+                'Баталгаажуулалт шалгаж чадсангүй'
+            );
+        }
+
+        if(
+            check.session?.sessionStatus
+            !== 'VERIFIED'
+        ){
+            return toast(
+                'SMS баталгаажуулалт хараахан дуусаагүй байна'
+            );
+        }
+
+        // =========================
+        // CREATE ACCOUNT
+        // =========================
+
+        const regResponse =
+            await fetch(
+                SUPABASE_URL +
+                '/functions/v1/phone-register',
+                {
+                    method:'POST',
+
+                    headers:{
+                        'Content-Type':
+                            'application/json',
+
+                        'apikey':
+                            SUPABASE_KEY,
+
+                        'Authorization':
+                            'Bearer ' +
+                            SUPABASE_KEY
+                    },
+
+                    body:JSON.stringify({
+                        sessionId:
+                            PHONE_VERIFY_SESSION,
+
+                        phone:
+                            PHONE_REGISTER_DATA.phone,
+
+                        password:
+                            PHONE_REGISTER_DATA.password,
+
+                        fullName:
+                            PHONE_REGISTER_DATA.fullName
+                    })
+                }
+            );
+
+        const reg =
+            await regResponse.json();
+
+        if(
+            !regResponse.ok ||
+            !reg.success
+        ){
+            throw new Error(
+                reg.error ||
+                'Бүртгэл үүсгэж чадсангүй'
+            );
+        }
+
+        // =========================
+        // AUTO LOGIN
+        // =========================
+
+        const internalEmail =
+            `976${PHONE_REGISTER_DATA.phone}@auth.angiin-fond.local`;
+
+        const {
+            error:loginError
+        } =
+        await sb.auth.signInWithPassword({
+            email:internalEmail,
+            password:
+                PHONE_REGISTER_DATA.password
+        });
+
+        if(loginError){
+            throw loginError;
+        }
+
+        PHONE_VERIFY_SESSION = null;
+        PHONE_REGISTER_DATA = null;
+
+        toast(
+            'Бүртгэл амжилттай 🎉'
+        );
+
+        await boot();
+
+    }catch(error){
+
+        console.error(error);
+
+        toast(
+            error.message ||
+            'Алдаа гарлаа'
+        );
+
+    }finally{
+
+        btn.disabled = false;
+
+        btn.textContent =
+            'Баталгаажуулсан — шалгах';
+    }
+}
+
+
+function cancelPhoneRegistration(){
+
+    PHONE_VERIFY_SESSION = null;
+    PHONE_REGISTER_DATA = null;
+
+    $('verifyBox')
+        .classList.add('hidden');
+
+    $('registerForm')
+        .classList.remove('hidden');
+}async function login(){
 
     const phone = $('le').value.trim();
     const password = $('lp').value;
