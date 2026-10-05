@@ -1093,14 +1093,22 @@ function authTab(x){$('loginBox').classList.toggle('hidden',x!=='login');$('regi
         return toast('Нууц үгээ оруулна уу');
     }
 
-    const { error } = await sb.auth.signInWithPassword({
-        phone: '+976' + phone,
-        password: password
-    });
+    // Хэрэглэгч утсаа оруулна.
+    // Дотроо Supabase auth email болгон хөрвүүлнэ.
+    const internalEmail =
+        `976${phone}@auth.angiin-fond.local`;
+
+    const { error } =
+        await sb.auth.signInWithPassword({
+            email: internalEmail,
+            password: password
+        });
 
     if(error){
-        console.error(error);
-        return toast('Утасны дугаар эсвэл нууц үг буруу байна');
+        console.error('Login error:', error);
+        return toast(
+            'Утасны дугаар эсвэл нууц үг буруу байна'
+        );
     }
 
     await boot();
