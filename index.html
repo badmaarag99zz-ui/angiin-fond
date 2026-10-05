@@ -1045,7 +1045,16 @@ h4{
 }
 </style></head><body>
 <div id="toast" class="toast hidden"></div>
-<section id="auth" class="wrap" style="max-width:480px;padding-top:8vh"><div class="card"><h1>Ангийн фонд</h1><p class="muted">Анги, бүлгийн сангийн ил тод бүртгэл.</p><div class="tabs"><button class="btn primary" onclick="authTab('login')">Нэвтрэх</button><button class="btn soft" onclick="authTab('register')">Бүртгүүлэх</button></div><div id="loginBox"><div class="field"><label>Email</label><input id="le" type="email"></div><div class="field"><label>Нууц үг</label><input id="lp" type="password"></div><button class="btn primary" onclick="login()">Нэвтрэх</button></div><div id="registerBox" class="hidden"><div class="field"><label>Нэр</label><input id="rn"></div><div class="field"><label>Email</label><input id="re" type="email"></div><div class="field"><label>Нууц үг</label><input id="rp" type="password"></div><button class="btn primary" onclick="register()">Бүртгүүлэх</button></div></div></section>
+<section id="auth" class="wrap" style="max-width:480px;padding-top:8vh"><div class="card"><h1>Ангийн фонд</h1><p class="muted">Анги, бүлгийн сангийн ил тод бүртгэл.</p><div class="tabs"><button class="btn primary" onclick="authTab('login')">Нэвтрэх</button><button class="btn soft" onclick="authTab('register')">Бүртгүүлэх</button></div><div id="loginBox"><div class="field">
+    <label>Утасны дугаар</label>
+    <input
+        id="le"
+        type="tel"
+        inputmode="numeric"
+        maxlength="8"
+        placeholder="99112233"
+    >
+</div><div class="field"><label>Нууц үг</label><input id="lp" type="password"></div><button class="btn primary" onclick="login()">Нэвтрэх</button></div><div id="registerBox" class="hidden"><div class="field"><label>Нэр</label><input id="rn"></div><div class="field"><label>Email</label><input id="re" type="email"></div><div class="field"><label>Нууц үг</label><input id="rp" type="password"></div><button class="btn primary" onclick="register()">Бүртгүүлэх</button></div></div></section>
 <section id="app" class="hidden"><div class="top"><div class="wrap"><div class="brand">
     <img src="angiin-fond-logo.png" class="brand-logo" alt="Ангийн фонд">
     Ангийн фонд
@@ -1071,7 +1080,31 @@ h4{
 <script>
 const SUPABASE_URL="https://fjvjtujwnbsonycgxuuu.supabase.co";const SUPABASE_KEY="sb_publishable_0QwVZZJsw_J0iHTov07o5A_ykK11Uai";const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 let U=null,G=null,M=null,DATA={};const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const money=n=>new Intl.NumberFormat('mn-MN').format(Number(n||0))+'₮';function toast(s){$('toast').textContent=s;$('toast').classList.remove('hidden');setTimeout(()=>$('toast').classList.add('hidden'),2500)}function modal(h){$('modalBody').innerHTML=h;$('modal').classList.remove('hidden')}function closeModal(){$('modal').classList.add('hidden')}function ay(){let d=new Date(),y=d.getFullYear();return d.getMonth()>=8?`${y}–${y+1}`:`${y-1}–${y}`}
-function authTab(x){$('loginBox').classList.toggle('hidden',x!=='login');$('registerBox').classList.toggle('hidden',x!=='register')}async function register(){let n=$('rn').value.trim(),e=$('re').value.trim(),p=$('rp').value;if(!n||!e||p.length<6)return toast('Мэдээллээ бүрэн оруулна уу');let{data,error}=await sb.auth.signUp({email:e,password:p,options:{data:{full_name:n}}});if(error)return toast(error.message);toast(data.session?'Бүртгэгдлээ':'Email баталгаажуулна уу');if(data.session)boot()}async function login(){let{error}=await sb.auth.signInWithPassword({email:$('le').value.trim(),password:$('lp').value});if(error)return toast(error.message);boot()}async function logout(){await sb.auth.signOut();location.reload()}
+function authTab(x){$('loginBox').classList.toggle('hidden',x!=='login');$('registerBox').classList.toggle('hidden',x!=='register')}async function register(){let n=$('rn').value.trim(),e=$('re').value.trim(),p=$('rp').value;if(!n||!e||p.length<6)return toast('Мэдээллээ бүрэн оруулна уу');let{data,error}=await sb.auth.signUp({email:e,password:p,options:{data:{full_name:n}}});if(error)return toast(error.message);toast(data.session?'Бүртгэгдлээ':'Email баталгаажуулна уу');if(data.session)boot()}async function login(){
+
+    const phone = $('le').value.trim();
+    const password = $('lp').value;
+
+    if(!/^\d{8}$/.test(phone)){
+        return toast('8 оронтой утасны дугаараа оруулна уу');
+    }
+
+    if(!password){
+        return toast('Нууц үгээ оруулна уу');
+    }
+
+    const { error } = await sb.auth.signInWithPassword({
+        phone: '+976' + phone,
+        password: password
+    });
+
+    if(error){
+        console.error(error);
+        return toast('Утасны дугаар эсвэл нууц үг буруу байна');
+    }
+
+    await boot();
+}async function logout(){await sb.auth.signOut();location.reload()}
 async function boot(){
 
     let { data:{session} } = await sb.auth.getSession();
