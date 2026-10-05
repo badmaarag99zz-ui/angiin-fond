@@ -1822,7 +1822,36 @@ function settings(){
  <div class="settings-item" onclick="funds()"><div class="settings-ico" style="background:#f4edff">⚙️</div><div style="flex:1"><b>Фондын тохиргоо</b></div><b>›</b></div>
  <div class="settings-item" onclick="ownerTransferInfo()"><div class="settings-ico" style="background:#fff0ef">👤</div><div style="flex:1"><b>Админ солих</b></div><b>›</b></div>
  <div class="settings-item" onclick="closeGroupInfo()" style="color:#e23d44"><div class="settings-ico" style="background:#fff0ef">🗑️</div><div style="flex:1"><b>Ангийг хаах</b></div><b>›</b></div></div>
- <div class="card"><b>🔗 Урилгын код</b><div class="money">${esc(G.invite_code)}</div><button class="btn soft" onclick="navigator.clipboard.writeText('${esc(G.invite_code)}');toast('Код хуулагдлаа')">Код хуулах</button></div>`;
+ <div class="card">
+    <b>🔗 Ангид урих</b>
+
+    <div class="money">${esc(G.invite_code)}</div>
+
+    <div class="row" style="margin-top:10px">
+        <button class="btn soft"
+            onclick="navigator.clipboard.writeText('${esc(G.invite_code)}');toast('Код хуулагдлаа')">
+            Код хуулах
+        </button>
+
+        <button class="btn primary"
+            onclick="copyInviteLink()">
+            🔗 Урилгын линк хуулах
+        </button>
+    </div>
+</div>`;
+}
+ function copyInviteLink(){
+    if(!G?.invite_code) return toast('Урилгын код олдсонгүй');
+
+    const link =
+        location.origin +
+        location.pathname +
+        '?invite=' +
+        encodeURIComponent(G.invite_code);
+
+    navigator.clipboard.writeText(link);
+
+    toast('Урилгын линк хуулагдлаа 🔗');
 }
 function settingsInfo(){modal(`<h3>Ангийн мэдээлэл</h3><div class="field"><label>Байгууллага</label><input value="${esc(G.institution_name)}" readonly></div><div class="field"><label>Анги / бүлэг</label><input value="${esc(G.group_name)}" readonly></div><div class="field"><label>Админы нэр</label><input id="an" value="${esc(G.admin_name||'')}"></div><div class="field"><label>Утас</label><input id="ap" maxlength="8" value="${esc(G.admin_phone||'')}"></div><div class="field"><label>Үүрэг</label><input id="at" value="${esc(G.admin_title||'')}"></div><button class="btn primary" style="width:100%" onclick="saveSettings()">Хадгалах</button>`)}
 function settingsBank(){modal(`<h3>Фондын дансны мэдээлэл</h3><div class="field"><label>Банк</label><input id="bn" value="${esc(G.bank_name||'')}"></div><div class="field"><label>Данс</label><input id="ba" value="${esc(G.bank_account||'')}"></div><div class="field"><label>Данс эзэмшигч</label><input id="bh" value="${esc(G.bank_holder||'')}"></div><button class="btn primary" style="width:100%" onclick="saveBank()">Хадгалах</button>`)}
