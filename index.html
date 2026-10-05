@@ -1130,7 +1130,19 @@ function childPaidStats(cid){
 function childStatus(cid){
  let s=childPaidStats(cid);if(!s.total)return['—',''];if(s.remaining===0)return['Төлсөн','status-paid'];if(s.paid>0)return['Хэсэгчилсэн','status-part'];return['Төлөөгүй','status-unpaid'];
 }
-function maskPhone(p){p=String(p||'');return p.length===8?p.slice(0,4)+'****':p}
+function maskPhone(p){
+    p = String(p || '');
+
+    // Эзэмшигч болон админ бүтэн дугаар харна
+    if(M && (M.role === 'owner' || M.role === 'admin')){
+        return p;
+    }
+
+    // Эцэг эхэд масктай
+    return p.length === 8
+        ? p.slice(0,4) + '****'
+        : p;
+}
 function childDetail(id){
  let c=DATA.children.find(x=>x.id===id);if(!c)return;let cs=DATA.contacts.filter(x=>x.child_id===id),st=childPaidStats(id);
  let funds=DATA.fc.filter(x=>x.child_id===id).map(fc=>{let f=DATA.funds.find(x=>x.id===fc.fund_id),p=approvedPaid(fc.fund_id,id);return f?`<div class="item row between"><div><b>${esc(f.title)}</b><div class="muted">${f.due_date}</div></div><span class="pill ${p>=Number(fc.target_amount)?'ok':p?'warn':'bad'}">${money(p)} / ${money(fc.target_amount)}</span></div>`:''}).join('');
