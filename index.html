@@ -1054,7 +1054,13 @@ h4{
         maxlength="8"
         placeholder="99112233"
     >
-</div><div class="field"><label>Нууц үг</label><input id="lp" type="password"></div><button class="btn primary" onclick="login()">Нэвтрэх</button></div><div id="registerBox" class="hidden">
+</div><div class="field"><label>Нууц үг</label><input id="lp" type="password"></div><button class="btn primary" onclick="login()">Нэвтрэх</button> <button
+    class="btn soft"
+    style="width:100%;margin-top:8px"
+    onclick="openForgotPassword()"
+>
+    Нууц үгээ мартсан?
+</button></div><div id="registerBox" class="hidden">
 
     <div id="registerForm">
 
@@ -2314,6 +2320,31 @@ function settings(){
  <div class="settings-item" onclick="funds()"><div class="settings-ico" style="background:#f4edff">⚙️</div><div style="flex:1"><b>Фондын тохиргоо</b></div><b>›</b></div>
  <div class="settings-item" onclick="ownerTransferInfo()"><div class="settings-ico" style="background:#fff0ef">👤</div><div style="flex:1"><b>Админ солих</b></div><b>›</b></div>
  <div class="settings-item" onclick="closeGroupInfo()" style="color:#e23d44"><div class="settings-ico" style="background:#fff0ef">🗑️</div><div style="flex:1"><b>Ангийг хаах</b></div><b>›</b></div></div>
+<div class="card">
+    <b>👤 Миний бүртгэл</b>
+
+    <div
+        class="settings-item"
+        onclick="openChangePassword()"
+    >
+        <div class="settings-ico">🔒</div>
+        <div style="flex:1">
+            <b>Нууц үг солих</b>
+        </div>
+        <b>›</b>
+    </div>
+
+    <div
+        class="settings-item"
+        onclick="openChangePhone()"
+    >
+        <div class="settings-ico">📱</div>
+        <div style="flex:1">
+            <b>Утасны дугаар солих</b>
+        </div>
+        <b>›</b>
+    </div>
+</div>
  <div class="card">
     <b>🔗 Ангид урих</b>
 
@@ -2351,5 +2382,569 @@ async function saveBank(){let row={bank_name:$('bn').value.trim(),bank_account:$
 function ownerTransferInfo(){modal(`<h3>Админ солих</h3><p class="muted">Ownership шилжүүлэлт backend-д бэлэн. Шинэ админ эхлээд өөрийн аккаунтаар тухайн ангид гишүүн болсон байх шаардлагатай. Дараагийн production алхамд гишүүдээс сонгодог selector холбоно.</p><button class="btn soft" style="width:100%" onclick="closeModal()">Ойлголоо</button>`)}
 function closeGroupInfo(){modal(`<h3 style="color:#e23d44">Ангийг хаах</h3><p class="muted">v1 дээр өгөгдөл санамсаргүй устахаас хамгаалж анги устгах үйлдлийг хаалттай үлдээсэн. Фонд бүрийг хааж, тайлангаа хадгална.</p><button class="btn soft" style="width:100%" onclick="closeModal()">Буцах</button>`)}
 async function saveSettings(){let row={admin_name:$('an').value.trim(),admin_phone:$('ap').value.trim(),admin_title:$('at').value.trim()};let{data,error}=await sb.from('af_groups').update(row).eq('id',G.id).select().single();if(error)return toast(error.message);G=data;closeModal();toast('Хадгалагдлаа')}
-sb.auth.onAuthStateChange((e,s)=>{if(e==='SIGNED_OUT')location.reload()});document.addEventListener('DOMContentLoaded',boot);
+let ACCOUNT_VERIFY_SESSION = null;
+let ACCOUNT_VERIFY_PHONE = null;
+
+/* =========================================
+   VERIFY START HELPER
+========================================= */
+
+async function startVerifyForPhone(phone){
+
+    const response = await fetch(
+        SUPABASE_URL + '/functions/v1/verify-start',
+        {
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json',
+                'apikey':SUPABASE_KEY,
+                'Authorization':'Bearer ' + SUPABASE_KEY
+            },
+            body:JSON.stringify({ phone })
+        }
+    );
+
+    const result = await response.json();
+
+    if(!response.ok || !result.success){
+        throw new Error(
+            result.error ||
+            'Баталгаажуулалт эхлүүлж чадсангүй'
+        );
+    }
+
+    return result.session;
+}
+
+
+/* =========================================
+   FORGOT PASSWORD
+========================================= */
+
+function openForgotPassword(){
+
+    modal(`
+        <h3>Нууц үг сэргээх</h3>
+
+        <p class="muted">
+            Бүртгэлтэй утасны дугаараа Verify.mn-ээр баталгаажуулна.
+        </p>
+
+        <div id="forgotStep1">
+
+            <div class="field">
+                <label>Утасны дугаар</label>
+                <input
+                    id="forgotPhone"
+                    type="tel"
+                    inputmode="numeric"
+                    maxlength="8"
+                    placeholder="99112233"
+                >
+            </div>
+
+            <button
+                class="btn primary"
+                style="width:100%"
+                onclick="startForgotVerify()"
+            >
+                Утас баталгаажуулах
+            </button>
+
+        </div>
+
+        <div id="forgotStep2" class="hidden"></div>
+    `);
+}
+
+
+async function startForgotVerify(){
+
+    const phone =
+        $('forgotPhone').value.trim();
+
+    if(!/^\d{8}$/.test(phone)){
+        return toast('8 оронтой утас оруулна уу');
+    }
+
+    try{
+
+        const s =
+            await startVerifyForPhone(phone);
+
+        ACCOUNT_VERIFY_SESSION =
+            s.sessionId;
+
+        ACCOUNT_VERIFY_PHONE =
+            phone;
+
+        $('forgotStep1')
+            .classList.add('hidden');
+
+        $('forgotStep2')
+            .classList.remove('hidden');
+
+        $('forgotStep2').innerHTML = `
+            <div class="card" style="background:#f0fff6">
+                <b>📱 SMS баталгаажуулалт</b>
+
+                <p class="muted">
+                    ${esc(
+                        s.displayInstruction ||
+                        `${phone} дугаараасаа ${s.shortcode || '144773'} дугаарт доорх кодыг илгээнэ үү.`
+                    )}
+                </p>
+
+                <div style="
+                    font-size:28px;
+                    font-weight:950;
+                    text-align:center;
+                    letter-spacing:4px;
+                ">
+                    ${esc(s.text || '')}
+                </div>
+            </div>
+
+            <button
+                class="btn primary"
+                style="width:100%"
+                onclick="forgotVerified()"
+            >
+                Баталгаажуулсан — шалгах
+            </button>
+        `;
+
+    }catch(e){
+        toast(e.message);
+    }
+}
+
+
+async function forgotVerified(){
+
+    try{
+
+        const { data, error } =
+            await sb.functions.invoke(
+                'verify-check',
+                {
+                    body:{
+                        sessionId:
+                            ACCOUNT_VERIFY_SESSION
+                    }
+                }
+            );
+
+        if(error) throw error;
+
+        if(
+            data?.session?.sessionStatus
+            !== 'VERIFIED'
+        ){
+            return toast(
+                'SMS баталгаажуулалт дуусаагүй байна'
+            );
+        }
+
+        $('forgotStep2').innerHTML = `
+            <div class="field">
+                <label>Шинэ нууц үг</label>
+                <input
+                    id="forgotNew1"
+                    type="password"
+                    minlength="6"
+                >
+            </div>
+
+            <div class="field">
+                <label>Шинэ нууц үг давтах</label>
+                <input
+                    id="forgotNew2"
+                    type="password"
+                    minlength="6"
+                >
+            </div>
+
+            <button
+                class="btn primary"
+                style="width:100%"
+                onclick="saveForgotPassword()"
+            >
+                Шинэ нууц үг хадгалах
+            </button>
+        `;
+
+    }catch(e){
+        toast(e.message || 'Шалгаж чадсангүй');
+    }
+}
+
+
+async function saveForgotPassword(){
+
+    const p1 = $('forgotNew1').value;
+    const p2 = $('forgotNew2').value;
+
+    if(p1.length < 6){
+        return toast(
+            'Нууц үг хамгийн багадаа 6 тэмдэгт байна'
+        );
+    }
+
+    if(p1 !== p2){
+        return toast(
+            'Нууц үг таарахгүй байна'
+        );
+    }
+
+    try{
+
+        const { data, error } =
+            await sb.functions.invoke(
+                'phone-reset-password',
+                {
+                    body:{
+                        sessionId:
+                            ACCOUNT_VERIFY_SESSION,
+                        phone:
+                            ACCOUNT_VERIFY_PHONE,
+                        newPassword:p1
+                    }
+                }
+            );
+
+        if(error) throw error;
+        if(!data?.success){
+            throw new Error(data?.error);
+        }
+
+        ACCOUNT_VERIFY_SESSION = null;
+        ACCOUNT_VERIFY_PHONE = null;
+
+        closeModal();
+
+        toast('Нууц үг шинэчлэгдлээ 🔒');
+
+    }catch(e){
+        toast(
+            e.message ||
+            'Нууц үг шинэчилж чадсангүй'
+        );
+    }
+}
+
+
+/* =========================================
+   LOGGED-IN PASSWORD CHANGE
+========================================= */
+
+function openChangePassword(){
+
+    modal(`
+        <h3>Нууц үг солих</h3>
+
+        <div class="field">
+            <label>Одоогийн нууц үг</label>
+            <input id="oldPassword" type="password">
+        </div>
+
+        <div class="field">
+            <label>Шинэ нууц үг</label>
+            <input id="newPassword1" type="password">
+        </div>
+
+        <div class="field">
+            <label>Шинэ нууц үг давтах</label>
+            <input id="newPassword2" type="password">
+        </div>
+
+        <button
+            class="btn primary"
+            style="width:100%"
+            onclick="saveChangedPassword()"
+        >
+            Нууц үг солих
+        </button>
+    `);
+}
+
+
+async function saveChangedPassword(){
+
+    const oldPass =
+        $('oldPassword').value;
+
+    const p1 =
+        $('newPassword1').value;
+
+    const p2 =
+        $('newPassword2').value;
+
+    if(!oldPass){
+        return toast(
+            'Одоогийн нууц үгээ оруулна уу'
+        );
+    }
+
+    if(p1.length < 6){
+        return toast(
+            'Шинэ нууц үг хамгийн багадаа 6 тэмдэгт байна'
+        );
+    }
+
+    if(p1 !== p2){
+        return toast(
+            'Шинэ нууц үг таарахгүй байна'
+        );
+    }
+
+    try{
+
+        const email = U.email;
+
+        const {
+            error:checkError
+        } =
+        await sb.auth.signInWithPassword({
+            email,
+            password:oldPass
+        });
+
+        if(checkError){
+            return toast(
+                'Одоогийн нууц үг буруу байна'
+            );
+        }
+
+        const {
+            error:updateError
+        } =
+        await sb.auth.updateUser({
+            password:p1
+        });
+
+        if(updateError) throw updateError;
+
+        closeModal();
+
+        toast('Нууц үг солигдлоо 🔒');
+
+    }catch(e){
+        toast(
+            e.message ||
+            'Нууц үг сольж чадсангүй'
+        );
+    }
+}
+
+
+/* =========================================
+   CHANGE PHONE
+========================================= */
+
+function openChangePhone(){
+
+    const currentPhone =
+        String(
+            U?.user_metadata?.verified_phone ||
+            ''
+        );
+
+    modal(`
+        <h3>Утасны дугаар солих</h3>
+
+        <p class="muted">
+            Одоогийн дугаар:
+            <b>${esc(currentPhone || '—')}</b>
+        </p>
+
+        <div id="changePhoneStep1">
+
+            <div class="field">
+                <label>Шинэ утасны дугаар</label>
+                <input
+                    id="newPhone"
+                    type="tel"
+                    inputmode="numeric"
+                    maxlength="8"
+                    placeholder="99112233"
+                >
+            </div>
+
+            <button
+                class="btn primary"
+                style="width:100%"
+                onclick="startChangePhone()"
+            >
+                Шинэ дугаар баталгаажуулах
+            </button>
+
+        </div>
+
+        <div
+            id="changePhoneStep2"
+            class="hidden"
+        ></div>
+    `);
+}
+
+
+async function startChangePhone(){
+
+    const phone =
+        $('newPhone').value.trim();
+
+    if(!/^\d{8}$/.test(phone)){
+        return toast(
+            '8 оронтой утас оруулна уу'
+        );
+    }
+
+    if(
+        phone ===
+        String(
+            U?.user_metadata?.verified_phone ||
+            ''
+        )
+    ){
+        return toast(
+            'Одоогийн дугаартай ижил байна'
+        );
+    }
+
+    try{
+
+        const s =
+            await startVerifyForPhone(phone);
+
+        ACCOUNT_VERIFY_SESSION =
+            s.sessionId;
+
+        ACCOUNT_VERIFY_PHONE =
+            phone;
+
+        $('changePhoneStep1')
+            .classList.add('hidden');
+
+        $('changePhoneStep2')
+            .classList.remove('hidden');
+
+        $('changePhoneStep2').innerHTML = `
+            <div class="card" style="background:#f0fff6">
+
+                <b>📱 Шинэ дугаар баталгаажуулах</b>
+
+                <p class="muted">
+                    ${esc(
+                        s.displayInstruction ||
+                        `${phone} дугаараасаа ${s.shortcode || '144773'} дугаарт доорх кодыг илгээнэ үү.`
+                    )}
+                </p>
+
+                <div style="
+                    font-size:28px;
+                    font-weight:950;
+                    text-align:center;
+                    letter-spacing:4px;
+                ">
+                    ${esc(s.text || '')}
+                </div>
+
+            </div>
+
+            <button
+                class="btn primary"
+                style="width:100%"
+                onclick="finishChangePhone()"
+            >
+                Баталгаажуулсан — дугаар солих
+            </button>
+        `;
+
+    }catch(e){
+        toast(e.message);
+    }
+}
+
+
+async function finishChangePhone(){
+
+    try{
+
+        const {
+            data:{session}
+        } =
+        await sb.auth.getSession();
+
+        if(!session){
+            throw new Error(
+                'Нэвтрэх эрх дууссан байна'
+            );
+        }
+
+        const response =
+            await fetch(
+                SUPABASE_URL +
+                '/functions/v1/change-phone',
+                {
+                    method:'POST',
+
+                    headers:{
+                        'Content-Type':
+                            'application/json',
+
+                        'apikey':
+                            SUPABASE_KEY,
+
+                        'Authorization':
+                            'Bearer ' +
+                            session.access_token
+                    },
+
+                    body:JSON.stringify({
+                        sessionId:
+                            ACCOUNT_VERIFY_SESSION,
+                        newPhone:
+                            ACCOUNT_VERIFY_PHONE
+                    })
+                }
+            );
+
+        const result =
+            await response.json();
+
+        if(
+            !response.ok ||
+            !result.success
+        ){
+            throw new Error(
+                result.error ||
+                'Дугаар сольж чадсангүй'
+            );
+        }
+
+        ACCOUNT_VERIFY_SESSION = null;
+        ACCOUNT_VERIFY_PHONE = null;
+
+        /*
+         Email identity өөрчлөгдсөн тул
+         хуучин session-оос гаргана.
+        */
+        await sb.auth.signOut();
+
+        alert(
+            'Утасны дугаар амжилттай солигдлоо. Шинэ дугаараараа дахин нэвтэрнэ үү.'
+        );
+
+        location.reload();
+
+    }catch(e){
+
+        toast(
+            e.message ||
+            'Дугаар сольж чадсангүй'
+        );
+    }
+}
+ sb.auth.onAuthStateChange((e,s)=>{if(e==='SIGNED_OUT')location.reload()});document.addEventListener('DOMContentLoaded',boot);
 </script></body></html>
