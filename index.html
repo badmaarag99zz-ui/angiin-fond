@@ -1151,6 +1151,46 @@ h4{
         radial-gradient(circle at 84% 22%, #fff 0 5%, transparent 6%),
         linear-gradient(160deg,#9ddcff,#c8f3d5 62%,#fff0b7) !important;
 }
+ /* ===== AUTH LOGIN / REGISTER TABS ===== */
+
+#auth .tabs{
+    display:grid !important;
+    grid-template-columns:1fr 1fr !important;
+
+    padding:4px !important;
+    margin-top:14px !important;
+    margin-bottom:10px !important;
+
+    background:#edf5f2 !important;
+    border:1px solid #dcebe5 !important;
+    border-radius:14px !important;
+    gap:4px !important;
+}
+
+#auth .tabs .btn{
+    width:100% !important;
+    min-height:42px !important;
+
+    padding:9px 8px !important;
+    border-radius:11px !important;
+
+    box-shadow:none !important;
+    border:0 !important;
+
+    font-size:14px !important;
+    font-weight:900 !important;
+}
+
+#auth .tabs .btn.primary{
+    background:#0ca66f !important;
+    color:#fff !important;
+    box-shadow:0 3px 10px rgba(12,166,111,.18) !important;
+}
+
+#auth .tabs .btn.soft{
+    background:transparent !important;
+    color:#087b50 !important;
+}
 </style></head><body>
 <div id="toast" class="toast hidden"></div>
 <section id="auth" class="wrap" style="max-width:480px;padding-top:8vh"><div class="card"><h1 class="auth-title">
