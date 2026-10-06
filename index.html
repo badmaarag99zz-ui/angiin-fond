@@ -1588,7 +1588,20 @@ window.history.replaceState(
 
 toast('Хүсэлт амжилттай илгээгдлээ 🎉');
 
-await loadGroups();}
+// Урилгын хүсэлт амжилттай илгээгдсэн тул
+// одоогийн аккаунтын session-оос гаргана
+await sb.auth.signOut();
+
+// Одоогийн хэрэглэгчийн мэдээллийг цэвэрлэнэ
+U = null;
+G = null;
+M = null;
+DATA = {};
+
+// Login / Register үндсэн нүүр рүү буцаана
+setTimeout(() => {
+    window.location.href = window.location.pathname;
+}, 800);}
 async function enter(raw){M=JSON.parse(raw);G=M.af_groups;$('groupsView').classList.add('hidden');$('workspace').classList.remove('hidden');$('gTitle').textContent=G.group_name;$('gSub').textContent=G.institution_name+' · '+G.academic_year;$('role').textContent=M.role==='owner'?'Эзэмшигч':M.role==='admin'?'Админ':'Эцэг эх';document.querySelectorAll('.admin').forEach(x=>x.classList.toggle('hidden',M.role==='parent'));await refresh();tab('home',document.querySelector('#nav button'))}function backGroups(){loadGroups()}function tab(id,b){document.querySelectorAll('.page').forEach(x=>x.classList.add('hidden'));$(id).classList.remove('hidden');document.querySelectorAll('#nav button').forEach(x=>{x.classList.remove('primary');x.classList.add('soft')});if(b){b.classList.add('primary');b.classList.remove('soft')}render(id)}
 function hasWrite(){return new Date(G.trial_ends_at)>new Date()||(G.access_ends_at&&new Date(G.access_ends_at)>new Date())}async function refresh(){
  let admin=M.role!=='parent';
