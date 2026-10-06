@@ -1137,19 +1137,29 @@ h4{
     font-weight:950 !important;
     color:#14253b !important;
 }
- /* ===== LOGIN TOP BANNER COMPACT ===== */
+/* ===== LOGIN TOP BANNER FINAL ===== */
 
 #auth > .card::before{
-    min-height:190px !important;
-    height:190px !important;
+    content:"" !important;
 
-    font-size:42px !important;
-    letter-spacing:22px !important;
+    display:block !important;
+
+    width:100% !important;
+    height:190px !important;
+    min-height:190px !important;
 
     background:
-        radial-gradient(circle at 18% 16%, #fff6a8 0 5%, transparent 6%),
-        radial-gradient(circle at 84% 22%, #fff 0 5%, transparent 6%),
-        linear-gradient(160deg,#9ddcff,#c8f3d5 62%,#fff0b7) !important;
+        url("angiin-fond-logo.png") center 28px / 72px 72px no-repeat,
+        radial-gradient(circle at 18% 16%, #fff2a1 0 5%, transparent 5.5%),
+        radial-gradient(circle at 84% 18%, #ffffff 0 5%, transparent 5.5%),
+        linear-gradient(
+            145deg,
+            #9fddff 0%,
+            #bcefdc 58%,
+            #fff1b8 100%
+        ) !important;
+
+    border-radius:0 !important;
 }
  /* ===== AUTH LOGIN / REGISTER TABS ===== */
 
