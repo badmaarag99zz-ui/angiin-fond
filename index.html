@@ -2624,6 +2624,519 @@ body.af-intro-modal-open{overflow:hidden!important}
     font-size:14px !important;
     padding:9px 14px !important;
 }
+ /* =========================================================
+   АНГИЙН ФОНД — LEGAL / CONTACT / FEEDBACK
+========================================================= */
+
+#auth .af-legal-footer{
+    padding:34px 24px 38px;
+
+    text-align:center;
+
+    background:#f8fafc;
+
+    border-top:1px solid #e5ebf1;
+}
+
+
+#auth .af-legal-links{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-wrap:wrap;
+
+    gap:8px;
+
+    margin-bottom:20px;
+}
+
+
+#auth .af-legal-links button{
+    border:0;
+    background:transparent;
+
+    padding:5px 3px;
+
+    color:#53657b;
+
+    font-size:13px !important;
+    font-weight:800;
+
+    cursor:pointer;
+}
+
+
+#auth .af-legal-links button:hover{
+    color:#079b66;
+    text-decoration:underline;
+}
+
+
+#auth .af-legal-links span{
+    color:#c2ccd6;
+
+    font-size:11px !important;
+}
+
+
+#auth .af-legal-copy{
+    color:#8997a8;
+
+    font-size:12px !important;
+    line-height:1.7;
+}
+
+
+#auth .af-legal-copy span{
+    font-size:12px !important;
+}
+
+
+/* =========================================================
+   INFO MODAL
+========================================================= */
+
+.af-info-modal{
+    position:fixed;
+
+    inset:0;
+
+    z-index:20000;
+
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+
+    padding:20px;
+}
+
+
+.af-info-modal.hidden{
+    display:none !important;
+}
+
+
+.af-info-backdrop{
+    position:absolute;
+
+    inset:0;
+
+    background:rgba(15,23,42,.62);
+
+    backdrop-filter:blur(5px);
+}
+
+
+.af-info-box{
+    position:relative;
+
+    z-index:2;
+
+    width:min(680px,100%);
+
+    max-height:88vh;
+
+    display:flex;
+    flex-direction:column;
+
+    background:#fff;
+
+    border-radius:24px;
+
+    overflow:hidden;
+
+    box-shadow:
+        0 30px 90px rgba(15,23,42,.28);
+}
+
+
+.af-info-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    gap:15px;
+
+    padding:18px 20px;
+
+    border-bottom:1px solid #e7edf2;
+
+    background:#fff;
+}
+
+
+.af-info-header > div:first-child{
+    display:flex;
+    align-items:center;
+
+    gap:12px;
+}
+
+
+.af-info-icon{
+    width:46px;
+    height:46px;
+
+    min-width:46px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:14px;
+
+    background:#e9f8f1;
+
+    font-size:22px !important;
+}
+
+
+#afInfoTitle{
+    margin:0;
+
+    color:#17233a;
+
+    font-size:20px !important;
+    font-weight:950;
+}
+
+
+#afInfoSubtitle{
+    margin-top:3px;
+
+    color:#8190a2;
+
+    font-size:12px !important;
+}
+
+
+.af-info-close{
+    width:40px;
+    height:40px;
+
+    min-width:40px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border:0;
+    border-radius:50%;
+
+    background:#f2f5f8;
+
+    color:#66778a;
+
+    font-size:25px !important;
+
+    cursor:pointer;
+}
+
+
+.af-info-content{
+    overflow-y:auto;
+
+    padding:24px;
+
+    color:#53657b;
+
+    font-size:15px !important;
+    line-height:1.8;
+}
+
+
+.af-info-content p{
+    font-size:15px !important;
+    line-height:1.8;
+
+    margin:0 0 17px;
+}
+
+
+.af-info-content h4{
+    margin:26px 0 8px;
+
+    color:#17233a;
+
+    font-size:17px !important;
+    font-weight:950;
+}
+
+
+.af-info-content h4:first-child{
+    margin-top:0;
+}
+
+
+.af-info-content ul{
+    margin:8px 0 18px;
+
+    padding-left:21px;
+}
+
+
+.af-info-content li{
+    margin:7px 0;
+
+    font-size:15px !important;
+    line-height:1.7;
+}
+
+
+.af-info-note{
+    margin:20px 0;
+
+    padding:17px;
+
+    border:1px solid #cbd5ff;
+
+    border-radius:16px;
+
+    background:#eef2ff;
+
+    color:#475569;
+
+    font-size:14px !important;
+    line-height:1.7;
+}
+
+
+.af-info-warning{
+    margin:20px 0;
+
+    padding:17px;
+
+    border:1px solid #bfe8d5;
+
+    border-radius:16px;
+
+    background:#effaf5;
+
+    color:#365e50;
+
+    font-size:14px !important;
+    line-height:1.7;
+}
+
+
+/* =========================================================
+   CONTACT
+========================================================= */
+
+.af-contact-coming{
+    padding:35px 18px;
+
+    text-align:center;
+}
+
+
+.af-contact-coming .ico{
+    margin-bottom:13px;
+
+    font-size:45px !important;
+}
+
+
+.af-contact-coming h4{
+    margin:0 0 9px;
+
+    font-size:21px !important;
+}
+
+
+.af-contact-coming p{
+    max-width:430px;
+
+    margin:auto;
+
+    color:#718096;
+
+    font-size:15px !important;
+}
+
+
+/* =========================================================
+   FEEDBACK
+========================================================= */
+
+.af-feedback-type{
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:8px;
+
+    margin:10px 0 20px;
+}
+
+
+.af-feedback-type button{
+    min-height:44px;
+
+    padding:9px;
+
+    border:1px solid #dce5ee;
+
+    border-radius:12px;
+
+    background:#fff;
+
+    color:#53657b;
+
+    font-size:13px !important;
+    font-weight:850;
+
+    cursor:pointer;
+}
+
+
+.af-feedback-type button.on{
+    border-color:#079b66;
+
+    background:#e7f8f0;
+
+    color:#087b50;
+}
+
+
+.af-feedback-field{
+    margin:16px 0;
+}
+
+
+.af-feedback-field label{
+    display:block;
+
+    margin-bottom:7px;
+
+    color:#405269;
+
+    font-size:13px !important;
+    font-weight:850;
+}
+
+
+.af-feedback-field textarea,
+.af-feedback-field input{
+    width:100%;
+
+    padding:13px 14px;
+
+    border:1px solid #dce5ee;
+
+    border-radius:12px;
+
+    outline:none;
+
+    background:#fff;
+
+    color:#17233a;
+
+    font-size:15px !important;
+}
+
+
+.af-feedback-field textarea{
+    min-height:140px;
+
+    resize:vertical;
+}
+
+
+.af-feedback-field textarea:focus,
+.af-feedback-field input:focus{
+    border-color:#42b88b;
+
+    box-shadow:
+        0 0 0 3px rgba(18,165,111,.10);
+}
+
+
+.af-feedback-send{
+    width:100%;
+
+    min-height:48px;
+
+    margin-top:7px;
+
+    border:0;
+
+    border-radius:13px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #10a86f,
+            #078b5c
+        );
+
+    color:#fff;
+
+    font-size:15px !important;
+    font-weight:900;
+
+    cursor:pointer;
+}
+
+
+.af-feedback-coming{
+    margin-top:13px;
+
+    padding:12px 14px;
+
+    border-radius:12px;
+
+    background:#f5f7fa;
+
+    color:#718096;
+
+    font-size:12px !important;
+    line-height:1.6;
+}
+
+
+@media(max-width:600px){
+
+    .af-info-modal{
+        padding:0;
+    }
+
+
+    .af-info-box{
+        width:100%;
+        height:100%;
+        max-height:none;
+
+        border-radius:0;
+    }
+
+
+    .af-info-content{
+        padding:20px 17px 35px;
+    }
+
+
+    .af-feedback-type{
+        grid-template-columns:1fr 1fr;
+    }
+
+
+    #auth .af-legal-footer{
+        padding:30px 16px 34px;
+    }
+
+
+    #auth .af-legal-links{
+        gap:5px 7px;
+    }
+
+
+    #auth .af-legal-links button{
+        font-size:12px !important;
+    }
+
+}
 </style></head><body>
 <div id="toast" class="toast hidden"></div>
 <section id="auth" class="wrap" style="max-width:480px;padding-top:8vh"><div class="card"><div class="auth-brand-banner">
@@ -3644,7 +4157,87 @@ body.af-intro-modal-open{overflow:hidden!important}
         <b>Ангийн фонд</b>
         <span>Анги, бүлгийн сангийн ил тод бүртгэл.</span>
     </div>
+<!-- =========================================
+     LEGAL / CONTACT / FEEDBACK FOOTER
+========================================= -->
 
+<div class="af-legal-footer">
+
+    <div class="af-legal-links">
+
+        <button type="button" onclick="openAfInfoModal('privacy')">
+            Нууцлалын бодлого
+        </button>
+
+        <span>•</span>
+
+        <button type="button" onclick="openAfInfoModal('terms')">
+            Үйлчилгээний нөхцөл
+        </button>
+
+        <span>•</span>
+
+        <button type="button" onclick="openAfInfoModal('contact')">
+            Холбоо барих
+        </button>
+
+        <span>•</span>
+
+        <button type="button" onclick="openAfInfoModal('feedback')">
+            Санал хүсэлт
+        </button>
+
+    </div>
+
+    <div class="af-legal-copy">
+        © 2026 Ангийн фонд<br>
+        <span>Анги, бүлгийн сангийн ил тод бүртгэл.</span>
+    </div>
+
+</div>
+
+
+<!-- =========================================
+     LEGAL / INFO MODAL
+========================================= -->
+
+<div id="afInfoModal" class="af-info-modal hidden">
+
+    <div class="af-info-backdrop" onclick="closeAfInfoModal()"></div>
+
+    <div class="af-info-box">
+
+        <div class="af-info-header">
+
+            <div>
+                <div id="afInfoIcon" class="af-info-icon">🔐</div>
+
+                <div>
+                    <h3 id="afInfoTitle">
+                        Нууцлалын бодлого
+                    </h3>
+
+                    <div id="afInfoSubtitle">
+                        Ангийн фонд
+                    </div>
+                </div>
+            </div>
+
+            <button
+                type="button"
+                class="af-info-close"
+                onclick="closeAfInfoModal()"
+            >
+                ×
+            </button>
+
+        </div>
+
+        <div id="afInfoContent" class="af-info-content"></div>
+
+    </div>
+
+</div>
 </section>
 
 </section><!-- /#auth --><section id="app" class="hidden"><div class="top"><div class="wrap"><div class="brand">
@@ -10344,4 +10937,626 @@ function goAppIntro(id){
 document.addEventListener('keydown',function(e){
  if(e.key==='Escape'&&document.getElementById('afLandingIntro')?.classList.contains('af-intro-open'))toggleAppIntro();
 });
+ /* =========================================================
+   АНГИЙН ФОНД — LEGAL / CONTACT / FEEDBACK
+========================================================= */
+
+let afFeedbackType = "Санал";
+
+
+function openAfInfoModal(type){
+
+    const modal =
+        document.getElementById("afInfoModal");
+
+    const title =
+        document.getElementById("afInfoTitle");
+
+    const subtitle =
+        document.getElementById("afInfoSubtitle");
+
+    const icon =
+        document.getElementById("afInfoIcon");
+
+    const content =
+        document.getElementById("afInfoContent");
+
+
+    if(!modal || !content) return;
+
+
+    /* =========================================
+       PRIVACY
+    ========================================= */
+
+    if(type === "privacy"){
+
+        icon.textContent = "🔐";
+
+        title.textContent =
+            "Нууцлалын бодлого";
+
+        subtitle.textContent =
+            "Таны болон хүүхдийн мэдээллийг хамгаалах тухай";
+
+
+        content.innerHTML = `
+
+            <h4>1. Нууцлалын тухай</h4>
+
+            <p>
+                “Ангийн фонд” нь анги болон цэцэрлэгийн
+                бүлгийн сангийн бүртгэл, төлөлт, зарлага,
+                тайланг ил тод, ойлгомжтой хөтлөхөд зориулсан
+                цахим хэрэгсэл юм.
+            </p>
+
+            <p>
+                Үйлчилгээг ашиглах явцад хэрэглэгч болон
+                хүүхэдтэй холбоотой тодорхой мэдээлэл
+                бүртгэгдэх боломжтой тул уг мэдээллийг
+                зөвхөн үйлчилгээний үндсэн ажиллагаанд
+                шаардлагатай хэмжээнд ашиглана.
+            </p>
+
+
+            <h4>2. Ямар мэдээлэл бүртгэгдэж болох вэ?</h4>
+
+            <ul>
+                <li>Хэрэглэгчийн баталгаажуулсан утасны дугаар</li>
+                <li>Хүүхдийн нэр</li>
+                <li>Эцэг эх, асран хамгаалагчийн холбоо барих дугаар</li>
+                <li>Анги, бүлэг болон хичээлийн жилийн мэдээлэл</li>
+                <li>Фондын төлөлтийн бүртгэл</li>
+                <li>Төлбөрийн хүсэлт болон баталгаажуулалтын мэдээлэл</li>
+                <li>Төлбөр, зарлагатай холбоотой баримтын зураг</li>
+                <li>Фондын орлого, зарлага, шилжүүлгийн түүх</li>
+            </ul>
+
+
+            <h4>3. Мэдээллийг юунд ашиглах вэ?</h4>
+
+            <p>
+                Бүртгэгдсэн мэдээллийг хэрэглэгчийг таних,
+                тухайн анги/бүлэгтэй холбох, хүүхдийн
+                төлөлтийн бүртгэл хөтлөх, сангийн тайлан
+                гаргах болон үйлчилгээний хэвийн ажиллагааг
+                хангах зорилгоор ашиглана.
+            </p>
+
+
+            <h4>4. Хүүхдийн мэдээллийн нууцлал</h4>
+
+            <div class="af-info-note">
+
+                Эцэг эх хэрэглэгч бусад хүүхдийн
+                хувийн төлөлтийн мэдээлэл, холбоо барих
+                мэдээллийг харах зориулалтгүй.
+
+                <br><br>
+
+                Эцэг эх өөрийн хүүхэдтэй холбоотой мэдээлэл
+                болон анги/бүлгийн нийтэд зориулсан
+                нэгтгэсэн сангийн мэдээллийг харна.
+
+            </div>
+
+
+            <h4>5. Админы хандах эрх</h4>
+
+            <p>
+                Анги, бүлгийн админ нь тухайн анги,
+                бүлгийн сангийн бүртгэлийг удирдах
+                шаардлагын хүрээнд хүүхэд, төлөлт,
+                зарлага болон холбогдох мэдээлэлд
+                хандах боломжтой.
+            </p>
+
+            <p>
+                Админ нь өөрийн хандах эрхээр олж авсан
+                мэдээллийг зориулалтын бусаар ашиглахгүй
+                байх үүрэгтэй.
+            </p>
+
+
+            <h4>6. Баримтын зураг</h4>
+
+            <p>
+                Төлбөр болон зарлагын нотлох баримт нь
+                сангийн бүртгэлийг баталгаажуулах зорилготой.
+                Баримтыг зөвхөн тухайн үйл ажиллагаатай
+                холбоотой эрх бүхий хэрэглэгчид үзэх
+                боломжтой байхаар зохион байгуулна.
+            </p>
+
+
+            <h4>7. Мэдээллийн хамгаалалт</h4>
+
+            <p>
+                Систем нь хэрэглэгчийн эрхийн түвшин,
+                нэвтрэлт болон өгөгдлийн хандалтын
+                хязгаарлалтыг ашиглан мэдээллийг
+                зөвшөөрөлгүй хандалтаас хамгаалахыг зорьдог.
+            </p>
+
+
+            <h4>8. Хэрэглэгчийн хариуцлага</h4>
+
+            <p>
+                Хэрэглэгч өөрийн нэвтрэх мэдээлэл болон
+                нууц үгийн аюулгүй байдлыг хамгаалах
+                үүрэгтэй.
+            </p>
+
+            <p>
+                Бусдын бүртгэлээр зөвшөөрөлгүй нэвтрэх,
+                бусдын хувийн мэдээллийг хуулбарлах,
+                түгээх болон зориулалтын бусаар ашиглахыг
+                хориглоно.
+            </p>
+
+
+            <h4>9. Мэдээлэл засах болон устгуулах</h4>
+
+            <p>
+                Хэрэглэгч өөртэй нь холбоотой буруу
+                мэдээллийг засуулах болон холбогдох
+                мэдээллийн талаар хүсэлт гаргах боломжтой.
+            </p>
+
+            <p>
+                Санхүүгийн бүртгэлийн түүх, баталгаажсан
+                төлөлт, зарлага зэрэг мэдээлэл нь
+                тайлангийн үнэн зөв, мөрдөх боломжийг
+                хадгалах шаардлагаар шууд устгагдахгүй
+                байж болно.
+            </p>
+
+
+            <h4>10. Бодлогын өөрчлөлт</h4>
+
+            <p>
+                Үйлчилгээ хөгжихийн хэрээр энэхүү
+                нууцлалын бодлогод өөрчлөлт орох
+                боломжтой. Шаардлагатай тохиолдолд
+                шинэчилсэн мэдээллийг апп дотор
+                байршуулна.
+            </p>
+
+        `;
+
+    }
+
+
+    /* =========================================
+       TERMS
+    ========================================= */
+
+    else if(type === "terms"){
+
+        icon.textContent = "📄";
+
+        title.textContent =
+            "Үйлчилгээний нөхцөл";
+
+        subtitle.textContent =
+            "Ангийн фонд үйлчилгээг ашиглах нөхцөл";
+
+
+        content.innerHTML = `
+
+            <h4>1. Үйлчилгээний зориулалт</h4>
+
+            <p>
+                “Ангийн фонд” нь ерөнхий боловсролын
+                сургуулийн анги болон цэцэрлэгийн бүлгийн
+                сангийн бүртгэл, төлөлт, зарлага,
+                үлдэгдэл болон тайланг хөтлөхөд
+                зориулсан цахим үйлчилгээ юм.
+            </p>
+
+
+            <div class="af-info-warning">
+
+                <strong>
+                    “Ангийн фонд” нь мөнгө хүлээн авах,
+                    хадгалах, дамжуулах болон шилжүүлэх
+                    төлбөрийн үйлчилгээ биш.
+                </strong>
+
+                <br><br>
+
+                Апп нь бодитоор хийгдсэн төлбөр,
+                зарлага болон сангийн хөдөлгөөнийг
+                бүртгэх, баталгаажуулах, тайлагнах
+                хэрэгсэл юм.
+
+            </div>
+
+
+            <h4>2. Хэрэглэгчийн бүртгэл</h4>
+
+            <p>
+                Хэрэглэгч өөрийн утасны дугаараар
+                бүртгүүлж, шаардлагатай тохиолдолд
+                утасны дугаараа баталгаажуулан
+                үйлчилгээнд нэвтэрнэ.
+            </p>
+
+
+            <h4>3. Анги, бүлгийн админ</h4>
+
+            <p>
+                Анги/бүлгийг үүсгэсэн болон админы
+                эрхтэй хэрэглэгч нь сангийн бүртгэл,
+                хүүхдийн хүсэлт, төлөлтийн баталгаажуулалт,
+                зарлага болон тайланг удирдана.
+            </p>
+
+            <p>
+                Админ оруулсан болон баталгаажуулсан
+                мэдээллийн үнэн зөв байдлыг хариуцна.
+            </p>
+
+
+            <h4>4. Эцэг эх, асран хамгаалагч</h4>
+
+            <p>
+                Эцэг эх, асран хамгаалагч нь өөрийн
+                хүүхэдтэй холбоотой мэдээллийг шалгах,
+                төлбөрийн хүсэлт илгээх болон өөрт
+                зөвшөөрөгдсөн сангийн мэдээллийг
+                харах боломжтой.
+            </p>
+
+
+            <h4>5. Төлбөрийн бүртгэл</h4>
+
+            <p>
+                Эцэг эхийн илгээсэн төлбөрийн мэдээлэл
+                нь админ баталгаажуулсны дараа
+                баталгаажсан төлөлтөд тооцогдоно.
+            </p>
+
+            <p>
+                Админ бодитоор хүлээн авсан төлбөрийг
+                гараар бүртгэх боломжтой.
+            </p>
+
+
+            <h4>6. Зарлага</h4>
+
+            <p>
+                Сангаас гарсан зарлагыг бүртгэхдээ
+                нотлох баримт хавсаргана.
+                Бүртгэлийн үнэн зөв байдлыг тухайн
+                мэдээллийг оруулсан хэрэглэгч хариуцна.
+            </p>
+
+
+            <h4>7. Фонд хаах болон үлдэгдэл</h4>
+
+            <p>
+                Фонд хаагдсан тохиолдолд тухайн
+                фондын түүх хадгалагдана.
+                Үлдэгдлийг өөр фонд руу шилжүүлсэн бол
+                шилжүүлгийн эх үүсвэр, дүн болон
+                чиглэл бүртгэлд хадгалагдана.
+            </p>
+
+
+            <h4>8. Үйлчилгээний эрх</h4>
+
+            <p>
+                Зарим боломжийг ашиглахын тулд
+                тухайн анги/бүлэг хүчинтэй
+                үйлчилгээний эрхтэй байх шаардлагатай
+                байж болно.
+            </p>
+
+            <p>
+                Эрхийн багцын үнэ болон хугацаа нь
+                худалдан авах үед харагдаж буй
+                нөхцөлийн дагуу үйлчилнэ.
+            </p>
+
+
+            <h4>9. Хориотой хэрэглээ</h4>
+
+            <ul>
+                <li>Хуурамч төлбөр, зарлага бүртгэх</li>
+                <li>Бусдын бүртгэлд зөвшөөрөлгүй нэвтрэх</li>
+                <li>Бусдын хувийн мэдээллийг зориулалтын бусаар ашиглах</li>
+                <li>Үйлчилгээний хэвийн ажиллагаанд зориудаар саад учруулах</li>
+                <li>Хууль бус зорилгоор үйлчилгээг ашиглах</li>
+            </ul>
+
+
+            <h4>10. Үйлчилгээний ажиллагаа</h4>
+
+            <p>
+                Системийн шинэчлэлт, техникийн
+                үйлчилгээ, сүлжээ болон гуравдагч
+                талын үйлчилгээний нөхцөлөөс
+                шалтгаалан үйлчилгээ түр хугацаанд
+                тасалдах боломжтой.
+            </p>
+
+
+            <h4>11. Нөхцөлийн өөрчлөлт</h4>
+
+            <p>
+                Үйлчилгээний ажиллагаа болон боломжууд
+                өөрчлөгдөхөд энэхүү нөхцөлийг
+                шинэчлэх боломжтой.
+            </p>
+
+        `;
+
+    }
+
+
+    /* =========================================
+       CONTACT
+    ========================================= */
+
+    else if(type === "contact"){
+
+        icon.textContent = "☎️";
+
+        title.textContent =
+            "Холбоо барих";
+
+        subtitle.textContent =
+            "Ангийн фонд";
+
+
+        content.innerHTML = `
+
+            <div class="af-contact-coming">
+
+                <div class="ico">
+                    📬
+                </div>
+
+                <h4>
+                    Тун удахгүй
+                </h4>
+
+                <p>
+                    Ангийн фондын албан ёсны
+                    холбоо барих утас, и-мэйл болон
+                    бусад сувгууд тун удахгүй
+                    энд нэмэгдэнэ.
+                </p>
+
+            </div>
+
+        `;
+
+    }
+
+
+    /* =========================================
+       FEEDBACK
+    ========================================= */
+
+    else if(type === "feedback"){
+
+        icon.textContent = "💬";
+
+        title.textContent =
+            "Санал хүсэлт";
+
+        subtitle.textContent =
+            "Ангийн фондыг хамтдаа сайжруулъя";
+
+
+        content.innerHTML = `
+
+            <p>
+                Аппын ажиллагаа, дизайн, шинэ боломж
+                эсвэл илэрсэн алдааны талаар санал
+                хүсэлтээ үлдээж болно.
+            </p>
+
+
+            <div class="af-feedback-type">
+
+                <button
+                    type="button"
+                    class="on"
+                    data-feedback-type="Санал"
+                    onclick="selectAfFeedbackType(this)"
+                >
+                    💡 Санал
+                </button>
+
+                <button
+                    type="button"
+                    data-feedback-type="Алдаа"
+                    onclick="selectAfFeedbackType(this)"
+                >
+                    🐞 Алдаа мэдээлэх
+                </button>
+
+                <button
+                    type="button"
+                    data-feedback-type="Сайжруулалт"
+                    onclick="selectAfFeedbackType(this)"
+                >
+                    ✨ Сайжруулах хүсэлт
+                </button>
+
+                <button
+                    type="button"
+                    data-feedback-type="Бусад"
+                    onclick="selectAfFeedbackType(this)"
+                >
+                    💬 Бусад
+                </button>
+
+            </div>
+
+
+            <div class="af-feedback-field">
+
+                <label>
+                    Таны санал хүсэлт *
+                </label>
+
+                <textarea
+                    id="afFeedbackMessage"
+                    maxlength="1500"
+                    placeholder="Санал хүсэлтээ энд бичнэ үү..."
+                ></textarea>
+
+            </div>
+
+
+            <div class="af-feedback-field">
+
+                <label>
+                    Холбоо барих дугаар
+                    <span style="font-weight:500;color:#94a3b8">
+                        (заавал биш)
+                    </span>
+                </label>
+
+                <input
+                    type="tel"
+                    id="afFeedbackPhone"
+                    maxlength="8"
+                    inputmode="numeric"
+                    placeholder="99112233"
+                    oninput="this.value=this.value.replace(/\\D/g,'').slice(0,8)"
+                >
+
+            </div>
+
+
+            <button
+                type="button"
+                class="af-feedback-send"
+                onclick="submitAfFeedback()"
+            >
+                Санал хүсэлт илгээх
+            </button>
+
+
+            <div class="af-feedback-coming">
+                ℹ️ Санал хүсэлт хүлээн авах систем
+                одоогоор бэлтгэгдэж байна.
+                Илгээх боломж тун удахгүй идэвхжинэ.
+            </div>
+
+        `;
+
+    }
+
+
+    modal.classList.remove("hidden");
+
+}
+
+
+function closeAfInfoModal(){
+
+    const modal =
+        document.getElementById("afInfoModal");
+
+    if(modal){
+        modal.classList.add("hidden");
+    }
+
+}
+
+
+/* =========================================
+   FEEDBACK TYPE
+========================================= */
+
+function selectAfFeedbackType(button){
+
+    document
+        .querySelectorAll(
+            ".af-feedback-type button"
+        )
+        .forEach(btn => {
+
+            btn.classList.remove("on");
+
+        });
+
+
+    button.classList.add("on");
+
+
+    afFeedbackType =
+        button.dataset.feedbackType || "Санал";
+
+}
+
+
+/* =========================================
+   FEEDBACK SUBMIT
+   Backend холбоогүй тул fake success хийхгүй.
+========================================= */
+
+function submitAfFeedback(){
+
+    const message =
+        document
+            .getElementById("afFeedbackMessage")
+            ?.value
+            .trim();
+
+
+    if(!message){
+
+        alert(
+            "Санал хүсэлтээ бичнэ үү."
+        );
+
+        return;
+    }
+
+
+    alert(
+        "Санал хүсэлт хүлээн авах систем тун удахгүй идэвхжинэ."
+    );
+
+}
+
+
+/* =========================================
+   ESC → INFO MODAL CLOSE
+========================================= */
+
+document.addEventListener(
+    "keydown",
+    function(event){
+
+        if(event.key !== "Escape"){
+            return;
+        }
+
+
+        const modal =
+            document.getElementById(
+                "afInfoModal"
+            );
+
+
+        if(
+            modal &&
+            !modal.classList.contains("hidden")
+        ){
+
+            closeAfInfoModal();
+
+        }
+
+    }
+);
 </script></body></html>
