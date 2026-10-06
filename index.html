@@ -5717,7 +5717,258 @@ function settingsInfo(){
 }
 function settingsBank(){modal(`<h3>Фондын дансны мэдээлэл</h3><div class="field"><label>Банк</label><input id="bn" value="${esc(G.bank_name||'')}"></div><div class="field"><label>Данс</label><input id="ba" value="${esc(G.bank_account||'')}"></div><div class="field"><label>Данс эзэмшигч</label><input id="bh" value="${esc(G.bank_holder||'')}"></div><button class="btn primary" style="width:100%" onclick="saveBank()">Хадгалах</button>`)}
 async function saveBank(){let row={bank_name:$('bn').value.trim(),bank_account:$('ba').value.trim(),bank_holder:$('bh').value.trim()};let{data,error}=await sb.from('af_groups').update(row).eq('id',G.id).select().single();if(error)return toast(error.message);G=data;closeModal();toast('Данс хадгалагдлаа')}
-function ownerTransferInfo(){modal(`<h3>Админ солих</h3><p class="muted">Ownership шилжүүлэлт backend-д бэлэн. Шинэ админ эхлээд өөрийн аккаунтаар тухайн ангид гишүүн болсон байх шаардлагатай. Дараагийн production алхамд гишүүдээс сонгодог selector холбоно.</p><button class="btn soft" style="width:100%" onclick="closeModal()">Ойлголоо</button>`)}
+async function ownerTransferInfo(){
+
+    if(!G?.id){
+        return toast('Анги сонгогдоогүй байна');
+    }
+
+    if(!isAdmin()){
+        return toast('Зөвхөн админ эрх шилжүүлэх боломжтой');
+    }
+
+    /* ==========================================
+       APPROVED MEMBERS
+    ========================================== */
+
+    const { data: members, error } = await sb
+        .from('af_memberships')
+        .select('user_id, role, status')
+        .eq('group_id', G.id)
+        .eq('status', 'approved')
+        .neq('user_id', U.id);
+
+    if(error){
+        console.error(error);
+        return toast(error.message);
+    }
+
+    if(!members || !members.length){
+
+        modal(`
+            <h3>👤 Админ солих</h3>
+
+            <div style="
+                text-align:center;
+                padding:30px 10px 20px;
+            ">
+
+                <div style="
+                    font-size:46px;
+                    margin-bottom:12px;
+                ">
+                    👥
+                </div>
+
+                <div style="
+                    font-size:17px;
+                    font-weight:800;
+                    color:#1e293b;
+                ">
+                    Шилжүүлэх гишүүн алга
+                </div>
+
+                <div class="muted" style="
+                    margin-top:8px;
+                    line-height:1.5;
+                ">
+                    Админ эрхийг шилжүүлэхийн тулд
+                    тухайн ангид өөр баталгаажсан
+                    эцэг эх бүртгэлтэй байх шаардлагатай.
+                </div>
+
+            </div>
+
+            <button
+                class="btn soft"
+                style="width:100%"
+                onclick="closeModal()"
+            >
+                Хаах
+            </button>
+        `);
+
+        return;
+    }
+
+
+    /* ==========================================
+       CONTACT DATA-ААС НЭР / УТАС ОЛНО
+    ========================================== */
+
+    const options = members.map(member => {
+
+        const contact = (DATA.contacts || []).find(c =>
+            c.user_id === member.user_id
+        );
+
+        let child = null;
+
+        if(contact){
+            child = (DATA.children || []).find(c =>
+                c.id === contact.child_id
+            );
+        }
+
+        const childName =
+            child?.name ||
+            child?.child_name ||
+            'Эцэг эх';
+
+        const phone =
+            contact?.phone || '';
+
+        const maskedPhone = phone
+            ? phone.slice(0,4) + '••••'
+            : 'Утасгүй';
+
+        return `
+            <option value="${member.user_id}">
+                ${esc(childName)}-ийн эцэг эх · ${esc(maskedPhone)}
+            </option>
+        `;
+
+    }).join('');
+
+
+    /* ==========================================
+       MODAL
+    ========================================== */
+
+    modal(`
+        <h3>👤 Админ солих</h3>
+
+        <div style="
+            background:#fff7ed;
+            border:1px solid #fed7aa;
+            border-radius:14px;
+            padding:13px;
+            margin-bottom:16px;
+            line-height:1.5;
+            font-size:13px;
+            color:#9a3412;
+        ">
+            ⚠️ Админ эрх шилжүүлсний дараа
+            таны эрх <b>Эцэг эх</b> болж,
+            сонгосон хэрэглэгч ангийн шинэ
+            <b>Админ</b> болно.
+        </div>
+
+        <div class="field">
+
+            <label>
+                Шинэ админ
+            </label>
+
+            <select id="newAdminUser">
+
+                <option value="">
+                    -- Гишүүн сонгох --
+                </option>
+
+                ${options}
+
+            </select>
+
+        </div>
+
+        <button
+            class="btn primary"
+            style="width:100%;margin-top:8px;"
+            onclick="confirmAdminTransfer()"
+        >
+            Админ эрх шилжүүлэх
+        </button>
+
+        <button
+            class="btn soft"
+            style="width:100%;margin-top:8px;"
+            onclick="closeModal()"
+        >
+            Болих
+        </button>
+    `);
+}
+ async function confirmAdminTransfer(){
+
+    if(!hasWrite()){
+        return toast('Эрх дууссан');
+    }
+
+    const select = $('newAdminUser');
+
+    if(!select){
+        return;
+    }
+
+    const newAdminUserId = select.value;
+
+    if(!newAdminUserId){
+        return toast('Шинэ админ сонгоно уу');
+    }
+
+    const selectedText =
+        select.options[select.selectedIndex]?.text ||
+        'сонгосон хэрэглэгч';
+
+
+    /* ==========================================
+       CONFIRM
+    ========================================== */
+
+    const ok = confirm(
+        `${selectedText}\n\n` +
+        `Энэ хэрэглэгчид ангийн админ эрхийг шилжүүлэх үү?\n\n` +
+        `Шилжүүлсний дараа таны эрх "Эцэг эх" болно.`
+    );
+
+    if(!ok){
+        return;
+    }
+
+
+    /* ==========================================
+       RPC
+    ========================================== */
+
+    const { error } = await sb.rpc(
+        'af_transfer_admin',
+        {
+            p_group_id: G.id,
+            p_new_admin_user_id: newAdminUserId
+        }
+    );
+
+    if(error){
+        console.error(error);
+        return toast(error.message);
+    }
+
+
+    /* ==========================================
+       LOCAL ROLE
+    ========================================== */
+
+    closeModal();
+
+    toast('Админ эрх амжилттай шилжлээ');
+
+
+    /* ==========================================
+       DATA REFRESH
+    ========================================== */
+
+    await refresh();
+
+
+    /* ==========================================
+       MY GROUPS РУУ БУЦНА
+    ========================================== */
+
+    G = null;
+
+    home();
+}
 function closeGroupInfo(){modal(`<h3 style="color:#e23d44">Ангийг хаах</h3><p class="muted">v1 дээр өгөгдөл санамсаргүй устахаас хамгаалж анги устгах үйлдлийг хаалттай үлдээсэн. Фонд бүрийг хааж, тайлангаа хадгална.</p><button class="btn soft" style="width:100%" onclick="closeModal()">Буцах</button>`)}
 async function saveSettings(){let row={admin_name:$('an').value.trim(),admin_phone:$('ap').value.trim(),admin_title:$('at').value.trim()};let{data,error}=await sb.from('af_groups').update(row).eq('id',G.id).select().single();if(error)return toast(error.message);G=data;closeModal();toast('Хадгалагдлаа')}
 let ACCOUNT_VERIFY_SESSION = null;
