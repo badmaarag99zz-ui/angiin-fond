@@ -3167,33 +3167,213 @@ function myChildren(){
     }
 
 
-    // =========================
-    // PARENT
-    // =========================
+ // =========================
+// PARENT
+// =========================
 
-    $('payments').innerHTML = `
-        <div class="row between">
+const myKids = myChildren();
 
-            <h3>
-                Миний төлөлт
-            </h3>
+const myKidIds =
+    myKids.map(
+        child => child.id
+    );
 
-            <button
-                class="btn primary"
-                onclick="payModal()"
-            >
-                Төлөлт хийх
-            </button>
+const myPayments =
+    DATA.payments
+        .filter(
+            payment =>
+                myKidIds.includes(payment.child_id)
+        )
+        .sort(
+            (a, b) =>
+                new Date(b.created_at) -
+                new Date(a.created_at)
+        );
 
-        </div>
 
-        <div class="card muted">
-            Төлөлт нь нэг хүүхэд + нэг хүлээн авах
-            дансаар багцлагдана.
-            Админ банкны гүйлгээг шалгаж батална.
-        </div>
-    `;
-}
+const paymentHistory =
+    myPayments.map(p => {
+
+        const child =
+            DATA.children.find(
+                x => x.id === p.child_id
+            );
+
+        const allocations =
+            p.af_payment_allocations || [];
+
+
+        const fundRows =
+            allocations.map(a => {
+
+                const fund =
+                    DATA.funds.find(
+                        x => x.id === a.fund_id
+                    );
+
+                return `
+                    <div
+                        class="row between"
+                        style="
+                            margin-top:6px;
+                        "
+                    >
+                        <span class="muted">
+                            ${esc(fund?.title || 'Фонд')}
+                        </span>
+
+                        <b>
+                            ${money(a.amount)}
+                        </b>
+                    </div>
+                `;
+
+            }).join('');
+
+
+        let statusHtml = '';
+
+        if(p.status === 'approved'){
+
+            statusHtml = `
+                <span class="pill ok">
+                    ✓ Батлагдсан
+                </span>
+            `;
+
+        }else if(p.status === 'rejected'){
+
+            statusHtml = `
+                <span class="pill bad">
+                    ✕ Татгалзсан
+                </span>
+            `;
+
+        }else{
+
+            statusHtml = `
+                <span class="pill warn">
+                    ⏳ Хүлээгдэж байна
+                </span>
+            `;
+        }
+
+
+        return `
+            <div class="card">
+
+                <div class="row between">
+
+                    <div>
+                        <div class="muted">
+                            ${esc(child?.full_name || '')}
+                        </div>
+
+                        <div
+                            style="
+                                font-size:22px;
+                                font-weight:900;
+                                margin-top:3px;
+                            "
+                        >
+                            ${money(p.total_amount)}
+                        </div>
+                    </div>
+
+                    ${statusHtml}
+
+                </div>
+
+
+                ${
+                    fundRows
+                    ? `
+                        <div
+                            style="
+                                margin-top:10px;
+                                padding-top:8px;
+                                border-top:1px solid #edf2f7;
+                            "
+                        >
+                            ${fundRows}
+                        </div>
+                    `
+                    : ''
+                }
+
+
+                <div
+                    class="muted"
+                    style="margin-top:10px"
+                >
+                    ${
+                        new Date(
+                            p.created_at
+                        ).toLocaleString()
+                    }
+                </div>
+
+
+                ${
+                    p.proof_path
+                    ? `
+                        <button
+                            class="btn soft"
+                            style="
+                                width:100%;
+                                margin-top:10px;
+                            "
+                            onclick="
+                                viewProof(
+                                    '${esc(p.proof_path)}'
+                                )
+                            "
+                        >
+                            🧾 Баримт харах
+                        </button>
+                    `
+                    : ''
+                }
+
+            </div>
+        `;
+
+    }).join('');
+
+
+$('payments').innerHTML = `
+
+    <div class="row between">
+
+        <h3>
+            Миний төлөлт
+        </h3>
+
+        <button
+            class="btn primary"
+            onclick="payModal()"
+        >
+            Төлөлт хийх
+        </button>
+
+    </div>
+
+
+    ${
+        paymentHistory
+        ? `
+            <div style="margin-top:12px">
+                ${paymentHistory}
+            </div>
+        `
+        : `
+            <div class="card muted">
+                Одоогоор төлөлтийн түүх алга.
+            </div>
+        `
+    }
+
+`;
 async function reviewPay(id,status){if(!hasWrite())return toast('Эрх дууссан');let{error}=await sb.rpc('af_approve_payment',{p_id:id,p_status:status});if(error)return toast(error.message);await refresh();payments()}
 function payModal(){
  let kids=myChildren();if(!kids.length)return toast('Таны аккаунттай холбогдсон хүүхэд алга');
