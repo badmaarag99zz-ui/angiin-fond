@@ -2292,12 +2292,7 @@ let paidKids=DATA.children.filter(c=>childStatus(c.id)[0]==='Төлсөн').leng
  <div class="hero-class"><div class="hero-ill">
     ${classCoverHTML()}
 </div><div class="hero-body"><div class="row between"><div><b>${esc(G.group_name)} ангийн фонд</b><div class="muted">Хамтдаа хүүхдүүдийнхээ төлөө 💚</div></div></div></div></div>
- <div class="grid">
-  <div class="card"><div class="statnum" style="color:#147ce5">${DATA.children.length}</div><div class="statlabel">Хүүхэд</div></div>
-  <div class="card"><div class="statnum" style="color:#7357df">${DATA.funds.filter(f=>f.status==='active').length}</div><div class="statlabel">Фонд</div></div>
-  <div class="card"><div class="statnum" style="color:#079b66">${paidKids}</div><div class="statlabel">Төлсөн</div></div>
-  <div class="card"><div class="statnum" style="color:#ef4c55">${unpaid}</div><div class="statlabel">Төлөөгүй</div></div>
- </div>
+
  ${mf?`<div class="card" onclick="fundDetail('${mf.id}')" style="cursor:pointer;background:linear-gradient(135deg,#eafff1,#f8fffb)"><div class="row between"><div><b>📅 ${esc(mf.title)}</b><div class="money">${money(ms.paid)}</div></div><b>›</b></div><div class="progress"><i style="width:${pct}%"></i></div><div class="row between muted" style="margin-top:5px"><span>${pct}%</span><span>${ms.paidCount}/${ms.count} төлсөн</span></div></div>`:''}
  <div class="row between" style="margin-top:12px"><b>Сүүлийн үйлдлүүд</b><span class="link" onclick="tab('report',document.querySelectorAll('#nav button')[4])">Бүгд ›</span></div>
  <div class="card">
