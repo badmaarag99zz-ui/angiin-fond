@@ -2496,100 +2496,73 @@ h4{
     transform:rotate(180deg);
 }
 
-
-/* =========================================================
-   APP INTRO — FULL SCREEN MODAL (FINAL)
-========================================================= */
-#auth .af-about-trigger{
-    padding:28px 24px 34px !important;
-}
-
+/* ===== APP INTRO — URIIN DEWTER STYLE FULL MODAL ===== */
 #auth #afLandingIntro{
-    display:none !important;
-    position:fixed !important;
-    inset:0 !important;
-    z-index:1000 !important;
-    width:min(100%, 500px) !important;
-    max-width:500px !important;
-    height:100dvh !important;
-    margin:0 auto !important;
-    padding:0 !important;
-    overflow-y:auto !important;
-    overscroll-behavior:contain;
-    background:#fff !important;
-    box-shadow:0 0 70px rgba(15,35,55,.28) !important;
+ display:none!important;position:fixed!important;z-index:10000!important;
+ top:16px!important;left:50%!important;transform:translateX(-50%)!important;
+ width:min(960px,calc(100vw - 32px))!important;height:calc(100vh - 32px)!important;
+ margin:0!important;padding:0!important;overflow-y:auto!important;overflow-x:hidden!important;
+ background:#fff!important;border:1px solid #e3eaf1!important;border-radius:28px!important;
+ box-shadow:0 0 0 100vmax rgba(24,39,52,.58),0 24px 70px rgba(15,23,42,.22)!important;
+ color:#53657b!important;scrollbar-width:thin;
 }
-
-#auth #afLandingIntro.af-intro-open{
-    display:block !important;
+#auth #afLandingIntro.af-intro-open{display:block!important}
+body.af-intro-modal-open{overflow:hidden!important}
+#auth .af-modal-head{
+ position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:12px;
+ min-height:88px;padding:15px 24px;background:rgba(255,255,255,.97);
+ border-bottom:1px solid #e5ebf1;backdrop-filter:blur(12px)
 }
-
-#auth .af-modal-topbar{
-    position:sticky;
-    top:0;
-    z-index:20;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:12px;
-    padding:12px 16px;
-    background:rgba(255,255,255,.96);
-    border-bottom:1px solid #e5eee9;
-    backdrop-filter:blur(14px);
-}
-
-#auth .af-modal-topbar-brand{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    min-width:0;
-}
-
-#auth .af-modal-topbar-brand img{
-    width:42px;
-    height:42px;
-    border-radius:12px;
-    object-fit:cover;
-    flex-shrink:0;
-}
-
-#auth .af-modal-topbar-brand b{
-    display:block;
-    color:#10233e;
-    font-size:14px !important;
-    font-weight:950;
-    line-height:1.25;
-}
-
-#auth .af-modal-topbar-brand small{
-    display:block;
-    margin-top:2px;
-    color:#718096;
-    font-size:11px !important;
-}
-
+#auth .af-modal-logo{width:46px;height:46px;min-width:46px;object-fit:cover;border-radius:13px;box-shadow:0 2px 8px rgba(15,23,42,.10)}
+#auth .af-modal-title{flex:1;min-width:0}
+#auth .af-modal-title b{display:block;color:#17233a;font-size:20px!important;font-weight:950;line-height:1.15}
+#auth .af-modal-title span{display:block;margin-top:4px;color:#718096;font-size:12px!important}
 #auth .af-modal-close{
-    width:42px;
-    height:42px;
-    min-width:42px;
-    border:1px solid #dfeae5;
-    border-radius:13px;
-    background:#f4faf7;
-    color:#24473b;
-    font-size:18px !important;
-    font-weight:900;
-    cursor:pointer;
+ width:42px;height:42px;min-width:42px;border:0;border-radius:50%;background:#f3f6f9;
+ color:#72839a;font-size:27px!important;font-weight:300;cursor:pointer;display:grid;place-items:center;line-height:1
 }
-
-#auth #afLandingIntro .af-section:first-of-type{
-    border-top:0;
+#auth .af-modal-tabs{
+ position:sticky;top:88px;z-index:19;display:flex;gap:8px;overflow-x:auto;padding:12px 24px;
+ background:rgba(255,255,255,.97);border-bottom:1px solid #e5ebf1;scrollbar-width:none;backdrop-filter:blur(12px)
 }
-
-@media(max-width:500px){
-    #auth #afLandingIntro{
-        width:100% !important;
-        max-width:none !important;
-    }
+#auth .af-modal-tabs::-webkit-scrollbar{display:none}
+#auth .af-modal-tabs button{
+ flex:0 0 auto;border:1px solid #dce5ee;background:#fff;color:#4f6075;border-radius:999px;
+ padding:8px 13px;font-size:12px!important;font-weight:850;cursor:pointer
+}
+#auth .af-modal-tabs button:first-child{background:#f0f3ff;border-color:#c9d2ff;color:#4650d7}
+#auth #afLandingIntro .af-section{
+ max-width:none!important;padding:34px 36px!important;border-top:0!important;background:#fff!important;text-align:left!important
+}
+#auth #afLandingIntro .af-section+.af-section{border-top:1px solid #edf1f5!important}
+#auth #afLandingIntro .af-intro{padding-top:34px!important}
+#auth #afLandingIntro .af-pill{background:#eef2ff;color:#4650d7}
+#auth #afLandingIntro .af-intro h2{font-size:28px!important;text-align:left!important}
+#auth #afLandingIntro .af-intro h2 span{color:#4650d7}
+#auth #afLandingIntro .af-lead,#auth #afLandingIntro .af-text,#auth #afLandingIntro p{
+ font-size:15px!important;line-height:1.9!important;color:#53657b!important
+}
+#auth #afLandingIntro .af-section-head>span{background:#f2f5ff}
+#auth #afLandingIntro .af-section-head small,#auth #afLandingIntro .af-center-head small,
+#auth #afLandingIntro .af-security>small,#auth #afLandingIntro .af-money-security>small{color:#4650d7}
+#auth #afLandingIntro .af-section-head h3,#auth #afLandingIntro .af-center-head h3,
+#auth #afLandingIntro .af-security h3,#auth #afLandingIntro .af-money-security h3{font-size:21px!important;color:#17233a}
+#auth #afLandingIntro .af-intro-note,#auth #afLandingIntro .af-money-security{
+ background:#eef2ff!important;border:1px solid #cbd5ff!important;color:#4e5d75!important;border-radius:18px!important;padding:20px!important
+}
+#auth #afLandingIntro .af-problem,#auth #afLandingIntro .af-mini-grid>div,#auth #afLandingIntro .af-who-card,
+#auth #afLandingIntro .af-security-grid>div,#auth #afLandingIntro .af-demo-card,#auth #afLandingIntro .af-payment-demo{
+ box-shadow:none!important;border:1px solid #e2e8f0!important;background:#fbfcfe!important
+}
+#auth #afLandingIntro [id^="af-modal-"]{scroll-margin-top:155px}
+@media(max-width:650px){
+ #auth #afLandingIntro{top:0!important;width:100%!important;height:100vh!important;border-radius:0!important;border:0!important}
+ #auth .af-modal-head{min-height:76px;padding:12px 15px}
+ #auth .af-modal-tabs{top:76px;padding:10px 14px}
+ #auth #afLandingIntro .af-section{padding:28px 18px!important}
+ #auth #afLandingIntro .af-problem-grid,#auth #afLandingIntro .af-mini-grid,
+ #auth #afLandingIntro .af-who-grid,#auth #afLandingIntro .af-security-grid{grid-template-columns:1fr!important}
+ #auth #afLandingIntro [id^="af-modal-"]{scroll-margin-top:140px}
 }
 
 </style></head><body>
@@ -2740,21 +2713,25 @@ h4{
     </button>
 
 </div>
-<section class="af-landing" id="afLandingIntro" aria-hidden="true">
+<section class="af-landing" id="afLandingIntro">
 
-    <div class="af-modal-topbar">
-        <div class="af-modal-topbar-brand">
-            <img src="angiin-fond-logo.png" alt="Ангийн фонд">
-            <div>
-                <b>Аппын дэлгэрэнгүй танилцуулга</b>
-                <small>Ангийн фонд</small>
-            </div>
-        </div>
-        <button type="button" class="af-modal-close" onclick="toggleAppIntro(false)" aria-label="Хаах">✕</button>
-    </div>
+<div class="af-modal-head">
+ <img src="angiin-fond-logo.png" class="af-modal-logo" alt="Ангийн фонд">
+ <div class="af-modal-title"><b>Ангийн фонд</b><span>Аппын дэлгэрэнгүй танилцуулга</span></div>
+ <button type="button" class="af-modal-close" onclick="toggleAppIntro()" aria-label="Хаах">×</button>
+</div>
+<div class="af-modal-tabs">
+ <button type="button" onclick="goAppIntro('af-modal-intro')">Танилцуулга</button>
+ <button type="button" onclick="goAppIntro('af-modal-features')">Боломжууд</button>
+ <button type="button" onclick="goAppIntro('af-modal-benefits')">Давуу тал</button>
+ <button type="button" onclick="goAppIntro('af-modal-security')">Аюулгүй байдал</button>
+ <button type="button" onclick="goAppIntro('af-modal-price')">Эрхийн багц</button>
+ <button type="button" onclick="goAppIntro('af-modal-faq')">FAQ</button>
+</div>
+
 
     <!-- INTRO -->
-    <div class="af-section af-intro">
+    <div class="af-section af-intro" id="af-modal-intro">
 
         <div class="af-pill">АНГИЙН ФОНД</div>
 
@@ -2864,7 +2841,7 @@ h4{
 
 
     <!-- FUNDS -->
-    <div class="af-section">
+    <div class="af-section" id="af-modal-features">
 
         <div class="af-section-head">
             <span>💰</span>
@@ -3085,7 +3062,7 @@ h4{
 
 
     <!-- TRANSPARENCY -->
-    <div class="af-section">
+    <div class="af-section" id="af-modal-benefits">
 
         <div class="af-section-head">
             <span>👀</span>
@@ -3116,7 +3093,7 @@ h4{
 
 
     <!-- PRIVACY -->
-    <div class="af-section af-security">
+    <div class="af-section af-security" id="af-modal-security">
 
         <div class="af-security-icon">🔒</div>
 
@@ -3454,7 +3431,7 @@ h4{
 
 
     <!-- PRICE -->
-    <div class="af-section af-price-section">
+    <div class="af-section af-price-section" id="af-modal-price">
 
         <div class="af-center-head">
             <small>ҮНИЙН БАГЦ</small>
@@ -3505,7 +3482,7 @@ h4{
 
 
     <!-- FAQ -->
-    <div class="af-section">
+    <div class="af-section" id="af-modal-faq">
 
         <div class="af-center-head">
             <small>ТҮГЭЭМЭЛ АСУУЛТ</small>
@@ -10293,29 +10270,19 @@ async function finishChangePhone(){
     }
 }
  sb.auth.onAuthStateChange((e,s)=>{if(e==='SIGNED_OUT')location.reload()});document.addEventListener('DOMContentLoaded',boot);
- function toggleAppIntro(forceOpen){
-
-    const intro = document.getElementById('afLandingIntro');
-    const arrow = document.getElementById('afAboutArrow');
-    if(!intro) return;
-
-    const opening = typeof forceOpen === 'boolean'
-        ? forceOpen
-        : !intro.classList.contains('af-intro-open');
-
-    intro.classList.toggle('af-intro-open', opening);
-    arrow?.classList.toggle('open', opening);
-    intro.setAttribute('aria-hidden', opening ? 'false' : 'true');
-    document.body.style.overflow = opening ? 'hidden' : '';
-
-    if(opening){
-        intro.scrollTop = 0;
-    }
+ function toggleAppIntro(){
+ const intro=document.getElementById('afLandingIntro');
+ if(!intro)return;
+ const opening=!intro.classList.contains('af-intro-open');
+ intro.classList.toggle('af-intro-open',opening);
+ document.body.classList.toggle('af-intro-modal-open',opening);
+ if(opening)intro.scrollTop=0;
 }
-
-document.addEventListener('keydown', function(e){
-    if(e.key === 'Escape' && document.getElementById('afLandingIntro')?.classList.contains('af-intro-open')){
-        toggleAppIntro(false);
-    }
+function goAppIntro(id){
+ const target=document.getElementById(id);
+ if(target)target.scrollIntoView({behavior:'smooth',block:'start'});
+}
+document.addEventListener('keydown',function(e){
+ if(e.key==='Escape'&&document.getElementById('afLandingIntro')?.classList.contains('af-intro-open'))toggleAppIntro();
 });
 </script></body></html>
