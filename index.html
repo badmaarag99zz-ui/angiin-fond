@@ -1201,12 +1201,132 @@ h4{
     background:transparent !important;
     color:#087b50 !important;
 }
+ /* =========================================
+   LOGIN BRAND BANNER
+========================================= */
+
+#auth .auth-brand-banner{
+    height:190px;
+    margin:-18px -18px 20px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    padding:25px;
+
+    background:
+        radial-gradient(
+            circle at 18% 18%,
+            #fff1a0 0 20px,
+            transparent 21px
+        ),
+        radial-gradient(
+            circle at 84% 20%,
+            #fff 0 20px,
+            transparent 21px
+        ),
+        linear-gradient(
+            145deg,
+            #9fddff 0%,
+            #bcefdc 58%,
+            #fff1b8 100%
+        );
+}
+
+
+/* LOGO + TEXT */
+
+#auth .auth-brand-main{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:15px;
+
+    margin-top:15px;
+}
+
+
+/* LOGO */
+
+#auth .auth-brand-logo{
+    width:72px;
+    height:72px;
+
+    object-fit:cover;
+
+    border-radius:17px;
+
+    box-shadow:
+        0 6px 18px rgba(15,23,42,.15);
+}
+
+
+/* TITLE */
+
+#auth .auth-brand-name{
+    font-size:27px;
+    line-height:1.15;
+
+    font-weight:950;
+
+    color:#10233e;
+}
+
+
+/* SUBTITLE */
+
+#auth .auth-brand-subtitle{
+    margin-top:7px;
+
+    font-size:12px;
+    line-height:1.4;
+
+    font-weight:600;
+
+    color:#64748b;
+}
+
+
+@media(max-width:600px){
+
+    #auth .auth-brand-banner{
+        height:180px;
+    }
+
+    #auth .auth-brand-logo{
+        width:66px;
+        height:66px;
+    }
+
+    #auth .auth-brand-name{
+        font-size:25px;
+    }
+
+}
 </style></head><body>
 <div id="toast" class="toast hidden"></div>
-<section id="auth" class="wrap" style="max-width:480px;padding-top:8vh"><div class="card"><h1 class="auth-title">
-    <img src="angiin-fond-logo.png" class="auth-logo" alt="Ангийн фонд">
-    <span>Ангийн фонд</span>
-</h1><p class="muted">Анги, бүлгийн сангийн ил тод бүртгэл.</p><div class="tabs"><button class="btn primary" onclick="authTab('login')">Нэвтрэх</button><button class="btn soft" onclick="authTab('register')">Бүртгүүлэх</button></div><div id="loginBox"><div class="field">
+<section id="auth" class="wrap" style="max-width:480px;padding-top:8vh"><div class="card"><div class="auth-brand-banner">
+
+    <div class="auth-brand-main">
+        <img
+            src="angiin-fond-logo.png"
+            class="auth-brand-logo"
+            alt="Ангийн фонд"
+        >
+
+        <div>
+            <div class="auth-brand-name">
+                Ангийн фонд
+            </div>
+
+            <div class="auth-brand-subtitle">
+                Анги, бүлгийн сангийн ил тод бүртгэл.
+            </div>
+        </div>
+    </div>
+
+</div><div class="tabs"><button class="btn primary" onclick="authTab('login')">Нэвтрэх</button><button class="btn soft" onclick="authTab('register')">Бүртгүүлэх</button></div><div id="loginBox"><div class="field">
     <label>Утасны дугаар</label>
     <input
         id="le"
