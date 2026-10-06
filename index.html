@@ -1174,7 +1174,34 @@ h4{
 <div id="home" class="page"></div><div id="children" class="page hidden"></div><div id="funds" class="page hidden"></div><div id="payments" class="page hidden"></div><div id="report" class="page hidden"></div><div id="settings" class="page hidden"></div></div></div></section><div id="modal" class="modal hidden" onclick="if(event.target===this)closeModal()"><div id="modalBody" class="modalbox"></div></div>
 <script>
 const SUPABASE_URL="https://fjvjtujwnbsonycgxuuu.supabase.co";const SUPABASE_KEY="sb_publishable_0QwVZZJsw_J0iHTov07o5A_ykK11Uai";const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-let U=null,G=null,M=null,DATA={};const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const money=n=>new Intl.NumberFormat('mn-MN').format(Number(n||0))+'₮';function toast(s){$('toast').textContent=s;$('toast').classList.remove('hidden');setTimeout(()=>$('toast').classList.add('hidden'),2500)}function modal(h){$('modalBody').innerHTML=h;$('modal').classList.remove('hidden')}function closeModal(){$('modal').classList.add('hidden')}function ay(){let d=new Date(),y=d.getFullYear();return d.getMonth()>=8?`${y}–${y+1}`:`${y-1}–${y}`}
+let U=null,G=null,M=null,DATA={}; let INVITE_CHILD_FLOW = false; const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const money=n=>new Intl.NumberFormat('mn-MN').format(Number(n||0))+'₮';function toast(s){$('toast').textContent=s;$('toast').classList.remove('hidden');setTimeout(()=>$('toast').classList.add('hidden'),2500)}function modal(h){$('modalBody').innerHTML=h;$('modal').classList.remove('hidden')}async function closeModal(){
+
+    $('modal').classList.add('hidden');
+
+    // Хүүхдийн урилгын form-оос хүсэлт илгээхгүйгээр гарсан бол
+    if(INVITE_CHILD_FLOW){
+
+        INVITE_CHILD_FLOW = false;
+
+        // Invite кодыг URL-аас арилгана
+        window.history.replaceState(
+            {},
+            document.title,
+            window.location.pathname
+        );
+
+        // Одоогийн аккаунтаас гарна
+        await sb.auth.signOut();
+
+        U = null;
+        G = null;
+        M = null;
+        DATA = {};
+
+        // Login / Register нүүр рүү буцна
+        window.location.href = window.location.pathname;
+    }
+}function ay(){let d=new Date(),y=d.getFullYear();return d.getMonth()>=8?`${y}–${y+1}`:`${y-1}–${y}`}
 function authTab(x){$('loginBox').classList.toggle('hidden',x!=='login');$('registerBox').classList.toggle('hidden',x!=='register')}let PHONE_VERIFY_SESSION = null;
 let PHONE_REGISTER_DATA = null;
 
@@ -1575,9 +1602,9 @@ async function saveAdminInfo(){
  if(error)return toast(error.message);G=data;closeModal();renderAccess();home();toast('Админы мэдээлэл хадгалагдлаа');
 }
 
-function openJoin(){modal(`<h3>Урилгын код</h3><div class="field"><input id="jc" placeholder="Код"></div><button class="btn primary" onclick="findInvite()">Үргэлжлүүлэх</button>`)}async function findInvite(){let code=$('jc').value.trim();let{data,error}=await sb.rpc('af_find_invite',{p_code:code});if(error||!data?.length)return toast('Код олдсонгүй');let g=data[0];modal(`<h3>${esc(g.institution_name)} — ${esc(g.group_name)}</h3><p class="muted">${esc(g.academic_year)} · Хариуцагч: ${esc(g.admin_name||'—')} ${esc(g.admin_phone||'')}</p><div class="field"><label>Хүүхдийн овог, нэр</label><input id="ch"></div><h4>Үндсэн холбоо барих хүн</h4><div class="field"><input id="n1" placeholder="Нэр"></div><div class="field"><input id="p1" maxlength="8" placeholder="Утас"></div><div class="field"><select id="r1">${rels()}</select></div><h4>Нэмэлт холбоо барих хүн *</h4><div class="field"><input id="n2" placeholder="Нэр"></div><div class="field"><input id="p2" maxlength="8" placeholder="Утас"></div><div class="field"><select id="r2">${rels()}</select></div><button class="btn primary" onclick="submitChild('${esc(code)}')">Хүсэлт илгээх</button>`)}function rels(){return ['Аав','Ээж','Өвөө','Эмээ','Ах','Эгч','Асран хамгаалагч','Бусад'].map(x=>`<option>${x}</option>`).join('')}async function submitChild(code){let a=['ch','n1','p1','n2','p2'].map(x=>$(x).value.trim());if(a.some(x=>!x))return toast('Бүх шаардлагатай мэдээллийг бөглөнө үү');let{error}=await sb.rpc('af_submit_child_request',{p_code:code,p_child:a[0],p_n1:a[1],p_p1:a[2],p_r1:$('r1').value,p_n2:a[3],p_p2:a[4],p_r2:$('r2').value});if(error)return toast(error.message);
+function openJoin(){modal(`<h3>Урилгын код</h3><div class="field"><input id="jc" placeholder="Код"></div><button class="btn primary" onclick="findInvite()">Үргэлжлүүлэх</button>`)}async function findInvite(){let code=$('jc').value.trim();let{data,error}=await sb.rpc('af_find_invite',{p_code:code});if(error||!data?.length)return toast('Код олдсонгүй');let g=data[0]; INVITE_CHILD_FLOW = true;modal(`<h3>${esc(g.institution_name)} — ${esc(g.group_name)}</h3><p class="muted">${esc(g.academic_year)} · Хариуцагч: ${esc(g.admin_name||'—')} ${esc(g.admin_phone||'')}</p><div class="field"><label>Хүүхдийн овог, нэр</label><input id="ch"></div><h4>Үндсэн холбоо барих хүн</h4><div class="field"><input id="n1" placeholder="Нэр"></div><div class="field"><input id="p1" maxlength="8" placeholder="Утас"></div><div class="field"><select id="r1">${rels()}</select></div><h4>Нэмэлт холбоо барих хүн *</h4><div class="field"><input id="n2" placeholder="Нэр"></div><div class="field"><input id="p2" maxlength="8" placeholder="Утас"></div><div class="field"><select id="r2">${rels()}</select></div><button class="btn primary" onclick="submitChild('${esc(code)}')">Хүсэлт илгээх</button>`)}function rels(){return ['Аав','Ээж','Өвөө','Эмээ','Ах','Эгч','Асран хамгаалагч','Бусад'].map(x=>`<option>${x}</option>`).join('')}async function submitChild(code){let a=['ch','n1','p1','n2','p2'].map(x=>$(x).value.trim());if(a.some(x=>!x))return toast('Бүх шаардлагатай мэдээллийг бөглөнө үү');let{error}=await sb.rpc('af_submit_child_request',{p_code:code,p_child:a[0],p_n1:a[1],p_p1:a[2],p_r1:$('r1').value,p_n2:a[3],p_p2:a[4],p_r2:$('r2').value});if(error)return toast(error.message);
 
-closeModal();
+INVITE_CHILD_FLOW = false;closeModal();
 
 // Урилгын кодыг URL-аас цэвэрлэнэ
 window.history.replaceState(
