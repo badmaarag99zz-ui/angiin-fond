@@ -1,5 +1,5 @@
 <!doctype html><html lang="mn"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ангийн фонд</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script><script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script><script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <style>
 *{box-sizing:border-box}
 :root{
@@ -4216,10 +4216,6 @@ function reportBalances(){
 }
 function excelReport(){
 
-    // ==========================================
-    // 1. ОДООГИЙН ТАЙЛАНГИЙН FILTER
-    // ==========================================
-
     const selectedFundIds =
         DATA.reportFilteredFundIds ||
         DATA.funds.map(f => f.id);
@@ -4229,25 +4225,22 @@ function excelReport(){
             f => selectedFundIds.includes(f.id)
         );
 
-
     if(!funds.length){
         return toast('Тайлангийн мэдээлэл алга.');
     }
 
 
     // ==========================================
-    // 2. FILTER-ИЙН НЭР
+    // FILTER НЭР
     // ==========================================
 
     const fundType =
-        document.getElementById(
-            'reportFundType'
-        )?.value || 'all';
+        document.getElementById('reportFundType')?.value ||
+        'all';
 
     const selectedMonth =
-        document.getElementById(
-            'reportMonth'
-        )?.value || 'all';
+        document.getElementById('reportMonth')?.value ||
+        'all';
 
 
     let fundTypeLabel = 'Бүх фонд';
@@ -4265,18 +4258,18 @@ function excelReport(){
 
     if(selectedMonth !== 'all'){
 
-        const [y,m] =
+        const [year,month] =
             selectedMonth
                 .split('-')
                 .map(Number);
 
         monthLabel =
-            `${y} оны ${m}-р сар`;
+            `${year} оны ${month}-р сар`;
     }
 
 
     // ==========================================
-    // 3. ФОНД БҮРИЙН МЭДЭЭЛЭЛ
+    // DATA
     // ==========================================
 
     const reportData =
@@ -4294,9 +4287,7 @@ function excelReport(){
                 fundChildren.reduce(
                     (sum,fc) =>
                         sum +
-                        Number(
-                            fc.target_amount || 0
-                        ),
+                        Number(fc.target_amount || 0),
                     0
                 );
 
@@ -4311,19 +4302,9 @@ function excelReport(){
                         );
 
                     return paid >=
-                        Number(
-                            fc.target_amount || 0
-                        );
+                        Number(fc.target_amount || 0);
 
                 }).length;
-
-
-            const unpaid =
-                Math.max(
-                    0,
-                    fundChildren.length -
-                    fullPaid
-                );
 
 
             let fundMonth = '';
@@ -4344,20 +4325,6 @@ function excelReport(){
             }
 
 
-            let fundMonthLabel = '';
-
-            if(fundMonth){
-
-                const [year,month] =
-                    fundMonth
-                        .split('-')
-                        .map(Number);
-
-                fundMonthLabel =
-                    `${year}.${String(month).padStart(2,'0')}`;
-            }
-
-
             return {
 
                 name:
@@ -4369,7 +4336,7 @@ function excelReport(){
                         : 'Тусгай',
 
                 month:
-                    fundMonthLabel,
+                    fundMonth,
 
                 status:
                     f.status === 'closed'
@@ -4379,39 +4346,20 @@ function excelReport(){
                 children:
                     fundChildren.length,
 
-                fullPaid:
+                paidChildren:
                     fullPaid,
-
-                unpaid:
-                    unpaid,
-
-                perChild:
-                    Number(
-                        f.amount_per_child || 0
-                    ),
 
                 target:
                     totalTarget,
 
                 income:
-                    Number(
-                        s.paid || 0
-                    ),
+                    Number(s.paid || 0),
 
                 expense:
-                    Number(
-                        s.exp || 0
-                    ),
-
-                carry:
-                    Number(
-                        f.carry_in || 0
-                    ),
+                    Number(s.exp || 0),
 
                 balance:
-                    Number(
-                        s.balance || 0
-                    )
+                    Number(s.balance || 0)
 
             };
 
@@ -4419,7 +4367,7 @@ function excelReport(){
 
 
     // ==========================================
-    // 4. НЭГДСЭН ДҮН
+    // TOTAL
     // ==========================================
 
     const totals =
@@ -4429,7 +4377,6 @@ function excelReport(){
                 a.target += r.target;
                 a.income += r.income;
                 a.expense += r.expense;
-                a.carry += r.carry;
                 a.balance += r.balance;
 
                 return a;
@@ -4439,14 +4386,13 @@ function excelReport(){
                 target:0,
                 income:0,
                 expense:0,
-                carry:0,
                 balance:0
             }
         );
 
 
     // ==========================================
-    // 5. SHEET-ИЙН ӨГӨГДӨЛ
+    // SHEET DATA
     // ==========================================
 
     const aoa = [
@@ -4456,46 +4402,36 @@ function excelReport(){
         ],
 
         [
-            'Байгууллага:',
-            G.institution_name || '',
-            '',
-            'Анги / бүлэг:',
-            G.group_name || ''
+            `${G.institution_name || ''}  •  ${G.group_name || ''}  •  ${G.academic_year || ''}`
         ],
 
         [
-            'Хичээлийн жил:',
-            G.academic_year || '',
-            '',
-            'Тайлан:',
-            `${fundTypeLabel} / ${monthLabel}`
+            `${fundTypeLabel}  •  ${monthLabel}`
         ],
 
         [],
 
         [
-            'НЭГДСЭН ҮЗҮҮЛЭЛТ'
-        ],
-
-        [
-            'Нийт төлөх',
-            'Цугласан',
-            'Зарлага',
-            'Үлдэгдэл'
+            'НИЙТ ТӨЛӨХ',
+            '',
+            'ЦУГЛАСАН',
+            '',
+            'ЗАРЛАГА',
+            '',
+            'ҮЛДЭГДЭЛ'
         ],
 
         [
             totals.target,
+            '',
             totals.income,
+            '',
             totals.expense,
+            '',
             totals.balance
         ],
 
         [],
-
-        [
-            'ДЭЛГЭРЭНГҮЙ ТАЙЛАН'
-        ],
 
         [
             '№',
@@ -4505,12 +4441,9 @@ function excelReport(){
             'Төлөв',
             'Хүүхэд',
             'Бүрэн төлсөн',
-            'Дутуу / төлөөгүй',
-            'Нэг хүүхдийн дүн',
             'Нийт төлөх',
             'Цугласан',
             'Зарлага',
-            'Шилжиж ирсэн',
             'Үлдэгдэл'
         ]
 
@@ -4534,19 +4467,13 @@ function excelReport(){
 
                 r.children,
 
-                r.fullPaid,
-
-                r.unpaid,
-
-                r.perChild,
+                r.paidChildren,
 
                 r.target,
 
                 r.income,
 
                 r.expense,
-
-                r.carry,
 
                 r.balance
 
@@ -4556,9 +4483,9 @@ function excelReport(){
     );
 
 
-    // ==========================================
-    // 6. НИЙТ МӨР
-    // ==========================================
+    const totalExcelRow =
+        aoa.length + 1;
+
 
     aoa.push([
 
@@ -4576,17 +4503,11 @@ function excelReport(){
 
         '',
 
-        '',
-
-        '',
-
         totals.target,
 
         totals.income,
 
         totals.expense,
-
-        totals.carry,
 
         totals.balance
 
@@ -4594,166 +4515,484 @@ function excelReport(){
 
 
     // ==========================================
-    // 7. WORKSHEET
+    // WORKSHEET
     // ==========================================
 
     const ws =
-        XLSX.utils.aoa_to_sheet(
-            aoa
-        );
+        XLSX.utils.aoa_to_sheet(aoa);
 
 
     // ==========================================
-    // 8. MERGE
+    // MERGE
     // ==========================================
 
     ws['!merges'] = [
 
-        // Гол гарчиг
         {
             s:{r:0,c:0},
-            e:{r:0,c:13}
+            e:{r:0,c:10}
         },
 
-        // Нэгдсэн үзүүлэлт
+        {
+            s:{r:1,c:0},
+            e:{r:1,c:10}
+        },
+
+        {
+            s:{r:2,c:0},
+            e:{r:2,c:10}
+        },
+
         {
             s:{r:4,c:0},
-            e:{r:4,c:13}
+            e:{r:4,c:1}
         },
 
-        // Дэлгэрэнгүй тайлан
         {
-            s:{r:8,c:0},
-            e:{r:8,c:13}
+            s:{r:4,c:2},
+            e:{r:4,c:3}
+        },
+
+        {
+            s:{r:4,c:4},
+            e:{r:4,c:5}
+        },
+
+        {
+            s:{r:4,c:6},
+            e:{r:4,c:10}
+        },
+
+        {
+            s:{r:5,c:0},
+            e:{r:5,c:1}
+        },
+
+        {
+            s:{r:5,c:2},
+            e:{r:5,c:3}
+        },
+
+        {
+            s:{r:5,c:4},
+            e:{r:5,c:5}
+        },
+
+        {
+            s:{r:5,c:6},
+            e:{r:5,c:10}
         }
 
     ];
 
 
     // ==========================================
-    // 9. БАГАНЫН ӨРГӨН
+    // COLORS
     // ==========================================
 
-    ws['!cols'] = [
+    const darkGreen = '087F5B';
+    const green = '12A879';
+    const lightGreen = 'DDF7EC';
 
-        {wch:5},   // №
+    const blue = '147CE5';
+    const lightBlue = 'E8F3FF';
 
-        {wch:28},  // Фонд
+    const red = 'E5484D';
+    const lightRed = 'FDECEC';
 
-        {wch:11},  // Төрөл
+    const yellow = 'FFF4D6';
 
-        {wch:11},  // Сар
+    const darkText = '17324D';
+    const muted = '60758A';
 
-        {wch:12},  // Төлөв
+    const white = 'FFFFFF';
 
-        {wch:9},   // Хүүхэд
-
-        {wch:13},  // Бүрэн төлсөн
-
-        {wch:16},  // Дутуу
-
-        {wch:17},  // Нэг хүүхдийн дүн
-
-        {wch:15},  // Нийт төлөх
-
-        {wch:15},  // Цугласан
-
-        {wch:15},  // Зарлага
-
-        {wch:16},  // Шилжиж ирсэн
-
-        {wch:15}   // Үлдэгдэл
-
-    ];
+    const borderColor = 'C9D8E6';
 
 
     // ==========================================
-    // 10. МӨРИЙН ӨНДӨР
+    // BORDER
     // ==========================================
 
-    ws['!rows'] = [];
+    const border = {
 
-    ws['!rows'][0] = {
-        hpt:30
-    };
+        top:{
+            style:'thin',
+            color:{rgb:borderColor}
+        },
 
-    ws['!rows'][4] = {
-        hpt:24
-    };
+        bottom:{
+            style:'thin',
+            color:{rgb:borderColor}
+        },
 
-    ws['!rows'][5] = {
-        hpt:24
-    };
+        left:{
+            style:'thin',
+            color:{rgb:borderColor}
+        },
 
-    ws['!rows'][6] = {
-        hpt:28
-    };
+        right:{
+            style:'thin',
+            color:{rgb:borderColor}
+        }
 
-    ws['!rows'][8] = {
-        hpt:24
-    };
-
-    ws['!rows'][9] = {
-        hpt:32
     };
 
 
     // ==========================================
-    // 11. МӨНГӨНИЙ FORMAT
+    // TITLE
     // ==========================================
 
-    const moneyFormat =
-        '#,##0"₮"';
+    ws['A1'].s = {
+
+        font:{
+            bold:true,
+            sz:20,
+            color:{
+                rgb:darkGreen
+            }
+        },
+
+        alignment:{
+            horizontal:'center',
+            vertical:'center'
+        }
+
+    };
 
 
-    // Summary мөнгө
+    ws['A2'].s = {
+
+        font:{
+            bold:true,
+            sz:11,
+            color:{
+                rgb:darkText
+            }
+        },
+
+        alignment:{
+            horizontal:'center'
+        }
+
+    };
+
+
+    ws['A3'].s = {
+
+        font:{
+            sz:10,
+            color:{
+                rgb:muted
+            }
+        },
+
+        alignment:{
+            horizontal:'center'
+        }
+
+    };
+
+
+    // ==========================================
+    // SUMMARY HEADER
+    // ==========================================
+
     [
-        'A7',
-        'B7',
-        'C7',
-        'D7'
+        'A5',
+        'C5',
+        'E5',
+        'G5'
     ].forEach(addr => {
 
-        if(ws[addr]){
-            ws[addr].z = moneyFormat;
-        }
+        ws[addr].s = {
+
+            font:{
+                bold:true,
+                color:{
+                    rgb:white
+                }
+            },
+
+            fill:{
+                fgColor:{
+                    rgb:darkGreen
+                }
+            },
+
+            alignment:{
+                horizontal:'center',
+                vertical:'center'
+            },
+
+            border:border
+
+        };
 
     });
 
 
-    // Хүснэгтийн эхний data row = 11
-    const firstDataRow = 11;
+    // ==========================================
+    // SUMMARY VALUES
+    // ==========================================
+
+    const summaryCells = [
+
+        {
+            cell:'A6',
+            color:darkText,
+            fill:'F4F8FB'
+        },
+
+        {
+            cell:'C6',
+            color:darkGreen,
+            fill:lightGreen
+        },
+
+        {
+            cell:'E6',
+            color:red,
+            fill:lightRed
+        },
+
+        {
+            cell:'G6',
+            color:blue,
+            fill:lightBlue
+        }
+
+    ];
+
+
+    summaryCells.forEach(x => {
+
+        ws[x.cell].s = {
+
+            font:{
+                bold:true,
+                sz:16,
+                color:{
+                    rgb:x.color
+                }
+            },
+
+            fill:{
+                fgColor:{
+                    rgb:x.fill
+                }
+            },
+
+            alignment:{
+                horizontal:'center',
+                vertical:'center'
+            },
+
+            border:border
+
+        };
+
+        ws[x.cell].z =
+            '#,##0"₮"';
+
+    });
+
+
+    // ==========================================
+    // TABLE HEADER
+    // ==========================================
+
+    for(
+        let col = 0;
+        col <= 10;
+        col++
+    ){
+
+        const addr =
+            XLSX.utils.encode_cell({
+                r:7,
+                c:col
+            });
+
+        ws[addr].s = {
+
+            font:{
+                bold:true,
+                color:{
+                    rgb:white
+                }
+            },
+
+            fill:{
+                fgColor:{
+                    rgb:darkGreen
+                }
+            },
+
+            alignment:{
+                horizontal:'center',
+                vertical:'center',
+                wrapText:true
+            },
+
+            border:border
+
+        };
+
+    }
+
+
+    // ==========================================
+    // TABLE BODY
+    // ==========================================
+
+    const firstDataRow = 9;
 
     const lastDataRow =
         firstDataRow +
         reportData.length -
         1;
 
-    const totalRow =
-        lastDataRow + 1;
 
-
-    // I - N багануудын мөнгө
     for(
         let row = firstDataRow;
-        row <= totalRow;
+        row <= lastDataRow;
         row++
     ){
 
+        for(
+            let col = 0;
+            col <= 10;
+            col++
+        ){
+
+            const addr =
+                XLSX.utils.encode_cell({
+
+                    r:row - 1,
+                    c:col
+
+                });
+
+
+            if(!ws[addr]){
+                continue;
+            }
+
+
+            ws[addr].s = {
+
+                font:{
+                    sz:10,
+                    color:{
+                        rgb:darkText
+                    }
+                },
+
+                fill:{
+                    fgColor:{
+                        rgb:
+                            row % 2 === 0
+                                ? 'F7FAFC'
+                                : 'FFFFFF'
+                    }
+                },
+
+                alignment:{
+
+                    vertical:'center',
+
+                    horizontal:
+                        col === 1
+                            ? 'left'
+                            : 'center',
+
+                    wrapText:true
+
+                },
+
+                border:border
+
+            };
+
+        }
+
+
+        // --------------------------------------
+        // STATUS COLOR
+        // --------------------------------------
+
+        const statusCell =
+            ws[`E${row}`];
+
+        if(statusCell){
+
+            if(statusCell.v === 'Хаагдсан'){
+
+                statusCell.s = {
+
+                    ...statusCell.s,
+
+                    font:{
+                        bold:true,
+                        color:{
+                            rgb:red
+                        }
+                    },
+
+                    fill:{
+                        fgColor:{
+                            rgb:lightRed
+                        }
+                    }
+
+                };
+
+            }else{
+
+                statusCell.s = {
+
+                    ...statusCell.s,
+
+                    font:{
+                        bold:true,
+                        color:{
+                            rgb:darkGreen
+                        }
+                    },
+
+                    fill:{
+                        fgColor:{
+                            rgb:lightGreen
+                        }
+                    }
+
+                };
+
+            }
+
+        }
+
+
+        // --------------------------------------
+        // MONEY FORMAT
+        // --------------------------------------
+
         [
+            'H',
             'I',
             'J',
-            'K',
-            'L',
-            'M',
-            'N'
+            'K'
         ].forEach(col => {
 
             const cell =
                 ws[`${col}${row}`];
 
             if(cell){
-                cell.z = moneyFormat;
+
+                cell.z =
+                    '#,##0"₮"';
+
             }
 
         });
@@ -4762,50 +5001,186 @@ function excelReport(){
 
 
     // ==========================================
-    // 12. AUTOFILTER
+    // TOTAL ROW
+    // ==========================================
+
+    for(
+        let col = 0;
+        col <= 10;
+        col++
+    ){
+
+        const addr =
+            XLSX.utils.encode_cell({
+
+                r:totalExcelRow - 1,
+
+                c:col
+
+            });
+
+
+        if(!ws[addr]){
+
+            ws[addr] = {
+                t:'s',
+                v:''
+            };
+
+        }
+
+
+        ws[addr].s = {
+
+            font:{
+                bold:true,
+                color:{
+                    rgb:white
+                }
+            },
+
+            fill:{
+                fgColor:{
+                    rgb:darkGreen
+                }
+            },
+
+            alignment:{
+                horizontal:
+                    col === 1
+                        ? 'left'
+                        : 'center',
+                vertical:'center'
+            },
+
+            border:border
+
+        };
+
+    }
+
+
+    [
+        'H',
+        'I',
+        'J',
+        'K'
+    ].forEach(col => {
+
+        const cell =
+            ws[`${col}${totalExcelRow}`];
+
+        if(cell){
+
+            cell.z =
+                '#,##0"₮"';
+
+        }
+
+    });
+
+
+    // ==========================================
+    // WIDTH
+    // ==========================================
+
+    ws['!cols'] = [
+
+        {wch:5},
+
+        {wch:27},
+
+        {wch:10},
+
+        {wch:11},
+
+        {wch:12},
+
+        {wch:9},
+
+        {wch:13},
+
+        {wch:15},
+
+        {wch:15},
+
+        {wch:14},
+
+        {wch:15}
+
+    ];
+
+
+    // ==========================================
+    // ROW HEIGHT
+    // ==========================================
+
+    ws['!rows'] = [];
+
+    ws['!rows'][0] = {
+        hpt:32
+    };
+
+    ws['!rows'][1] = {
+        hpt:20
+    };
+
+    ws['!rows'][2] = {
+        hpt:18
+    };
+
+    ws['!rows'][4] = {
+        hpt:22
+    };
+
+    ws['!rows'][5] = {
+        hpt:32
+    };
+
+    ws['!rows'][7] = {
+        hpt:34
+    };
+
+
+    // ==========================================
+    // AUTOFILTER
     // ==========================================
 
     ws['!autofilter'] = {
 
         ref:
-            `A10:N${lastDataRow}`
+            `A8:K${lastDataRow}`
 
     };
 
 
     // ==========================================
-    // 13. PRINT AREA
+    // PRINT AREA
     // ==========================================
 
     ws['!printArea'] =
-        `A1:N${totalRow}`;
+        `A1:K${totalExcelRow}`;
 
 
     // ==========================================
-    // 14. PAGE SETUP — A4 LANDSCAPE
+    // A4 LANDSCAPE
     // ==========================================
 
     ws['!pageSetup'] = {
 
-        paperSize: 9,
+        paperSize:9,
 
-        orientation:
-            'landscape',
+        orientation:'landscape',
 
-        fitToWidth:
-            1,
+        fitToWidth:1,
 
-        fitToHeight:
-            0,
-
-        scale:
-            80
+        fitToHeight:0
 
     };
 
 
     // ==========================================
-    // 15. MARGIN
+    // MARGINS
     // ==========================================
 
     ws['!margins'] = {
@@ -4814,9 +5189,9 @@ function excelReport(){
 
         right:0.25,
 
-        top:0.45,
+        top:0.4,
 
-        bottom:0.45,
+        bottom:0.4,
 
         header:0.2,
 
@@ -4826,16 +5201,16 @@ function excelReport(){
 
 
     // ==========================================
-    // 16. FREEZE
+    // FREEZE
     // ==========================================
 
     ws['!freeze'] = {
 
         xSplit:0,
 
-        ySplit:10,
+        ySplit:8,
 
-        topLeftCell:'A11',
+        topLeftCell:'A9',
 
         activePane:'bottomLeft',
 
@@ -4845,7 +5220,7 @@ function excelReport(){
 
 
     // ==========================================
-    // 17. WORKBOOK
+    // WORKBOOK
     // ==========================================
 
     const wb =
@@ -4860,7 +5235,7 @@ function excelReport(){
 
 
     // ==========================================
-    // 18. ФАЙЛЫН НЭР
+    // FILE NAME
     // ==========================================
 
     let fileName =
@@ -4871,22 +5246,6 @@ function excelReport(){
 
         fileName +=
             `-${selectedMonth}`;
-
-    }
-
-
-    if(fundType === 'monthly'){
-
-        fileName +=
-            '-sariin';
-
-    }
-
-
-    if(fundType === 'special'){
-
-        fileName +=
-            '-tusgai';
 
     }
 
