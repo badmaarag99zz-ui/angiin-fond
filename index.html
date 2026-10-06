@@ -3397,33 +3397,484 @@ async function submitPay(raw){
  closeModal();toast('Төлөлт шалгуулахаар илгээгдлээ');await refresh();payments()}catch(e){toast(e.message)}
 }
 function report(){
- let rows=DATA.funds.map(f=>{let s=fstats(f);return{Фонд:f.title,Төрөл:f.kind==='monthly'?'Сарын':'Тусгай','Хүүхэд':s.count,'Төлсөн':s.paidCount,'Цугласан':s.paid,'Зарлага':s.exp,'Үлдэгдэл':s.balance,'Төлөв':f.status}});
- let total=rows.reduce((a,r)=>({in:a.in+r['Цугласан'],ex:a.ex+r['Зарлага'],bal:a.bal+r['Үлдэгдэл']}),{in:0,ex:0,bal:0});
- let months=DATA.funds.filter(f=>f.kind==='monthly').slice(-6);
- $('report').innerHTML=`<div class="row between"><h3>Тайлан</h3><span class="pill">${esc(G.academic_year)}</span></div>
- <div class="two"><div class="field"><label>Фонд</label><select><option>Сарын фонд</option><option>Бүх фонд</option></select></div><div class="field"><label>Сар</label><select><option>Бүгд</option>${months.map(f=>`<option>${esc(f.title)}</option>`).join('')}</select></div></div>
- <div class="grid" style="grid-template-columns:repeat(3,1fr)"><div class="card"><div class="statlabel">Нийт орлого</div><div class="statnum" style="color:#079b66">${money(total.in)}</div></div><div class="card"><div class="statlabel">Нийт зарлага</div><div class="statnum" style="color:#ef4c55">${money(total.ex)}</div></div><div class="card"><div class="statlabel">Үлдэгдэл</div><div class="statnum" style="color:#147ce5">${money(total.bal)}</div></div></div>
- <div class="card"><b>Сарын төлөлтийн явц</b><div class="chart">${months.map(f=>{let st=fstats(f),pct=st.count?Math.round(st.paidCount/st.count*100):0;return `<div class="barcol"><div class="bar" style="height:${Math.max(8,pct)}px"></div>${esc(f.month_key||'')}</div>`}).join('')||'<span class="muted">Сарын фондын мэдээлэл алга.</span>'}</div></div>
- <div class="item" onclick="reportPayments()">
-    📘 Төлөлтийн жагсаалт
-    <span style="float:right">›</span>
-</div>
 
-<div class="item" onclick="reportExpenses()">
-    🧾 Зарлагын жагсаалт
-    <span style="float:right">›</span>
-</div>
+    const oldType =
+        document.getElementById('reportFundType')?.value
+        || 'all';
 
-<div class="item" onclick="reportChildren()">
-    🧒 Хүүхэд тус бүрийн төлөв
-    <span style="float:right">›</span>
-</div>
+    const oldMonth =
+        document.getElementById('reportMonth')?.value
+        || 'all';
 
-<div class="item" onclick="reportBalances()">
-    💚 Фондын үлдэгдэл
-    <span style="float:right">›</span>
-</div>${M.role!=='parent'?`<div class="item" onclick="excelReport()">📗 Excel татах <span style="float:right">›</span></div><div class="item" onclick="pdfReport()">📄 PDF татах <span style="float:right">›</span></div>`:''}</div>`;
- DATA.reportRows=rows;
+
+    // =========================
+    // БОЛОМЖИТ САРУУД
+    // =========================
+
+    const monthKeys = [
+        ...new Set(
+            DATA.funds
+                .map(f => {
+
+                    if(f.kind === 'monthly'){
+                        return f.month_key ||
+                            f.fund_month?.slice(0,7) ||
+                            null;
+                    }
+
+                    return f.fund_month?.slice(0,7) ||
+                        f.month_key ||
+                        null;
+
+                })
+                .filter(Boolean)
+        )
+    ].sort();
+
+
+    // =========================
+    // FILTER
+    // =========================
+
+    const filteredFunds =
+        DATA.funds.filter(f => {
+
+            let typeOk = true;
+
+            if(oldType === 'monthly'){
+                typeOk = f.kind === 'monthly';
+            }
+
+            if(oldType === 'special'){
+                typeOk = f.kind === 'special';
+            }
+
+
+            let fundMonth = null;
+
+            if(f.kind === 'monthly'){
+
+                fundMonth =
+                    f.month_key ||
+                    f.fund_month?.slice(0,7) ||
+                    null;
+
+            }else{
+
+                fundMonth =
+                    f.fund_month?.slice(0,7) ||
+                    f.month_key ||
+                    null;
+
+            }
+
+
+            const monthOk =
+                oldMonth === 'all' ||
+                fundMonth === oldMonth;
+
+
+            return typeOk && monthOk;
+
+        });
+
+
+    // =========================
+    // REPORT ROWS
+    // =========================
+
+    const rows =
+        filteredFunds.map(f => {
+
+            const s = fstats(f);
+
+            return {
+                Фонд: f.title,
+                Төрөл:
+                    f.kind === 'monthly'
+                        ? 'Сарын'
+                        : 'Тусгай',
+                Хүүхэд: s.count,
+                Төлсөн: s.paidCount,
+                Цугласан: s.paid,
+                Зарлага: s.exp,
+                Үлдэгдэл: s.balance,
+                Төлөв: f.status
+            };
+
+        });
+
+
+    const total =
+        rows.reduce(
+            (a,r) => {
+
+                a.in += Number(
+                    r['Цугласан'] || 0
+                );
+
+                a.ex += Number(
+                    r['Зарлага'] || 0
+                );
+
+                a.bal += Number(
+                    r['Үлдэгдэл'] || 0
+                );
+
+                return a;
+
+            },
+            {
+                in:0,
+                ex:0,
+                bal:0
+            }
+        );
+
+
+    // =========================
+    // CHART
+    // =========================
+
+    const chartFunds =
+        filteredFunds
+            .filter(
+                f => f.kind === 'monthly'
+            )
+            .sort(
+                (a,b) =>
+                    String(
+                        a.month_key ||
+                        a.fund_month ||
+                        ''
+                    ).localeCompare(
+                        String(
+                            b.month_key ||
+                            b.fund_month ||
+                            ''
+                        )
+                    )
+            )
+            .slice(-6);
+
+
+    const chartHtml =
+        chartFunds.map(f => {
+
+            const st = fstats(f);
+
+            const pct =
+                st.count
+                    ? Math.round(
+                        st.paidCount /
+                        st.count *
+                        100
+                    )
+                    : 0;
+
+            const key =
+                f.month_key ||
+                f.fund_month?.slice(0,7) ||
+                '';
+
+            return `
+                <div class="barcol">
+
+                    <div
+                        class="bar"
+                        style="
+                            height:${Math.max(8,pct)}px
+                        "
+                    ></div>
+
+                    ${esc(key)}
+
+                </div>
+            `;
+
+        }).join('');
+
+
+    // =========================
+    // UI
+    // =========================
+
+    $('report').innerHTML = `
+
+        <div class="row between">
+
+            <h3>
+                Тайлан
+            </h3>
+
+            <span class="pill">
+                ${esc(G.academic_year)}
+            </span>
+
+        </div>
+
+
+        <div class="two">
+
+            <div class="field">
+
+                <label>
+                    Фонд
+                </label>
+
+                <select
+                    id="reportFundType"
+                    onchange="report()"
+                >
+
+                    <option
+                        value="all"
+                        ${oldType === 'all' ? 'selected' : ''}
+                    >
+                        Бүх фонд
+                    </option>
+
+                    <option
+                        value="monthly"
+                        ${oldType === 'monthly' ? 'selected' : ''}
+                    >
+                        Сарын фонд
+                    </option>
+
+                    <option
+                        value="special"
+                        ${oldType === 'special' ? 'selected' : ''}
+                    >
+                        Тусгай фонд
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="field">
+
+                <label>
+                    Сар
+                </label>
+
+                <select
+                    id="reportMonth"
+                    onchange="report()"
+                >
+
+                    <option value="all">
+                        Бүгд
+                    </option>
+
+                    ${
+                        monthKeys.map(key => {
+
+                            const [
+                                year,
+                                month
+                            ] = key
+                                .split('-')
+                                .map(Number);
+
+                            return `
+                                <option
+                                    value="${key}"
+                                    ${
+                                        oldMonth === key
+                                            ? 'selected'
+                                            : ''
+                                    }
+                                >
+                                    ${year} оны ${month}-р сар
+                                </option>
+                            `;
+
+                        }).join('')
+                    }
+
+                </select>
+
+            </div>
+
+        </div>
+
+
+        <div
+            class="grid"
+            style="
+                grid-template-columns:
+                repeat(3,1fr)
+            "
+        >
+
+            <div class="card">
+
+                <div class="statlabel">
+                    Нийт орлого
+                </div>
+
+                <div
+                    class="statnum"
+                    style="color:#079b66"
+                >
+                    ${money(total.in)}
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="statlabel">
+                    Нийт зарлага
+                </div>
+
+                <div
+                    class="statnum"
+                    style="color:#ef4c55"
+                >
+                    ${money(total.ex)}
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="statlabel">
+                    Үлдэгдэл
+                </div>
+
+                <div
+                    class="statnum"
+                    style="color:#147ce5"
+                >
+                    ${money(total.bal)}
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <b>
+                Сарын төлөлтийн явц
+            </b>
+
+            <div class="chart">
+
+                ${
+                    chartHtml ||
+                    `
+                        <span class="muted">
+                            Сарын фондын мэдээлэл алга.
+                        </span>
+                    `
+                }
+
+            </div>
+
+        </div>
+
+
+        <div class="card report-links">
+
+            <b>
+                Дэлгэрэнгүй тайлан
+            </b>
+
+
+            <div
+                class="item"
+                onclick="reportPayments()"
+            >
+                📘 Төлөлтийн жагсаалт
+                <span style="float:right">
+                    ›
+                </span>
+            </div>
+
+
+            <div
+                class="item"
+                onclick="reportExpenses()"
+            >
+                🧾 Зарлагын жагсаалт
+                <span style="float:right">
+                    ›
+                </span>
+            </div>
+
+
+            <div
+                class="item"
+                onclick="reportChildren()"
+            >
+                🧒 Хүүхэд тус бүрийн төлөв
+                <span style="float:right">
+                    ›
+                </span>
+            </div>
+
+
+            <div
+                class="item"
+                onclick="reportBalances()"
+            >
+                💚 Фондын үлдэгдэл
+                <span style="float:right">
+                    ›
+                </span>
+            </div>
+
+
+            ${
+                M.role !== 'parent'
+                    ? `
+
+                        <div
+                            class="item"
+                            onclick="excelReport()"
+                        >
+                            📗 Excel татах
+                            <span style="float:right">
+                                ›
+                            </span>
+                        </div>
+
+
+                        <div
+                            class="item"
+                            onclick="pdfReport()"
+                        >
+                            📄 PDF татах
+                            <span style="float:right">
+                                ›
+                            </span>
+                        </div>
+
+                    `
+                    : ''
+            }
+
+        </div>
+    `;
+
+
+    // Excel / PDF-д одоо шүүгдсэн мөрүүд орно
+    DATA.reportRows = rows;
+
+
+    // Дэлгэрэнгүй тайлангуудад ашиглана
+    DATA.reportFilteredFundIds =
+        filteredFunds.map(
+            f => f.id
+        );
+
 }
  function reportPayments(){
 
