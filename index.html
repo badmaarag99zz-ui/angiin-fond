@@ -5525,7 +5525,28 @@ function settings(){
  
 
  <div class="settings-item" onclick="ownerTransferInfo()"><div class="settings-ico" style="background:#fff0ef">👤</div><div style="flex:1"><b>Админ солих</b></div><b>›</b></div>
- <div class="settings-item" onclick="closeGroupInfo()" style="color:#e23d44"><div class="settings-ico" style="background:#fff0ef">🗑️</div><div style="flex:1"><b>Ангийг хаах</b></div><b>›</b></div></div>
+ <div class="settings-item" onclick="promoteGroupInfo()">
+
+    <div
+        class="settings-ico"
+        style="background:#e9faef"
+    >
+        🎓
+    </div>
+
+    <div style="flex:1">
+
+        <b>Анги дэвшүүлэх</b>
+
+        <div class="muted">
+            Дараагийн хичээлийн жилд шилжүүлэх
+        </div>
+
+    </div>
+
+    <b>›</b>
+
+</div></div>
 <div class="card">
     <b>👤 Миний бүртгэл</b>
 
@@ -5965,7 +5986,286 @@ async function ownerTransferInfo(){
 
     home();
 }
-function closeGroupInfo(){modal(`<h3 style="color:#e23d44">Ангийг хаах</h3><p class="muted">v1 дээр өгөгдөл санамсаргүй устахаас хамгаалж анги устгах үйлдлийг хаалттай үлдээсэн. Фонд бүрийг хааж, тайлангаа хадгална.</p><button class="btn soft" style="width:100%" onclick="closeModal()">Буцах</button>`)}
+function promoteGroupInfo(){
+
+    if(!G) return;
+
+
+    /* ==========================================
+       ОДООГИЙН АНГИАС ДАРААГИЙН НЭРИЙГ ТООЦНО
+    ========================================== */
+
+    const currentName =
+        String(G.group_name || '').trim();
+
+
+    const match =
+        currentName.match(/^(\d+)(.*)$/);
+
+
+    let nextName = currentName;
+
+
+    if(match){
+
+        nextName =
+            (Number(match[1]) + 1) +
+            match[2];
+
+    }
+
+
+    /* ==========================================
+       ХИЧЭЭЛИЙН ЖИЛ
+    ========================================== */
+
+    const yearMatch =
+        String(G.academic_year || '')
+            .match(/(\d{4})\D+(\d{4})/);
+
+
+    let nextYear = '';
+
+
+    if(yearMatch){
+
+        nextYear =
+            `${Number(yearMatch[1]) + 1}–${Number(yearMatch[2]) + 1}`;
+
+    }
+
+
+    modal(`
+
+        <h3>🎓 Анги дэвшүүлэх</h3>
+
+
+        <div
+            style="
+                background:#f0fff6;
+                border:1px solid #cceedd;
+                border-radius:14px;
+                padding:14px;
+                margin-bottom:15px;
+            "
+        >
+
+            <div class="muted">
+                Одоогийн анги
+            </div>
+
+            <b style="font-size:18px">
+                ${esc(G.group_name)}
+            </b>
+
+            <div
+                class="muted"
+                style="margin-top:3px"
+            >
+                ${esc(G.academic_year)}
+            </div>
+
+        </div>
+
+
+        <div style="
+            text-align:center;
+            font-size:25px;
+            margin:5px 0 10px;
+        ">
+            ↓
+        </div>
+
+
+        <div class="field">
+
+            <label>
+                Дараагийн анги
+            </label>
+
+            <input
+                id="promoteGroupName"
+                value="${esc(nextName)}"
+                placeholder="Жишээ: 2а"
+            >
+
+        </div>
+
+
+        <div class="field">
+
+            <label>
+                Шинэ хичээлийн жил
+            </label>
+
+            <input
+                id="promoteAcademicYear"
+                value="${esc(nextYear)}"
+                placeholder="2027–2028"
+            >
+
+        </div>
+
+
+        <div
+            style="
+                background:#fff8e8;
+                border:1px solid #ffe0a6;
+                border-radius:13px;
+                padding:12px;
+                margin:15px 0;
+                font-size:13px;
+                line-height:1.55;
+            "
+        >
+
+            <b>📚 Өмнөх мэдээлэл устахгүй.</b>
+
+            <div class="muted" style="margin-top:5px">
+
+                ${esc(G.group_name)} ·
+                ${esc(G.academic_year)}
+                хичээлийн жилийн түүх хадгалагдана.
+
+                Хүүхэд, эцэг эх болон ангийн
+                бүртгэл үргэлжлэн ашиглагдана.
+
+            </div>
+
+        </div>
+
+
+        <button
+            class="btn primary"
+            style="width:100%"
+            onclick="confirmPromoteGroup()"
+        >
+            🎓 Анги дэвшүүлэх
+        </button>
+
+
+        <button
+            class="btn soft"
+            style="width:100%;margin-top:8px"
+            onclick="closeModal()"
+        >
+            Болих
+        </button>
+
+    `);
+
+}
+ async function confirmPromoteGroup(){
+
+    if(!hasWrite()){
+        return toast('Эрх дууссан');
+    }
+
+
+    const newGroupName =
+        $('promoteGroupName')
+            .value
+            .trim();
+
+
+    const newAcademicYear =
+        $('promoteAcademicYear')
+            .value
+            .trim();
+
+
+    if(!newGroupName){
+        return toast(
+            'Дараагийн ангийн нэрийг оруулна уу'
+        );
+    }
+
+
+    if(!/^\d{4}[–-]\d{4}$/.test(newAcademicYear)){
+
+        return toast(
+            'Хичээлийн жилийг 2027–2028 хэлбэрээр оруулна уу'
+        );
+
+    }
+
+
+    const ok = confirm(
+
+        `${G.group_name} · ${G.academic_year}\n\n` +
+
+        `↓\n\n` +
+
+        `${newGroupName} · ${newAcademicYear}\n\n` +
+
+        `Анги дэвшүүлэх үү?`
+
+    );
+
+
+    if(!ok){
+        return;
+    }
+
+
+    const { data, error } =
+        await sb.rpc(
+            'af_promote_group',
+            {
+                p_group_id:
+                    G.id,
+
+                p_new_group_name:
+                    newGroupName,
+
+                p_new_academic_year:
+                    newAcademicYear
+            }
+        );
+
+
+    if(error){
+
+        console.error(error);
+
+        return toast(
+            error.message
+        );
+
+    }
+
+
+    /* ==========================================
+       CURRENT GROUP ШИНЭЧИЛНЭ
+    ========================================== */
+
+    G = data;
+
+
+    $('gTitle').textContent =
+        G.group_name;
+
+
+    $('gSub').textContent =
+        G.institution_name +
+        ' · ' +
+        G.academic_year;
+
+
+    closeModal();
+
+
+    toast(
+        `🎓 ${G.group_name} анги руу амжилттай дэвшлээ`
+    );
+
+
+    await refresh();
+
+
+    settings();
+
+}
 async function saveSettings(){let row={admin_name:$('an').value.trim(),admin_phone:$('ap').value.trim(),admin_title:$('at').value.trim()};let{data,error}=await sb.from('af_groups').update(row).eq('id',G.id).select().single();if(error)return toast(error.message);G=data;closeModal();toast('Хадгалагдлаа')}
 let ACCOUNT_VERIFY_SESSION = null;
 let ACCOUNT_VERIFY_PHONE = null;
