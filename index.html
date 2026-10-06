@@ -2996,7 +2996,204 @@ function myChildren(){
     return DATA.children.filter(
         child => myChildIds.includes(child.id)
     );
-}function payments(){if(M.role!=='parent'){$('payments').innerHTML=`<h3>Төлөлтийн хүсэлтүүд</h3>${DATA.payments.filter(x=>x.status==='pending').map(p=>{let c=DATA.children.find(x=>x.id===p.child_id);return `<div class="card row between"><div><b>${esc(c?.full_name||'')}</b> — ${money(p.total_amount)}<div class="muted">${new Date(p.created_at).toLocaleString()}</div></div><div><button class="btn primary" onclick="reviewPay('${p.id}','approved')">Зөвшөөрөх</button> <button class="btn danger" onclick="reviewPay('${p.id}','rejected')">Татгалзах</button></div></div>`}).join('')||'<div class="card muted">Хүлээгдэж буй төлөлт алга.</div>'}`;return}$('payments').innerHTML=`<div class="row between"><h3>Миний төлөлт</h3><button class="btn primary" onclick="payModal()">Төлөлт хийх</button></div><div class="card muted">Төлөлт нь нэг хүүхэд + нэг хүлээн авах дансаар багцлагдана. Админ банкны гүйлгээг шалгаж батална.</div>`}
+}function payments(){
+
+    // =========================
+    // ADMIN / OWNER
+    // =========================
+
+    if(M.role !== 'parent'){
+
+        const pending =
+            DATA.payments.filter(
+                x => x.status === 'pending'
+            );
+
+        $('payments').innerHTML = `
+            <h3>Төлөлтийн хүсэлтүүд</h3>
+
+            ${
+                pending.map(p => {
+
+                    const c =
+                        DATA.children.find(
+                            x => x.id === p.child_id
+                        );
+
+                    const allocations =
+                        p.af_payment_allocations || [];
+
+                    const fundRows =
+                        allocations.map(a => {
+
+                            const f =
+                                DATA.funds.find(
+                                    x => x.id === a.fund_id
+                                );
+
+                            return `
+                                <div
+                                    class="row between"
+                                    style="margin-top:6px"
+                                >
+                                    <span class="muted">
+                                        ${esc(f?.title || 'Фонд')}
+                                    </span>
+
+                                    <b>
+                                        ${money(a.amount)}
+                                    </b>
+                                </div>
+                            `;
+
+                        }).join('');
+
+                    return `
+                        <div class="card">
+
+                            <div class="row between">
+
+                                <div>
+                                    <b>
+                                        ${esc(c?.full_name || 'Хүүхэд')}
+                                    </b>
+
+                                    <div
+                                        class="money"
+                                        style="margin-top:4px"
+                                    >
+                                        ${money(p.total_amount)}
+                                    </div>
+                                </div>
+
+                                <span class="pill warn">
+                                    Хүлээгдэж байна
+                                </span>
+
+                            </div>
+
+
+                            ${
+                                fundRows
+                                ? `
+                                    <div
+                                        style="
+                                            margin-top:10px;
+                                            padding-top:8px;
+                                            border-top:1px solid #edf2f7;
+                                        "
+                                    >
+                                        ${fundRows}
+                                    </div>
+                                `
+                                : ''
+                            }
+
+
+                            <div
+                                class="muted"
+                                style="margin-top:10px"
+                            >
+                                ${new Date(p.created_at).toLocaleString()}
+                            </div>
+
+
+                            ${
+                                p.proof_path
+                                ? `
+                                    <button
+                                        class="btn soft"
+                                        style="
+                                            width:100%;
+                                            margin-top:12px;
+                                        "
+                                        onclick="viewProof('${esc(p.proof_path)}')"
+                                    >
+                                        🧾 Гүйлгээний баримт харах
+                                    </button>
+                                `
+                                : `
+                                    <div
+                                        class="pill bad"
+                                        style="margin-top:12px"
+                                    >
+                                        ⚠️ Баримт байхгүй
+                                    </div>
+                                `
+                            }
+
+
+                            <div
+                                class="two"
+                                style="margin-top:10px"
+                            >
+
+                                <button
+                                    class="btn primary"
+                                    onclick="reviewPay(
+                                        '${p.id}',
+                                        'approved'
+                                    )"
+                                >
+                                    ✓ Зөвшөөрөх
+                                </button>
+
+                                <button
+                                    class="btn danger"
+                                    onclick="reviewPay(
+                                        '${p.id}',
+                                        'rejected'
+                                    )"
+                                >
+                                    ✕ Татгалзах
+                                </button>
+
+                            </div>
+
+                        </div>
+                    `;
+
+                }).join('')
+                ||
+                `
+                    <div class="card muted">
+                        Хүлээгдэж буй төлөлт алга.
+                    </div>
+                `
+            }
+        `;
+
+        return;
+    }
+
+
+    // =========================
+    // PARENT
+    // =========================
+
+    $('payments').innerHTML = `
+        <div class="row between">
+
+            <h3>
+                Миний төлөлт
+            </h3>
+
+            <button
+                class="btn primary"
+                onclick="payModal()"
+            >
+                Төлөлт хийх
+            </button>
+
+        </div>
+
+        <div class="card muted">
+            Төлөлт нь нэг хүүхэд + нэг хүлээн авах
+            дансаар багцлагдана.
+            Админ банкны гүйлгээг шалгаж батална.
+        </div>
+    `;
+}
 async function reviewPay(id,status){if(!hasWrite())return toast('Эрх дууссан');let{error}=await sb.rpc('af_approve_payment',{p_id:id,p_status:status});if(error)return toast(error.message);await refresh();payments()}
 function payModal(){
  let kids=myChildren();if(!kids.length)return toast('Таны аккаунттай холбогдсон хүүхэд алга');
