@@ -4610,6 +4610,50 @@ body.af-intro-modal-open{overflow:hidden!important}
     <img src="angiin-fond-logo.png" class="brand-logo" alt="Ангийн фонд">
     Ангийн фонд
 </div><button class="btn soft" onclick="logout()">Гарах</button></div></div><div class="wrap">
+ <!-- =========================================
+     SUPER ADMIN
+========================================= -->
+
+<div id="superAdminView" class="hidden">
+
+    <div class="groups-hero">
+
+        <div style="
+            font-size:25px;
+            font-weight:950;
+            letter-spacing:-.7px;
+            margin-bottom:4px;
+        ">
+            🛡️ Super Admin
+        </div>
+
+        <div class="groups-toolbar">
+
+            <div>
+                <h2>Эрхийн хүсэлтүүд</h2>
+
+                <div class="muted">
+                    Ангийн эрх сунгах төлбөрийн хүсэлтүүд
+                </div>
+            </div>
+
+            <button
+                class="btn soft"
+                onclick="loadSuperAdminRequests()"
+            >
+                ↻ Шинэчлэх
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div id="superAdminStats"></div>
+
+    <div id="superAdminRequests"></div>
+
+</div>
 <div id="groupsView">
   <div class="groups-hero">
     <div id="friendlyGreeting" style="font-size:25px;font-weight:950;letter-spacing:-.7px;margin-bottom:4px;padding-right:78px">Сайн байна уу 👋</div>
@@ -5004,23 +5048,82 @@ function cancelPhoneRegistration(){
 }async function logout(){await sb.auth.signOut();location.reload()}
 async function boot(){
 
-    let { data:{session} } = await sb.auth.getSession();
+    const {
+        data:{ session }
+    } =
+    await sb.auth.getSession();
 
-    if(!session) return;
+
+    if(!session){
+        return;
+    }
+
 
     $('auth').classList.add('hidden');
     $('app').classList.remove('hidden');
 
     U = session.user;
 
+
+    /* =========================================
+       SUPER ADMIN CHECK
+    ========================================= */
+
+    try{
+
+        const {
+            data:isSuperAdmin,
+            error:adminError
+        } =
+        await sb.rpc(
+            'af_is_super_admin'
+        );
+
+
+        if(adminError){
+            console.error(
+                'Super admin check error:',
+                adminError
+            );
+        }
+
+
+        if(isSuperAdmin === true){
+
+            await openSuperAdmin();
+
+            return;
+        }
+
+    }
+    catch(error){
+
+        console.error(
+            'Super admin check failed:',
+            error
+        );
+    }
+
+
+    /* =========================================
+       NORMAL USER
+    ========================================= */
+
     await loadGroups();
 
-    // ==============================
-    // INVITE LINK
-    // ==============================
 
-    const params = new URLSearchParams(window.location.search);
-    const inviteCode = params.get('invite');
+    /* =========================================
+       INVITE LINK
+    ========================================= */
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    const inviteCode =
+        params.get('invite');
+
 
     if(inviteCode){
 
@@ -5030,18 +5133,576 @@ async function boot(){
 
             setTimeout(() => {
 
-                const input = document.getElementById('jc');
+                const input =
+                    document.getElementById('jc');
 
                 if(input){
-                    input.value = inviteCode;
+
+                    input.value =
+                        inviteCode;
+
                     findInvite();
                 }
 
             },100);
 
         },200);
+    }
+}
+ /* =========================================================
+   SUPER ADMIN
+========================================================= */
+
+async function openSuperAdmin(){
+
+    G = null;
+    M = null;
+
+    $('groupsView')
+        ?.classList.add('hidden');
+
+    $('workspace')
+        ?.classList.add('hidden');
+
+    $('superAdminView')
+        ?.classList.remove('hidden');
+
+
+    await loadSuperAdminRequests();
+}
+
+
+/* =========================================================
+   LOAD SUBSCRIPTION REQUESTS
+========================================================= */
+
+async function loadSuperAdminRequests(){
+
+    const box =
+        $('superAdminRequests');
+
+    const stats =
+        $('superAdminStats');
+
+
+    if(!box){
+        return;
+    }
+
+
+    box.innerHTML = `
+        <div class="card">
+            <div class="muted">
+                ⏳ Хүсэлтүүдийг ачаалж байна...
+            </div>
+        </div>
+    `;
+
+
+    try{
+
+        const {
+            data,
+            error
+        } =
+        await sb.rpc(
+            'af_admin_subscription_requests'
+        );
+
+
+        if(error){
+            throw error;
+        }
+
+
+        const requests =
+            data || [];
+
+
+        const pendingCount =
+            requests.filter(
+                x => x.status === 'pending'
+            ).length;
+
+        const approvedCount =
+            requests.filter(
+                x => x.status === 'approved'
+            ).length;
+
+        const rejectedCount =
+            requests.filter(
+                x => x.status === 'rejected'
+            ).length;
+
+
+        if(stats){
+
+            stats.innerHTML = `
+                <div
+                    class="three"
+                    style="margin:16px 0"
+                >
+
+                    <div class="card">
+
+                        <div class="statlabel">
+                            Хүлээгдэж байна
+                        </div>
+
+                        <div class="statnum">
+                            ${pendingCount}
+                        </div>
+
+                    </div>
+
+
+                    <div class="card">
+
+                        <div class="statlabel">
+                            Зөвшөөрсөн
+                        </div>
+
+                        <div class="statnum">
+                            ${approvedCount}
+                        </div>
+
+                    </div>
+
+
+                    <div class="card">
+
+                        <div class="statlabel">
+                            Татгалзсан
+                        </div>
+
+                        <div class="statnum">
+                            ${rejectedCount}
+                        </div>
+
+                    </div>
+
+                </div>
+            `;
+        }
+
+
+        if(!requests.length){
+
+            box.innerHTML = `
+                <div class="empty-state">
+
+                    <div class="empty-icon">
+                        📭
+                    </div>
+
+                    <b>
+                        Эрхийн хүсэлт алга
+                    </b>
+
+                    <div style="margin-top:7px">
+                        Шинэ хүсэлт ирэхэд энд харагдана.
+                    </div>
+
+                </div>
+            `;
+
+            return;
+        }
+
+
+        box.innerHTML =
+            requests
+                .map(
+                    subscriptionRequestCard
+                )
+                .join('');
 
     }
+    catch(error){
+
+        console.error(
+            'Super admin requests error:',
+            error
+        );
+
+
+        box.innerHTML = `
+            <div class="card">
+
+                <b>
+                    ⚠️ Хүсэлтүүдийг ачаалж чадсангүй
+                </b>
+
+                <div
+                    class="muted"
+                    style="margin-top:6px"
+                >
+                    ${esc(
+                        error?.message ||
+                        'Алдаа гарлаа'
+                    )}
+                </div>
+
+            </div>
+        `;
+    }
+}
+
+
+/* =========================================================
+   REQUEST CARD
+========================================================= */
+
+function subscriptionRequestCard(r){
+
+    const planNames = {
+
+        '1m':
+            '1 сар',
+
+        '6m':
+            '5+1 сар',
+
+        'full_year':
+            'Full year'
+
+    };
+
+
+    const statusMap = {
+
+        pending:{
+            text:'⏳ Хүлээгдэж байна',
+            color:'#b46a00',
+            bg:'#fff8df'
+        },
+
+        approved:{
+            text:'✅ Зөвшөөрсөн',
+            color:'#078458',
+            bg:'#eafff5'
+        },
+
+        rejected:{
+            text:'❌ Татгалзсан',
+            color:'#d33d49',
+            bg:'#fff0f1'
+        }
+
+    };
+
+
+    const status =
+        statusMap[r.status] ||
+        statusMap.pending;
+
+
+    const created =
+        r.created_at
+            ? new Date(
+                r.created_at
+            ).toLocaleString('mn-MN')
+            : '—';
+
+
+    return `
+        <div
+            class="card"
+            style="
+                margin-bottom:14px;
+                border-radius:20px;
+            "
+        >
+
+            <div class="row between">
+
+                <div>
+
+                    <div
+                        class="muted"
+                        style="
+                            font-size:12px;
+                            margin-bottom:4px;
+                        "
+                    >
+                        🏫 ${esc(
+                            r.institution_name ||
+                            'Байгууллага'
+                        )}
+                    </div>
+
+                    <b style="font-size:18px">
+                        ${esc(
+                            r.group_name ||
+                            'Анги / бүлэг'
+                        )}
+                    </b>
+
+                </div>
+
+
+                <span
+                    class="pill"
+                    style="
+                        background:${status.bg};
+                        color:${status.color};
+                    "
+                >
+                    ${status.text}
+                </span>
+
+            </div>
+
+
+            <div
+                style="
+                    margin-top:14px;
+                    padding:14px;
+                    background:#f7fafc;
+                    border-radius:16px;
+                "
+            >
+
+                <div class="row between">
+
+                    <span class="muted">
+                        Багц
+                    </span>
+
+                    <b>
+                        ${esc(
+                            planNames[
+                                r.plan_code
+                            ] ||
+                            r.plan_code
+                        )}
+                    </b>
+
+                </div>
+
+
+                <div
+                    class="row between"
+                    style="margin-top:8px"
+                >
+
+                    <span class="muted">
+                        Төлбөр
+                    </span>
+
+                    <b
+                        style="
+                            font-size:18px;
+                            color:#079b66;
+                        "
+                    >
+                        ${money(r.amount)}
+                    </b>
+
+                </div>
+
+
+                <div
+                    class="row between"
+                    style="margin-top:8px"
+                >
+
+                    <span class="muted">
+                        Илгээсэн
+                    </span>
+
+                    <span>
+                        ${esc(created)}
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="btn soft"
+                style="
+                    width:100%;
+                    margin-top:12px;
+                "
+                onclick="viewProof(
+                    '${esc(r.proof_path)}'
+                )"
+            >
+                🧾 Баримт харах
+            </button>
+
+
+            ${
+                r.status === 'pending'
+                    ? `
+                        <div
+                            class="two"
+                            style="margin-top:10px"
+                        >
+
+                            <button
+                                type="button"
+                                class="btn danger"
+                                onclick="
+                                    rejectSubscription(
+                                        '${r.request_id}'
+                                    )
+                                "
+                            >
+                                Татгалзах
+                            </button>
+
+
+                            <button
+                                type="button"
+                                class="btn primary"
+                                onclick="
+                                    approveSubscription(
+                                        '${r.request_id}'
+                                    )
+                                "
+                            >
+                                ✓ Зөвшөөрөх
+                            </button>
+
+                        </div>
+                    `
+                    : ''
+            }
+
+        </div>
+    `;
+}
+
+
+/* =========================================================
+   APPROVE
+========================================================= */
+
+async function approveSubscription(
+    requestId
+){
+
+    if(
+        !confirm(
+            'Энэ төлбөрийг зөвшөөрч, ангийн эрхийг сунгах уу?'
+        )
+    ){
+        return;
+    }
+
+
+    try{
+
+        const {
+            data:newExpiry,
+            error
+        } =
+        await sb.rpc(
+            'af_approve_subscription_request',
+            {
+                p_request_id:
+                    requestId
+            }
+        );
+
+
+        if(error){
+            throw error;
+        }
+
+
+        toast(
+            'Эрх амжилттай сунгагдлаа 🎉'
+        );
+
+
+        console.log(
+            'New access expiry:',
+            newExpiry
+        );
+
+
+        await loadSuperAdminRequests();
+
+    }
+    catch(error){
+
+        console.error(
+            'Approve subscription error:',
+            error
+        );
+
+
+        toast(
+            error?.message ||
+            'Хүсэлтийг зөвшөөрч чадсангүй'
+        );
+    }
+}
+
+
+/* =========================================================
+   REJECT
+========================================================= */
+
+async function rejectSubscription(
+    requestId
+){
+
+    if(
+        !confirm(
+            'Энэ төлбөрийн хүсэлтийг татгалзах уу?'
+        )
+    ){
+        return;
+    }
+
+
+    try{
+
+        const {
+            error
+        } =
+        await sb.rpc(
+            'af_reject_subscription_request',
+            {
+                p_request_id:
+                    requestId
+            }
+        );
+
+
+        if(error){
+            throw error;
+        }
+
+
+        toast(
+            'Хүсэлтийг татгалзлаа'
+        );
+
+
+        await loadSuperAdminRequests();
+
+    }
+    catch(error){
+
+        console.error(
+            'Reject subscription error:',
+            error
+        );
+
+
+        toast(
+            error?.message ||
+            'Хүсэлтийг татгалзаж чадсангүй'
+        );
+    }
+}
 }async function loadGroups(){G=M=null;$('groupsView').classList.remove('hidden');$('workspace').classList.add('hidden');let{data,error}=await sb.from('af_memberships').select('id,role,status,group_id,af_groups(*)').eq('user_id',U.id).eq('status','approved');if(error)return toast(error.message);$('groups').innerHTML=(data||[]).length?(data||[]).map((m,i)=>`<div class="card" onclick='enter(${JSON.stringify(JSON.stringify(m))})'><div class="row between"><div class="row"><div style="width:52px;height:52px;border-radius:16px;background:${i%2?'#dceeff':'#dcf8e7'};display:grid;place-items:center;font-size:25px">${i%2?'🎒':'🏫'}</div><div><b>${esc(m.af_groups.group_name)}</b><div class="muted">${esc(m.af_groups.institution_name)} · ${esc(m.af_groups.academic_year)}</div></div></div><span class="pill">${m.role==='owner'?'👑 Фонд хариуцагч':m.role==='admin'?'⭐ Админ':'👨‍👩‍👧 Эцэг эх'}</span></div></div>`).join(''):'<div class="empty-state"><div class="empty-icon">🏫</div><b style="color:#24352f">Одоогоор анги / бүлэг алга</b><div style="margin-top:7px">Шинээр анги үүсгэх эсвэл урилгын кодоор нэгдээрэй.</div></div>'}
 function openCreateGroup(){modal(`<h3>Анги / бүлэг үүсгэх</h3><div class="field"><label>Байгууллагын нэр *</label><input id="ci" placeholder="23-р сургууль / 123-р цэцэрлэг"></div><div class="two"><div class="field"><label>Анги / бүлэг *</label><input id="cg" placeholder="5А"></div><div class="field"><label>Хичээлийн жил</label><input value="${ay()}" readonly></div></div><div class="field"><label>Тайлбар (заавал биш)</label><input placeholder="Жишээ: Манай 5А анги" disabled></div><button class="btn primary" style="width:100%" onclick="createGroup()">Үүсгэх</button>`)}async function createGroup(){let i=$('ci').value.trim(),g=$('cg').value.trim();if(!i||!g)return toast('Мэдээллээ бөглөнө үү');let{data:gid,error}=await sb.rpc('af_create_group',{p_institution:i,p_group:g,p_year:ay()});if(error)return toast(error.message);closeModal();toast('Анги үүслээ');let{data:m,error:me}=await sb.from('af_memberships').select('id,role,status,group_id,af_groups(*)').eq('user_id',U.id).eq('group_id',gid).single();if(me||!m){await loadGroups();return}await enter(JSON.stringify(m));setTimeout(()=>adminInfoModal(),250)}
 function adminInfoModal(){
