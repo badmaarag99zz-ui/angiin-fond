@@ -6193,7 +6193,7 @@ function settingsInfo(){
     `);
 
 }
- async function saveSettingsInfo(){
+async function saveSettingsInfo(){
 
     if(!hasWrite()){
         return toast('Эрх дууссан');
@@ -6216,15 +6216,14 @@ function settingsInfo(){
 
 
     const { data, error } =
-        await sb
-            .from('af_groups')
-            .update({
-                institution_name: institution,
-                group_name: groupName
-            })
-            .eq('id', G.id)
-            .select()
-            .single();
+        await sb.rpc(
+            'af_update_group_info',
+            {
+                p_group_id: G.id,
+                p_institution_name: institution,
+                p_group_name: groupName
+            }
+        );
 
 
     if(error){
@@ -6233,11 +6232,36 @@ function settingsInfo(){
     }
 
 
+    /* =========================================
+       LOCAL DATA SYNC
+    ========================================= */
+
     G = data;
+
+    if(DATA.currentYear){
+        DATA.currentYear.group_name =
+            groupName;
+    }
+
+
+    /* =========================================
+       HEADER UPDATE
+    ========================================= */
+
+    $('gTitle').textContent =
+        G.group_name;
+
+    $('gSub').textContent =
+        G.institution_name +
+        ' · ' +
+        G.academic_year;
+
 
     closeModal();
 
     toast('Ангийн мэдээлэл хадгалагдлаа');
+
+    await refresh();
 
     settings();
 }
