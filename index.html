@@ -11810,11 +11810,7 @@ function openAfInfoModal(type){
             </button>
 
 
-            <div class="af-feedback-coming">
-                ℹ️ Санал хүсэлт хүлээн авах систем
-                одоогоор бэлтгэгдэж байна.
-                Илгээх боломж тун удахгүй идэвхжинэ.
-            </div>
+          
 
         `;
 
@@ -11869,14 +11865,28 @@ function selectAfFeedbackType(button){
    Backend холбоогүй тул fake success хийхгүй.
 ========================================= */
 
-function submitAfFeedback(){
+async function submitAfFeedback(){
+
+    const messageInput =
+        document.getElementById("afFeedbackMessage");
+
+    const phoneInput =
+        document.getElementById("afFeedbackPhone");
+
+    const sendButton =
+        document.querySelector(".af-feedback-send");
+
 
     const message =
-        document
-            .getElementById("afFeedbackMessage")
-            ?.value
-            .trim();
+        messageInput?.value.trim() || "";
 
+    const phone =
+        phoneInput?.value.trim() || "";
+
+
+    /* =========================================
+       VALIDATION
+    ========================================= */
 
     if(!message){
 
@@ -11884,16 +11894,160 @@ function submitAfFeedback(){
             "Санал хүсэлтээ бичнэ үү."
         );
 
+        messageInput?.focus();
+
         return;
     }
 
 
-    alert(
-        "Санал хүсэлт хүлээн авах систем тун удахгүй идэвхжинэ."
-    );
+    if(message.length > 1500){
+
+        alert(
+            "Санал хүсэлт 1500 тэмдэгтээс хэтрэхгүй байна."
+        );
+
+        return;
+    }
+
+
+    if(
+        phone &&
+        !/^\d{8}$/.test(phone)
+    ){
+
+        alert(
+            "Утасны дугаар 8 оронтой байна."
+        );
+
+        phoneInput?.focus();
+
+        return;
+    }
+
+
+    /* =========================================
+       BUTTON LOADING
+    ========================================= */
+
+    const oldButtonText =
+        sendButton?.textContent;
+
+
+    if(sendButton){
+
+        sendButton.disabled = true;
+
+        sendButton.textContent =
+            "Илгээж байна...";
+
+    }
+
+
+    try{
+
+        /* =========================================
+           CURRENT USER
+        ========================================= */
+
+        const {
+            data:{
+                user
+            }
+        } =
+        await sb.auth.getUser();
+
+
+        /* =========================================
+           INSERT
+        ========================================= */
+
+        const payload = {
+
+            user_id:
+                user?.id || null,
+
+            type:
+                afFeedbackType || "Санал",
+
+            message:
+                message,
+
+            phone:
+                phone || null
+
+        };
+
+
+        const {
+            error
+        } =
+        await sb
+            .from("af_feedback")
+            .insert(payload);
+
+
+        if(error){
+
+            throw error;
+
+        }
+
+
+        /* =========================================
+           SUCCESS
+        ========================================= */
+
+        if(messageInput){
+            messageInput.value = "";
+        }
+
+
+        if(phoneInput){
+            phoneInput.value = "";
+        }
+
+
+        afFeedbackType =
+            "Санал";
+
+
+        alert(
+            "Санал хүсэлт амжилттай илгээгдлээ. Баярлалаа! 💚"
+        );
+
+
+        closeAfInfoModal();
+
+
+    }
+    catch(error){
+
+        console.error(
+            "Feedback submit error:",
+            error
+        );
+
+
+        alert(
+            "Санал хүсэлт илгээхэд алдаа гарлаа. Дахин оролдоно уу."
+        );
+
+    }
+    finally{
+
+        if(sendButton){
+
+            sendButton.disabled = false;
+
+            sendButton.textContent =
+                oldButtonText ||
+                "Санал хүсэлт илгээх";
+
+        }
+
+    }
 
 }
-
 
 /* =========================================
    ESC → INFO MODAL CLOSE
