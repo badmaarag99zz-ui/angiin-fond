@@ -3799,6 +3799,140 @@ function adminPaymentModal(){
     $('adminPayAmount').value =
         remaining;
 }
+ async function saveAdminPayment(){
+
+    if(M.role === 'parent'){
+        return toast('Эрх хүрэхгүй байна');
+    }
+
+    if(!hasWrite()){
+        return toast('Эрх дууссан');
+    }
+
+
+    const childId =
+        $('adminPayChild')?.value;
+
+    const fundId =
+        $('adminPayFund')?.value;
+
+    const amount =
+        Number(
+            $('adminPayAmount')?.value
+        );
+
+    const paidDate =
+        $('adminPayDate')?.value;
+
+    const note =
+        $('adminPayNote')?.value.trim() || null;
+
+
+    if(!childId){
+        return toast('Хүүхэд сонгоно уу');
+    }
+
+    if(!fundId){
+        return toast('Фонд сонгоно уу');
+    }
+
+    if(!amount || amount <= 0){
+        return toast('Төлөлтийн дүн оруулна уу');
+    }
+
+    if(!paidDate){
+        return toast('Төлсөн огноо сонгоно уу');
+    }
+
+
+    const fundChild =
+        DATA.fc.find(
+            x =>
+                x.fund_id === fundId &&
+                x.child_id === childId
+        );
+
+
+    if(!fundChild){
+        return toast('Фондын мэдээлэл олдсонгүй');
+    }
+
+
+    const remaining =
+        Number(fundChild.target_amount) -
+        approvedPaid(
+            fundId,
+            childId
+        );
+
+
+    if(amount > remaining){
+
+        return toast(
+            `Үлдэгдэл ${money(remaining)} байна`
+        );
+
+    }
+
+
+    const child =
+        DATA.children.find(
+            c => c.id === childId
+        );
+
+    const fund =
+        DATA.funds.find(
+            f => f.id === fundId
+        );
+
+
+    const ok = confirm(
+        `${child?.full_name || 'Хүүхэд'}\n` +
+        `${fund?.title || 'Фонд'}\n` +
+        `${money(amount)} төлөлт бүртгэх үү?`
+    );
+
+    if(!ok){
+        return;
+    }
+
+
+    const { error } =
+        await sb.rpc(
+            'af_admin_record_payment',
+            {
+                p_group_id: G.id,
+                p_child_id: childId,
+                p_fund_id: fundId,
+                p_amount: amount,
+                p_paid_date: paidDate,
+                p_note: note
+            }
+        );
+
+
+    if(error){
+
+        console.error(error);
+
+        return toast(
+            error.message ||
+            'Төлөлт бүртгэхэд алдаа гарлаа'
+        );
+
+    }
+
+
+    closeModal();
+
+    await refresh();
+
+    payments();
+
+    toast(
+        'Төлөлт амжилттай бүртгэгдлээ 🎉'
+    );
+}
  function payModal(){
  let kids=myChildren();if(!kids.length)return toast('Таны аккаунттай холбогдсон хүүхэд алга');
  modal(`<h3>Төлөлт хийх</h3><div class="field"><label>Хүүхэд</label><select id="pc" onchange="payOptions()">${kids.map(c=>`<option value="${c.id}">${esc(c.full_name)}</option>`).join('')}</select></div><div id="payOpts"></div>`);payOptions();
