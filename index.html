@@ -3404,9 +3404,366 @@ function report(){
  <div class="two"><div class="field"><label>Фонд</label><select><option>Сарын фонд</option><option>Бүх фонд</option></select></div><div class="field"><label>Сар</label><select><option>Бүгд</option>${months.map(f=>`<option>${esc(f.title)}</option>`).join('')}</select></div></div>
  <div class="grid" style="grid-template-columns:repeat(3,1fr)"><div class="card"><div class="statlabel">Нийт орлого</div><div class="statnum" style="color:#079b66">${money(total.in)}</div></div><div class="card"><div class="statlabel">Нийт зарлага</div><div class="statnum" style="color:#ef4c55">${money(total.ex)}</div></div><div class="card"><div class="statlabel">Үлдэгдэл</div><div class="statnum" style="color:#147ce5">${money(total.bal)}</div></div></div>
  <div class="card"><b>Сарын төлөлтийн явц</b><div class="chart">${months.map(f=>{let st=fstats(f),pct=st.count?Math.round(st.paidCount/st.count*100):0;return `<div class="barcol"><div class="bar" style="height:${Math.max(8,pct)}px"></div>${esc(f.month_key||'')}</div>`}).join('')||'<span class="muted">Сарын фондын мэдээлэл алга.</span>'}</div></div>
- <div class="card report-links"><b>Дэлгэрэнгүй тайлан</b><div class="item">📘 Төлөлтийн жагсаалт <span style="float:right">›</span></div><div class="item">🧾 Зарлагын жагсаалт <span style="float:right">›</span></div><div class="item">🧒 Хүүхэд тус бүрийн төлөв <span style="float:right">›</span></div><div class="item">💚 Фондыг үлдэгдэл <span style="float:right">›</span></div>${M.role!=='parent'?`<div class="item" onclick="excelReport()">📗 Excel татах <span style="float:right">›</span></div><div class="item" onclick="pdfReport()">📄 PDF татах <span style="float:right">›</span></div>`:''}</div>`;
+ <div class="item" onclick="reportPayments()">
+    📘 Төлөлтийн жагсаалт
+    <span style="float:right">›</span>
+</div>
+
+<div class="item" onclick="reportExpenses()">
+    🧾 Зарлагын жагсаалт
+    <span style="float:right">›</span>
+</div>
+
+<div class="item" onclick="reportChildren()">
+    🧒 Хүүхэд тус бүрийн төлөв
+    <span style="float:right">›</span>
+</div>
+
+<div class="item" onclick="reportBalances()">
+    💚 Фондын үлдэгдэл
+    <span style="float:right">›</span>
+</div>${M.role!=='parent'?`<div class="item" onclick="excelReport()">📗 Excel татах <span style="float:right">›</span></div><div class="item" onclick="pdfReport()">📄 PDF татах <span style="float:right">›</span></div>`:''}</div>`;
  DATA.reportRows=rows;
-}function excelReport(){let ws=XLSX.utils.json_to_sheet(DATA.reportRows||[]),wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Тайлан');XLSX.writeFile(wb,`Angiin-fond-${G.academic_year}.xlsx`)}function pdfReport(){let{jsPDF}=window.jspdf,doc=new jsPDF();doc.text('Angiin fond report',14,16);doc.text(`${G.institution_name} / ${G.group_name} / ${G.academic_year}`,14,24);let y=34;(DATA.reportRows||[]).forEach(r=>{doc.text(`${r['Фонд']}: income ${r['Цугласан']}, expense ${r['Зарлага']}, balance ${r['Үлдэгдэл']}`,14,y);y+=8;if(y>280){doc.addPage();y=20}});doc.save(`Angiin-fond-${G.academic_year}.pdf`)}
+}
+ function reportPayments(){
+
+    const approved = DATA.payments
+        .filter(p => p.status === 'approved')
+        .sort(
+            (a,b) =>
+                new Date(b.created_at) -
+                new Date(a.created_at)
+        );
+
+    const html = approved.map(p => {
+
+        const child = DATA.children.find(
+            c => c.id === p.child_id
+        );
+
+        const allocations =
+            p.af_payment_allocations || [];
+
+        const fundRows = allocations.map(a => {
+
+            const fund = DATA.funds.find(
+                f => f.id === a.fund_id
+            );
+
+            return `
+                <div class="row between" style="margin-top:6px">
+                    <span class="muted">
+                        ${esc(fund?.title || 'Фонд')}
+                    </span>
+
+                    <b>
+                        ${money(a.amount)}
+                    </b>
+                </div>
+            `;
+
+        }).join('');
+
+        return `
+            <div class="card">
+
+                <div class="row between">
+                    <b>${esc(child?.full_name || 'Хүүхэд')}</b>
+
+                    <span class="pill ok">
+                        ✓ Батлагдсан
+                    </span>
+                </div>
+
+                <div
+                    class="money"
+                    style="margin-top:6px"
+                >
+                    ${money(p.total_amount)}
+                </div>
+
+                ${
+                    fundRows
+                        ? `
+                            <div
+                                style="
+                                    margin-top:8px;
+                                    padding-top:8px;
+                                    border-top:1px solid #edf2f7;
+                                "
+                            >
+                                ${fundRows}
+                            </div>
+                        `
+                        : ''
+                }
+
+                <div class="muted" style="margin-top:8px">
+                    ${new Date(p.created_at).toLocaleString()}
+                </div>
+
+            </div>
+        `;
+
+    }).join('');
+
+    modal(`
+        <h3>📘 Төлөлтийн жагсаалт</h3>
+
+        ${
+            html ||
+            `
+                <div class="muted">
+                    Батлагдсан төлөлт алга.
+                </div>
+            `
+        }
+    `);
+}
+
+
+function reportExpenses(){
+
+    const expenses = [...DATA.expenses]
+        .sort(
+            (a,b) =>
+                String(b.expense_date || '')
+                    .localeCompare(
+                        String(a.expense_date || '')
+                    )
+        );
+
+    const html = expenses.map(e => {
+
+        const fund = DATA.funds.find(
+            f => f.id === e.fund_id
+        );
+
+        return `
+            <div class="card">
+
+                <div class="row between">
+
+                    <div>
+                        <b>
+                            ${esc(e.title || 'Зарлага')}
+                        </b>
+
+                        <div class="muted">
+                            ${esc(fund?.title || 'Фонд')}
+                        </div>
+                    </div>
+
+                    <b style="color:#ef4c55">
+                        ${money(e.amount)}
+                    </b>
+
+                </div>
+
+                <div class="muted" style="margin-top:8px">
+                    ${esc(e.expense_date || '')}
+                </div>
+
+                ${
+                    e.proof_path
+                        ? `
+                            <button
+                                class="btn soft"
+                                style="width:100%;margin-top:10px"
+                                onclick="viewProof('${esc(e.proof_path)}')"
+                            >
+                                🧾 Баримт харах
+                            </button>
+                        `
+                        : ''
+                }
+
+            </div>
+        `;
+
+    }).join('');
+
+    modal(`
+        <h3>🧾 Зарлагын жагсаалт</h3>
+
+        ${
+            html ||
+            `
+                <div class="muted">
+                    Зарлага бүртгэгдээгүй байна.
+                </div>
+            `
+        }
+    `);
+}
+
+
+function reportChildren(){
+
+    const html = DATA.children
+        .map(child => {
+
+            const allocations = DATA.fc.filter(
+                fc => fc.child_id === child.id
+            );
+
+            const target = allocations.reduce(
+                (sum,fc) =>
+                    sum + Number(fc.target_amount || 0),
+                0
+            );
+
+            const paid = allocations.reduce(
+                (sum,fc) =>
+                    sum +
+                    approvedPaid(
+                        fc.fund_id,
+                        child.id
+                    ),
+                0
+            );
+
+            const remaining =
+                Math.max(0, target - paid);
+
+            return `
+                <div class="card">
+
+                    <b>
+                        ${esc(child.full_name)}
+                    </b>
+
+                    <div
+                        class="row between"
+                        style="margin-top:10px"
+                    >
+                        <span class="muted">
+                            Төлсөн
+                        </span>
+
+                        <b style="color:#079b66">
+                            ${money(paid)}
+                        </b>
+                    </div>
+
+                    <div
+                        class="row between"
+                        style="margin-top:6px"
+                    >
+                        <span class="muted">
+                            Үлдэгдэл
+                        </span>
+
+                        <b>
+                            ${money(remaining)}
+                        </b>
+                    </div>
+
+                </div>
+            `;
+
+        }).join('');
+
+    modal(`
+        <h3>🧒 Хүүхэд тус бүрийн төлөв</h3>
+
+        ${
+            html ||
+            `
+                <div class="muted">
+                    Хүүхдийн мэдээлэл алга.
+                </div>
+            `
+        }
+    `);
+}
+
+
+function reportBalances(){
+
+    const html = DATA.funds.map(f => {
+
+        const s = fstats(f);
+
+        return `
+            <div class="card">
+
+                <div class="row between">
+
+                    <div>
+                        <b>
+                            ${esc(f.title)}
+                        </b>
+
+                        <div class="muted">
+                            ${
+                                f.kind === 'monthly'
+                                    ? 'Сарын фонд'
+                                    : 'Тусгай фонд'
+                            }
+                        </div>
+                    </div>
+
+                    <b
+                        style="
+                            color:
+                            ${
+                                s.balance >= 0
+                                    ? '#147ce5'
+                                    : '#ef4c55'
+                            };
+                        "
+                    >
+                        ${money(s.balance)}
+                    </b>
+
+                </div>
+
+                <div
+                    class="row between"
+                    style="margin-top:10px"
+                >
+                    <span class="muted">
+                        Цугласан
+                    </span>
+
+                    <span>
+                        ${money(s.paid)}
+                    </span>
+                </div>
+
+                <div
+                    class="row between"
+                    style="margin-top:5px"
+                >
+                    <span class="muted">
+                        Зарлага
+                    </span>
+
+                    <span>
+                        ${money(s.exp)}
+                    </span>
+                </div>
+
+            </div>
+        `;
+
+    }).join('');
+
+    modal(`
+        <h3>💚 Фондын үлдэгдэл</h3>
+
+        ${
+            html ||
+            `
+                <div class="muted">
+                    Фондын мэдээлэл алга.
+                </div>
+            `
+        }
+    `);
+}
+ function excelReport(){let ws=XLSX.utils.json_to_sheet(DATA.reportRows||[]),wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Тайлан');XLSX.writeFile(wb,`Angiin-fond-${G.academic_year}.xlsx`)}function pdfReport(){let{jsPDF}=window.jspdf,doc=new jsPDF();doc.text('Angiin fond report',14,16);doc.text(`${G.institution_name} / ${G.group_name} / ${G.academic_year}`,14,24);let y=34;(DATA.reportRows||[]).forEach(r=>{doc.text(`${r['Фонд']}: income ${r['Цугласан']}, expense ${r['Зарлага']}, balance ${r['Үлдэгдэл']}`,14,y);y+=8;if(y>280){doc.addPage();y=20}});doc.save(`Angiin-fond-${G.academic_year}.pdf`)}
 function settings(){
  $('settings').innerHTML=`<h3>Тохиргоо</h3><div class="card">
  <div class="settings-item" onclick="settingsInfo()"><div class="settings-ico">🏫</div><div style="flex:1"><b>Ангийн мэдээлэл</b></div><b>›</b></div>
