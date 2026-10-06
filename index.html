@@ -5186,38 +5186,67 @@ DATA.requests =
  if(admin)DATA.memberships=z[k++]?.data||[];
  renderAccess();
 }
+/* =========================================================
+   ACCESS / SUBSCRIPTION
+========================================================= */
+
 async function renderAccess(){
 
-    const trial =
-        new Date(G.trial_ends_at);
+    if(!G || !$('accessBanner')){
+        return;
+    }
 
-    const now =
-        new Date();
+    const now = new Date();
 
-    const subscriptionActive =
-        G.access_ends_at &&
-        new Date(G.access_ends_at) > now;
+    const trialEnd =
+        G.trial_ends_at
+            ? new Date(G.trial_ends_at)
+            : null;
+
+    const accessEnd =
+        G.access_ends_at
+            ? new Date(G.access_ends_at)
+            : null;
 
     const trialActive =
-        trial > now;
+        trialEnd &&
+        !Number.isNaN(trialEnd.getTime()) &&
+        trialEnd > now;
+
+    const subscriptionActive =
+        accessEnd &&
+        !Number.isNaN(accessEnd.getTime()) &&
+        accessEnd > now;
 
     const active =
-        subscriptionActive ||
-        trialActive;
+        trialActive ||
+        subscriptionActive;
 
     const days =
-        Math.max(
-            0,
-            Math.ceil(
-                (trial - now) / 86400000
+        trialActive
+            ? Math.max(
+                0,
+                Math.ceil(
+                    (trialEnd - now) / 86400000
+                )
             )
-        );
+            : 0;
+
+
+    /* =========================================
+       OWNER-ИЙН СҮҮЛИЙН SUBSCRIPTION REQUEST
+    ========================================= */
 
     let request = null;
 
     if(M?.role === 'owner'){
 
-        const { data } =
+        try{
+
+            const {
+                data,
+                error
+            } =
             await sb
                 .from('af_subscription_requests')
                 .select(
@@ -5231,15 +5260,173 @@ async function renderAccess(){
                 .limit(1)
                 .maybeSingle();
 
-        request = data || null;
+
+            if(error){
+                console.error(
+                    'Subscription request load error:',
+                    error
+                );
+            }else{
+                request = data || null;
+            }
+
+        }
+        catch(error){
+
+            console.error(
+                'Subscription request load error:',
+                error
+            );
+        }
     }
+
+
+    /* =========================================
+       ИДЭВХТЭЙ ЭРХ
+    ========================================= */
+
+    if(active){
+
+        let html = '';
+
+
+        if(subscriptionActive){
+
+            html += `
+                <b>✅ Эрх идэвхтэй</b>
+
+                <div class="muted">
+                    Дуусах:
+                    ${accessEnd.toLocaleDateString('mn-MN')}
+                </div>
+            `;
+
+        }else{
+
+            html += `
+                <b>🎁 Үнэгүй туршилт</b>
+
+                <div class="muted">
+                    ${days} хоног үлдлээ
+                </div>
+            `;
+        }
+
+
+        /* OWNER */
+
+        if(M?.role === 'owner'){
+
+            if(request?.status === 'pending'){
+
+                html += `
+                    <div
+                        class="muted"
+                        style="
+                            margin-top:5px;
+                            color:#b46a00;
+                        "
+                    >
+                        ⏳ Эрх сунгах хүсэлт шалгагдаж байна
+                    </div>
+                `;
+
+            }else{
+
+                html += `
+                    <button
+                        type="button"
+                        class="link"
+                        style="
+                            border:0;
+                            background:none;
+                            padding:4px 0 0;
+                            font-size:12px !important;
+                        "
+                        onclick="openSubscriptionModal()"
+                    >
+                        Эрх сунгах →
+                    </button>
+                `;
+            }
+        }
+
+
+        $('accessBanner').innerHTML =
+            html;
+
+        return;
+    }
+
+
+    /* =========================================
+       ЭРХ ДУУССАН
+    ========================================= */
+
+    let html = `
+        <b>🔒 Эрхийн хугацаа дууссан</b>
+
+        <div class="muted">
+            Мэдээлэл хадгалагдсан.
+            Унших боломжтой.
+        </div>
+    `;
+
+
+    if(M?.role === 'owner'){
+
+        if(request?.status === 'pending'){
+
+            html += `
+                <div
+                    class="muted"
+                    style="
+                        margin-top:6px;
+                        color:#b46a00;
+                    "
+                >
+                    ⏳ Төлбөрийн хүсэлт шалгагдаж байна
+                </div>
+            `;
+
+        }else{
+
+            html += `
+                <button
+                    type="button"
+                    class="btn primary"
+                    style="
+                        margin-top:8px;
+                        padding:8px 12px;
+                        font-size:12px !important;
+                    "
+                    onclick="openSubscriptionModal()"
+                >
+                    Эрх сунгах
+                </button>
+            `;
+        }
+    }
+
+
+    $('accessBanner').innerHTML =
+        html;
+}
+
+
+/* =========================================================
+   SUBSCRIPTION PLAN MODAL
+========================================================= */
+
 function openSubscriptionModal(){
 
     if(M?.role !== 'owner'){
+
         return toast(
             'Эрх сунгах хүсэлтийг зөвхөн эзэмшигч илгээнэ'
         );
     }
+
 
     modal(`
         <h3>💚 Эрх сунгах</h3>
@@ -5250,6 +5437,8 @@ function openSubscriptionModal(){
         </p>
 
 
+        <!-- 1 MONTH -->
+
         <div
             class="card"
             style="cursor:pointer"
@@ -5259,19 +5448,27 @@ function openSubscriptionModal(){
                 '1 сар'
             )"
         >
+
             <div class="row between">
+
                 <div>
+
                     <b>1 сар</b>
 
                     <div class="muted">
                         1 сарын ашиглах эрх
                     </div>
+
                 </div>
 
                 <b>8,900₮</b>
+
             </div>
+
         </div>
 
+
+        <!-- 5 + 1 -->
 
         <div
             class="card"
@@ -5285,22 +5482,28 @@ function openSubscriptionModal(){
                 '5+1 сар'
             )"
         >
+
             <div class="row between">
 
                 <div>
+
                     <b>⭐ 5+1 сар</b>
 
                     <div class="muted">
                         5 сарын төлбөрөөр
                         нийт 6 сар
                     </div>
+
                 </div>
 
                 <b>34,900₮</b>
 
             </div>
+
         </div>
 
+
+        <!-- FULL YEAR -->
 
         <div
             class="card"
@@ -5311,23 +5514,44 @@ function openSubscriptionModal(){
                 'Full year'
             )"
         >
+
             <div class="row between">
 
                 <div>
+
                     <b>🎓 Full year</b>
 
                     <div class="muted">
                         Дараагийн 9-р сарын 1 хүртэл
                     </div>
+
                 </div>
 
                 <b>59,900₮</b>
 
             </div>
+
         </div>
+
+
+        <button
+            type="button"
+            class="btn soft"
+            style="
+                width:100%;
+                margin-top:8px;
+            "
+            onclick="closeModal()"
+        >
+            Хаах
+        </button>
     `);
 }
 
+
+/* =========================================================
+   PLAN SELECTED
+========================================================= */
 
 function chooseSubscriptionPlan(
     planCode,
@@ -5335,8 +5559,19 @@ function chooseSubscriptionPlan(
     planName
 ){
 
+    if(M?.role !== 'owner'){
+
+        return toast(
+            'Зөвхөн эзэмшигч эрх сунгах боломжтой'
+        );
+    }
+
+
     modal(`
-        <h3>${esc(planName)}</h3>
+        <h3>
+            ${esc(planName)}
+        </h3>
+
 
         <div
             class="card"
@@ -5345,6 +5580,7 @@ function chooseSubscriptionPlan(
                 background:#f2fff7;
             "
         >
+
             <div class="muted">
                 Төлөх дүн
             </div>
@@ -5352,6 +5588,7 @@ function chooseSubscriptionPlan(
             <div class="money">
                 ${money(amount)}
             </div>
+
         </div>
 
 
@@ -5359,7 +5596,10 @@ function chooseSubscriptionPlan(
             class="card"
             style="background:#f7fbff"
         >
-            <b>🏦 Төлбөр шилжүүлэх</b>
+
+            <b>
+                🏦 Төлбөр шилжүүлэх
+            </b>
 
             <div
                 class="muted"
@@ -5367,6 +5607,7 @@ function chooseSubscriptionPlan(
             >
                 Дансны мэдээллийг энд байрлуулна.
             </div>
+
         </div>
 
 
@@ -5387,6 +5628,7 @@ function chooseSubscriptionPlan(
 
         <button
             id="subscriptionSubmitBtn"
+            type="button"
             class="btn primary"
             style="width:100%"
             onclick="
@@ -5401,6 +5643,7 @@ function chooseSubscriptionPlan(
 
 
         <button
+            type="button"
             class="btn soft"
             style="
                 width:100%;
@@ -5414,33 +5657,87 @@ function chooseSubscriptionPlan(
 }
 
 
+/* =========================================================
+   SUBMIT SUBSCRIPTION REQUEST
+========================================================= */
+
 async function submitSubscriptionRequest(
     planCode,
     amount
 ){
 
     if(M?.role !== 'owner'){
+
         return toast(
             'Зөвхөн ангийн эзэмшигч хүсэлт илгээнэ'
         );
     }
 
 
+    /* =========================================
+       PLAN VALIDATION
+    ========================================= */
+
+    const validPlans = {
+
+        '1m': 8900,
+
+        '6m': 34900,
+
+        'full_year': 59900
+
+    };
+
+
+    if(
+        !Object.prototype.hasOwnProperty.call(
+            validPlans,
+            planCode
+        )
+    ){
+
+        return toast(
+            'Багцын мэдээлэл буруу байна'
+        );
+    }
+
+
+    amount =
+        validPlans[planCode];
+
+
+    /* =========================================
+       PROOF
+    ========================================= */
+
+    const proofInput =
+        $('subscriptionProof');
+
     const file =
-        $('subscriptionProof')?.files?.[0];
+        proofInput?.files?.[0];
+
 
     if(!file){
+
         return toast(
             'Гүйлгээний баримт хавсаргана уу'
         );
     }
 
 
+    /* =========================================
+       BUTTON LOCK
+    ========================================= */
+
     const button =
         $('subscriptionSubmitBtn');
 
+
     if(button){
-        button.disabled = true;
+
+        button.disabled =
+            true;
+
         button.textContent =
             'Илгээж байна...';
     }
@@ -5448,9 +5745,10 @@ async function submitSubscriptionRequest(
 
     try{
 
-        /* =========================
-           PENDING ДАВХАРДАХГҮЙ
-        ========================= */
+
+        /* =====================================
+           PENDING REQUEST БАЙГАА ЭСЭХ
+        ===================================== */
 
         const {
             data:pending,
@@ -5481,9 +5779,9 @@ async function submitSubscriptionRequest(
         }
 
 
-        /* =========================
-           БАРИМТ UPLOAD
-        ========================= */
+        /* =====================================
+           RECEIPT UPLOAD
+        ===================================== */
 
         const proof =
             await upload(
@@ -5492,9 +5790,9 @@ async function submitSubscriptionRequest(
             );
 
 
-        /* =========================
-           REQUEST
-        ========================= */
+        /* =====================================
+           REQUEST INSERT
+        ===================================== */
 
         const {
             error
@@ -5526,6 +5824,10 @@ async function submitSubscriptionRequest(
         }
 
 
+        /* =====================================
+           SUCCESS
+        ===================================== */
+
         closeModal();
 
         await renderAccess();
@@ -5542,146 +5844,22 @@ async function submitSubscriptionRequest(
             error
         );
 
+
         toast(
-            error.message ||
+            error?.message ||
             'Хүсэлт илгээхэд алдаа гарлаа'
         );
 
+
         if(button){
-            button.disabled = false;
+
+            button.disabled =
+                false;
+
             button.textContent =
                 'Төлбөр шалгуулах';
         }
     }
-}
-
-    /* =========================================
-       ИДЭВХТЭЙ ЭРХ
-    ========================================= */
-
-    if(active){
-
-        let html = '';
-
-        if(subscriptionActive){
-
-            html += `
-                <b>✅ Эрх идэвхтэй</b>
-
-                <div class="muted">
-                    Дуусах:
-                    ${new Date(
-                        G.access_ends_at
-                    ).toLocaleDateString('mn-MN')}
-                </div>
-            `;
-
-        }else{
-
-            html += `
-                <b>🎁 Үнэгүй туршилт</b>
-
-                <div class="muted">
-                    ${days} хоног үлдлээ
-                </div>
-            `;
-        }
-
-
-        if(
-            M?.role === 'owner' &&
-            request?.status === 'pending'
-        ){
-
-            html += `
-                <div
-                    class="muted"
-                    style="
-                        margin-top:5px;
-                        color:#b46a00;
-                    "
-                >
-                    ⏳ Эрх сунгах хүсэлт шалгагдаж байна
-                </div>
-            `;
-
-        }else if(M?.role === 'owner'){
-
-            html += `
-                <button
-                    type="button"
-                    class="link"
-                    style="
-                        border:0;
-                        background:none;
-                        padding:4px 0 0;
-                        font-size:12px !important;
-                    "
-                    onclick="openSubscriptionModal()"
-                >
-                    Эрх сунгах →
-                </button>
-            `;
-        }
-
-        $('accessBanner').innerHTML =
-            html;
-
-        return;
-    }
-
-
-    /* =========================================
-       ЭРХ ДУУССАН
-    ========================================= */
-
-    let html = `
-        <b>🔒 Эрхийн хугацаа дууссан</b>
-
-        <div class="muted">
-            Мэдээлэл хадгалагдсан.
-            Унших боломжтой.
-        </div>
-    `;
-
-
-    if(
-        M?.role === 'owner' &&
-        request?.status === 'pending'
-    ){
-
-        html += `
-            <div
-                class="muted"
-                style="
-                    margin-top:6px;
-                    color:#b46a00;
-                "
-            >
-                ⏳ Төлбөрийн хүсэлт шалгагдаж байна
-            </div>
-        `;
-
-    }else if(M?.role === 'owner'){
-
-        html += `
-            <button
-                class="btn primary"
-                style="
-                    margin-top:8px;
-                    padding:8px 12px;
-                    font-size:12px !important;
-                "
-                onclick="openSubscriptionModal()"
-            >
-                Эрх сунгах
-            </button>
-        `;
-    }
-
-
-    $('accessBanner').innerHTML =
-        html;
 }
 function render(id){if(id==='home')home();if(id==='children')children();if(id==='funds')funds();if(id==='payments')payments();if(id==='report')report();if(id==='settings')settings()}
 function approvedPaid(f,c){return DATA.payments.filter(p=>p.child_id===c&&p.status==='approved').flatMap(p=>p.af_payment_allocations||[]).filter(a=>a.fund_id===f).reduce((s,a)=>s+Number(a.amount),0)}function fstats(f){let rows=DATA.fc.filter(x=>x.fund_id===f.id),target=rows.reduce((s,x)=>s+Number(x.target_amount),0),paid=rows.reduce((s,x)=>s+approvedPaid(f.id,x.child_id),0),exp=DATA.exp.filter(x=>x.fund_id===f.id).reduce((s,x)=>s+Number(x.amount),0);return{target,paid,exp,balance:Number(f.carry_in||0)+paid-exp,count:rows.length,paidCount:rows.filter(x=>approvedPaid(f.id,x.child_id)>=Number(x.target_amount)).length}}
