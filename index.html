@@ -4706,7 +4706,87 @@ let U=null,G=null,M=null,DATA={}; let FUND_VIEW_MONTH = new Date()
 }function ay(){let d=new Date(),y=d.getFullYear();return d.getMonth()>=8?`${y}–${y+1}`:`${y-1}–${y}`}
 function authTab(x){$('loginBox').classList.toggle('hidden',x!=='login');$('registerBox').classList.toggle('hidden',x!=='register')}let PHONE_VERIFY_SESSION = null;
 let PHONE_REGISTER_DATA = null;
+async function login(){
 
+    const phone =
+        $('le').value.trim();
+
+    const password =
+        $('lp').value;
+
+
+    if(!/^\d{8}$/.test(phone)){
+
+        return toast(
+            '8 оронтой утасны дугаараа оруулна уу'
+        );
+    }
+
+
+    if(!password){
+
+        return toast(
+            'Нууц үгээ оруулна уу'
+        );
+    }
+
+
+    try{
+
+        const internalEmail =
+            `976${phone}@auth.angiin-fond.local`;
+
+
+        const {
+            data,
+            error
+        } =
+        await sb.auth.signInWithPassword({
+
+            email:
+                internalEmail,
+
+            password:
+                password
+
+        });
+
+
+        if(error){
+            throw error;
+        }
+
+
+        if(!data?.user){
+
+            throw new Error(
+                'Нэвтэрч чадсангүй'
+            );
+        }
+
+
+        toast(
+            'Амжилттай нэвтэрлээ'
+        );
+
+
+        await boot();
+
+    }
+    catch(error){
+
+        console.error(
+            'Login error:',
+            error
+        );
+
+
+        toast(
+            error?.message ||
+            'Утасны дугаар эсвэл нууц үг буруу байна'
+        );
+    }
+}
 async function startPhoneRegistration(){
 
     const fullName =
