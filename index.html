@@ -2724,7 +2724,113 @@ if(!titleOverride){
 
 return f;
 }
-function monthlyModal(){if(!hasWrite())return toast('Эрх дууссан');modal(`<h3>Сарын үндсэн фонд</h3><div class="field"><label>Сар бүрийн дүн</label><input id="fa" type="number"></div><div class="field"><label>Эхлэх сар</label><input id="ms" type="month"></div><div class="field"><label>Дуусах сар</label><input id="me" type="month"></div><button class="btn primary" onclick="makeMonths()">Сарууд үүсгэх</button>`)}async function makeMonths(){let a=Number($('fa').value),s=$('ms').value,e=$('me').value;if(!a||!s||!e)return toast('Мэдээллээ бөглөнө үү');let d=new Date(s+'-01T00:00'),end=new Date(e+'-01T00:00');if(d>end)return toast('Сарын дараалал буруу');while(d<=end){let mk=d.toISOString().slice(0,7),m=d.getMonth()+1,last=new Date(d.getFullYear(),d.getMonth()+1,0).toISOString().slice(0,10);let exists=DATA.funds.some(f=>f.month_key===mk);if(!exists){let fake={value:a};window.fa=fake;await saveFund('monthly',mk,`${m}-р сарын ангийн фонд`,last)}d.setMonth(d.getMonth()+1)}closeModal();await refresh();funds();toast('Сарын фондууд үүслээ')}
+function monthlyModal(){if(!hasWrite())return toast('Эрх дууссан');modal(`<h3>Сарын үндсэн фонд</h3><div class="field"><label>Сар бүрийн дүн</label><input id="fa" type="number"></div><div class="field"><label>Эхлэх сар</label><input id="ms" type="month"></div><div class="field"><label>Дуусах сар</label><input id="me" type="month"></div><button class="btn primary" onclick="makeMonths()">Сарууд үүсгэх</button>`)}async function makeMonths(){
+
+    let amount = Number($('fa').value);
+    let start = $('ms').value;
+    let end = $('me').value;
+
+    if(!amount || !start || !end){
+        return toast('Мэдээллээ бөглөнө үү');
+    }
+
+    if(start > end){
+        return toast('Сарын дараалал буруу');
+    }
+
+
+    let [startYear, startMonth] =
+        start.split('-').map(Number);
+
+    let [endYear, endMonth] =
+        end.split('-').map(Number);
+
+
+    let year = startYear;
+    let month = startMonth;
+
+
+    while(
+        year < endYear ||
+        (
+            year === endYear &&
+            month <= endMonth
+        )
+    ){
+
+        let monthKey =
+            year +
+            '-' +
+            String(month).padStart(2,'0');
+
+
+        let fundMonth =
+            monthKey + '-01';
+
+
+        let lastDay =
+            new Date(
+                year,
+                month,
+                0
+            ).getDate();
+
+
+        let dueDate =
+            year +
+            '-' +
+            String(month).padStart(2,'0') +
+            '-' +
+            String(lastDay).padStart(2,'0');
+
+
+        let exists =
+            DATA.funds.some(
+                f =>
+                    f.kind === 'monthly' &&
+                    f.month_key === monthKey
+            );
+
+
+        if(!exists){
+
+            let fake = {
+                value: amount
+            };
+
+            window.fa = fake;
+
+
+            await saveFund(
+                'monthly',
+                monthKey,
+                `${month}-р сарын ангийн фонд`,
+                dueDate
+            );
+
+        }
+
+
+        month++;
+
+        if(month > 12){
+
+            month = 1;
+            year++;
+
+        }
+
+    }
+
+
+    closeModal();
+
+    await refresh();
+
+    funds();
+
+    toast('Сарын фондууд үүслээ 🎉');
+}
 async function fundDetail(id){
  let f=DATA.funds.find(x=>x.id===id),st=fstats(f),rows=DATA.fc.filter(x=>x.fund_id===id),pct=st.count?Math.round(st.paidCount/st.count*100):0;
  let childRows=rows.map(x=>{let c=DATA.children.find(z=>z.id===x.child_id),p=approvedPaid(id,x.child_id),rem=Math.max(0,Number(x.target_amount)-p);return `<div class="item row between"><span>${esc(c?.full_name||'')}</span><span class="pill ${rem===0?'ok':p?'warn':'bad'}">${money(p)} / ${money(x.target_amount)}</span></div>`}).join('');
