@@ -2401,7 +2401,19 @@ function home(){
  let total=DATA.funds.reduce((a,f)=>a+fstats(f).paid,0),ex=DATA.funds.reduce((a,f)=>a+fstats(f).exp,0);
 let paidKids=DATA.children.filter(c=>childStatus(c.id)[0]==='Төлсөн').length,
     unpaid=DATA.children.filter(c=>childStatus(c.id)[0]==='Төлөөгүй').length;
- let mf=DATA.funds.find(f=>f.status==='active'&&f.kind==='monthly')||DATA.funds.find(f=>f.status==='active');
+let currentMonth =
+    new Date().getFullYear() +
+    '-' +
+    String(
+        new Date().getMonth() + 1
+    ).padStart(2,'0');
+
+let mf = DATA.funds.find(
+    f =>
+        f.status === 'active' &&
+        f.kind === 'monthly' &&
+        f.month_key === currentMonth
+);
  let ms=mf?fstats(mf):{paid:0,balance:0,paidCount:0,count:0},pct=ms.count?Math.round(ms.paidCount/ms.count*100):0;
  $('home').innerHTML=`
  <div class="hero-class"><div class="hero-ill">
