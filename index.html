@@ -13545,4 +13545,33 @@ document.addEventListener(
     }
 
 }
-</script></body></html>
+</script>
+ <script>
+if ("serviceWorker" in navigator) {
+
+    window.addEventListener("load", () => {
+
+        navigator.serviceWorker
+            .register("/sw.js")
+            .then(registration => {
+
+                console.log(
+                    "✅ Ангийн фонд PWA ready:",
+                    registration.scope
+                );
+
+            })
+            .catch(error => {
+
+                console.error(
+                    "❌ Service Worker error:",
+                    error
+                );
+
+            });
+
+    });
+
+}
+</script>
+</body></html>
