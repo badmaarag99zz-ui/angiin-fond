@@ -4220,27 +4220,24 @@ function excelReport(){
         DATA.reportFilteredFundIds ||
         DATA.funds.map(f => f.id);
 
-    const funds =
-        DATA.funds.filter(
-            f => selectedFundIds.includes(f.id)
-        );
+    const funds = DATA.funds.filter(
+        f => selectedFundIds.includes(f.id)
+    );
 
     if(!funds.length){
         return toast('Тайлангийн мэдээлэл алга.');
     }
 
 
-    // ==========================================
-    // FILTER НЭР
-    // ==========================================
+    // =====================================================
+    // FILTER
+    // =====================================================
 
     const fundType =
-        document.getElementById('reportFundType')?.value ||
-        'all';
+        document.getElementById('reportFundType')?.value || 'all';
 
     const selectedMonth =
-        document.getElementById('reportMonth')?.value ||
-        'all';
+        document.getElementById('reportMonth')?.value || 'all';
 
 
     let fundTypeLabel = 'Бүх фонд';
@@ -4259,116 +4256,176 @@ function excelReport(){
     if(selectedMonth !== 'all'){
 
         const [year,month] =
-            selectedMonth
-                .split('-')
-                .map(Number);
+            selectedMonth.split('-').map(Number);
 
         monthLabel =
             `${year} оны ${month}-р сар`;
     }
 
 
-    // ==========================================
-    // DATA
-    // ==========================================
+    // =====================================================
+    // ФОНДЫН МЭДЭЭЛЭЛ
+    // =====================================================
 
-    const reportData =
-        funds.map(f => {
+    const reportData = funds.map(f => {
 
-            const s = fstats(f);
+        const s = fstats(f);
 
-            const fundChildren =
-                DATA.fc.filter(
-                    fc => fc.fund_id === f.id
-                );
-
-
-            const totalTarget =
-                fundChildren.reduce(
-                    (sum,fc) =>
-                        sum +
-                        Number(fc.target_amount || 0),
-                    0
-                );
+        const fundChildren =
+            DATA.fc.filter(
+                fc => fc.fund_id === f.id
+            );
 
 
-            const fullPaid =
-                fundChildren.filter(fc => {
+        const totalTarget =
+            fundChildren.reduce(
+                (sum,fc) =>
+                    sum + Number(fc.target_amount || 0),
+                0
+            );
 
-                    const paid =
-                        approvedPaid(
-                            f.id,
-                            fc.child_id
+
+        const fullPaid =
+            fundChildren.filter(fc => {
+
+                const paid =
+                    approvedPaid(
+                        f.id,
+                        fc.child_id
+                    );
+
+                return paid >=
+                    Number(fc.target_amount || 0);
+
+            }).length;
+
+
+        // -------------------------------------------------
+        // САР
+        // -------------------------------------------------
+
+        let fundMonth = '';
+
+        if(f.kind === 'monthly'){
+
+            fundMonth =
+                f.month_key ||
+                f.fund_month?.slice(0,7) ||
+                '';
+
+        }else{
+
+            fundMonth =
+                f.fund_month?.slice(0,7) ||
+                f.month_key ||
+                '';
+
+        }
+
+
+        // -------------------------------------------------
+        // ЭНЭ ФОНД РУУ ШИЛЖИЖ ИРСЭН ГҮЙЛГЭЭНҮҮД
+        // -------------------------------------------------
+
+        const incomingTransfers =
+            (DATA.trans || []).filter(
+                t => t.to_fund_id === f.id
+            );
+
+
+        const transferredIn =
+            incomingTransfers.reduce(
+                (sum,t) =>
+                    sum + Number(t.amount || 0),
+                0
+            );
+
+
+        // -------------------------------------------------
+        // ХААНААС ШИЛЖИЖ ИРСЭН
+        // -------------------------------------------------
+
+        let transferSources = '—';
+
+        if(incomingTransfers.length){
+
+            transferSources =
+                incomingTransfers
+                    .map(t => {
+
+                        const sourceFund =
+                            DATA.funds.find(
+                                x => x.id === t.from_fund_id
+                            );
+
+                        const sourceName =
+                            sourceFund?.title ||
+                            'Өмнөх фонд';
+
+                        return (
+                            sourceName +
+                            ' (' +
+                            Number(t.amount || 0)
+                                .toLocaleString('mn-MN') +
+                            '₮)'
                         );
 
-                    return paid >=
-                        Number(fc.target_amount || 0);
+                    })
+                    .join('\n');
 
-                }).length;
-
-
-            let fundMonth = '';
-
-            if(f.kind === 'monthly'){
-
-                fundMonth =
-                    f.month_key ||
-                    f.fund_month?.slice(0,7) ||
-                    '';
-
-            }else{
-
-                fundMonth =
-                    f.fund_month?.slice(0,7) ||
-                    f.month_key ||
-                    '';
-            }
+        }
 
 
-            return {
+        return {
 
-                name:
-                    f.title || '',
+            name:
+                f.title || '',
 
-                type:
-                    f.kind === 'monthly'
-                        ? 'Сарын'
-                        : 'Тусгай',
+            type:
+                f.kind === 'monthly'
+                    ? 'Сарын'
+                    : 'Тусгай',
 
-                month:
-                    fundMonth,
+            month:
+                fundMonth,
 
-                status:
-                    f.status === 'closed'
-                        ? 'Хаагдсан'
-                        : 'Идэвхтэй',
+            status:
+                f.status === 'closed'
+                    ? 'Хаагдсан'
+                    : 'Идэвхтэй',
 
-                children:
-                    fundChildren.length,
+            children:
+                fundChildren.length,
 
-                paidChildren:
-                    fullPaid,
+            paidChildren:
+                fullPaid,
 
-                target:
-                    totalTarget,
+            target:
+                totalTarget,
 
-                income:
-                    Number(s.paid || 0),
+            income:
+                Number(s.paid || 0),
 
-                expense:
-                    Number(s.exp || 0),
+            expense:
+                Number(s.exp || 0),
 
-                balance:
-                    Number(s.balance || 0)
+            transferredIn:
+                transferredIn,
 
-            };
+            transferSources:
+                transferSources,
 
-        });
+            balance:
+                Number(s.balance || 0)
+
+        };
+
+    });
 
 
-    // ==========================================
-    // TOTAL
-    // ==========================================
+    // =====================================================
+    // НИЙТ ДҮН
+    // =====================================================
 
     const totals =
         reportData.reduce(
@@ -4377,6 +4434,7 @@ function excelReport(){
                 a.target += r.target;
                 a.income += r.income;
                 a.expense += r.expense;
+                a.transferredIn += r.transferredIn;
                 a.balance += r.balance;
 
                 return a;
@@ -4386,14 +4444,15 @@ function excelReport(){
                 target:0,
                 income:0,
                 expense:0,
+                transferredIn:0,
                 balance:0
             }
         );
 
 
-    // ==========================================
-    // SHEET DATA
-    // ==========================================
+    // =====================================================
+    // EXCEL DATA
+    // =====================================================
 
     const aoa = [
 
@@ -4406,10 +4465,13 @@ function excelReport(){
         ],
 
         [
-            `${fundTypeLabel}  •  ${monthLabel}`
+            `Шүүлтүүр: ${fundTypeLabel}  •  ${monthLabel}`
         ],
 
         [],
+
+
+        // SUMMARY HEADER
 
         [
             'НИЙТ ТӨЛӨХ',
@@ -4418,8 +4480,17 @@ function excelReport(){
             '',
             'ЗАРЛАГА',
             '',
-            'ҮЛДЭГДЭЛ'
+            'ШИЛЖИЖ ИРСЭН',
+            '',
+            'ҮЛДЭГДЭЛ',
+            '',
+            '',
+            '',
+            ''
         ],
+
+
+        // SUMMARY VALUE
 
         [
             totals.target,
@@ -4428,10 +4499,19 @@ function excelReport(){
             '',
             totals.expense,
             '',
-            totals.balance
+            totals.transferredIn,
+            '',
+            totals.balance,
+            '',
+            '',
+            '',
+            ''
         ],
 
         [],
+
+
+        // TABLE HEADER
 
         [
             '№',
@@ -4444,44 +4524,56 @@ function excelReport(){
             'Нийт төлөх',
             'Цугласан',
             'Зарлага',
+            'Шилжиж ирсэн',
+            'Хаанаас шилжсэн',
             'Үлдэгдэл'
         ]
 
     ];
 
 
-    reportData.forEach(
-        (r,index) => {
+    // =====================================================
+    // TABLE ROWS
+    // =====================================================
 
-            aoa.push([
+    reportData.forEach((r,index) => {
 
-                index + 1,
+        aoa.push([
 
-                r.name,
+            index + 1,
 
-                r.type,
+            r.name,
 
-                r.month,
+            r.type,
 
-                r.status,
+            r.month,
 
-                r.children,
+            r.status,
 
-                r.paidChildren,
+            r.children,
 
-                r.target,
+            r.paidChildren,
 
-                r.income,
+            r.target,
 
-                r.expense,
+            r.income,
 
-                r.balance
+            r.expense,
 
-            ]);
+            r.transferredIn,
 
-        }
-    );
+            r.transferSources,
 
+            r.balance
+
+        ]);
+
+    });
+
+
+    // =====================================================
+    // TOTAL ROW
+    // =====================================================
 
     const totalExcelRow =
         aoa.length + 1;
@@ -4509,110 +4601,55 @@ function excelReport(){
 
         totals.expense,
 
+        totals.transferredIn,
+
+        '',
+
         totals.balance
 
     ]);
 
 
-    // ==========================================
+    // =====================================================
     // WORKSHEET
-    // ==========================================
+    // =====================================================
 
     const ws =
         XLSX.utils.aoa_to_sheet(aoa);
 
 
-    // ==========================================
-    // MERGE
-    // ==========================================
-
-    ws['!merges'] = [
-
-        {
-            s:{r:0,c:0},
-            e:{r:0,c:10}
-        },
-
-        {
-            s:{r:1,c:0},
-            e:{r:1,c:10}
-        },
-
-        {
-            s:{r:2,c:0},
-            e:{r:2,c:10}
-        },
-
-        {
-            s:{r:4,c:0},
-            e:{r:4,c:1}
-        },
-
-        {
-            s:{r:4,c:2},
-            e:{r:4,c:3}
-        },
-
-        {
-            s:{r:4,c:4},
-            e:{r:4,c:5}
-        },
-
-        {
-            s:{r:4,c:6},
-            e:{r:4,c:10}
-        },
-
-        {
-            s:{r:5,c:0},
-            e:{r:5,c:1}
-        },
-
-        {
-            s:{r:5,c:2},
-            e:{r:5,c:3}
-        },
-
-        {
-            s:{r:5,c:4},
-            e:{r:5,c:5}
-        },
-
-        {
-            s:{r:5,c:6},
-            e:{r:5,c:10}
-        }
-
-    ];
-
-
-    // ==========================================
+    // =====================================================
     // COLORS
-    // ==========================================
+    // =====================================================
 
     const darkGreen = '087F5B';
     const green = '12A879';
-    const lightGreen = 'DDF7EC';
+
+    const lightGreen = 'E8F7F0';
 
     const blue = '147CE5';
-    const lightBlue = 'E8F3FF';
+    const lightBlue = 'EAF4FF';
 
     const red = 'E5484D';
     const lightRed = 'FDECEC';
 
-    const yellow = 'FFF4D6';
+    const orange = 'E98B2A';
+    const lightOrange = 'FFF3E5';
+
+    const purple = '7C5CE7';
+    const lightPurple = 'F0EDFF';
 
     const darkText = '17324D';
     const muted = '60758A';
 
     const white = 'FFFFFF';
 
-    const borderColor = 'C9D8E6';
+    const borderColor = 'C8D5E3';
 
 
-    // ==========================================
+    // =====================================================
     // BORDER
-    // ==========================================
+    // =====================================================
 
     const border = {
 
@@ -4639,9 +4676,92 @@ function excelReport(){
     };
 
 
-    // ==========================================
-    // TITLE
-    // ==========================================
+    // =====================================================
+    // MERGES
+    // =====================================================
+
+    ws['!merges'] = [
+
+        // TITLE
+
+        {
+            s:{r:0,c:0},
+            e:{r:0,c:12}
+        },
+
+        {
+            s:{r:1,c:0},
+            e:{r:1,c:12}
+        },
+
+        {
+            s:{r:2,c:0},
+            e:{r:2,c:12}
+        },
+
+
+        // SUMMARY
+
+        {
+            s:{r:4,c:0},
+            e:{r:4,c:1}
+        },
+
+        {
+            s:{r:5,c:0},
+            e:{r:5,c:1}
+        },
+
+
+        {
+            s:{r:4,c:2},
+            e:{r:4,c:3}
+        },
+
+        {
+            s:{r:5,c:2},
+            e:{r:5,c:3}
+        },
+
+
+        {
+            s:{r:4,c:4},
+            e:{r:4,c:5}
+        },
+
+        {
+            s:{r:5,c:4},
+            e:{r:5,c:5}
+        },
+
+
+        {
+            s:{r:4,c:6},
+            e:{r:4,c:7}
+        },
+
+        {
+            s:{r:5,c:6},
+            e:{r:5,c:7}
+        },
+
+
+        {
+            s:{r:4,c:8},
+            e:{r:4,c:12}
+        },
+
+        {
+            s:{r:5,c:8},
+            e:{r:5,c:12}
+        }
+
+    ];
+
+
+    // =====================================================
+    // TITLE STYLE
+    // =====================================================
 
     ws['A1'].s = {
 
@@ -4672,7 +4792,8 @@ function excelReport(){
         },
 
         alignment:{
-            horizontal:'center'
+            horizontal:'center',
+            vertical:'center'
         }
 
     };
@@ -4688,131 +4809,24 @@ function excelReport(){
         },
 
         alignment:{
-            horizontal:'center'
+            horizontal:'center',
+            vertical:'center'
         }
 
     };
 
 
-    // ==========================================
-    // SUMMARY HEADER
-    // ==========================================
+    // =====================================================
+    // SUMMARY HEADER STYLE
+    // =====================================================
 
     [
         'A5',
         'C5',
         'E5',
-        'G5'
+        'G5',
+        'I5'
     ].forEach(addr => {
-
-        ws[addr].s = {
-
-            font:{
-                bold:true,
-                color:{
-                    rgb:white
-                }
-            },
-
-            fill:{
-                fgColor:{
-                    rgb:darkGreen
-                }
-            },
-
-            alignment:{
-                horizontal:'center',
-                vertical:'center'
-            },
-
-            border:border
-
-        };
-
-    });
-
-
-    // ==========================================
-    // SUMMARY VALUES
-    // ==========================================
-
-    const summaryCells = [
-
-        {
-            cell:'A6',
-            color:darkText,
-            fill:'F4F8FB'
-        },
-
-        {
-            cell:'C6',
-            color:darkGreen,
-            fill:lightGreen
-        },
-
-        {
-            cell:'E6',
-            color:red,
-            fill:lightRed
-        },
-
-        {
-            cell:'G6',
-            color:blue,
-            fill:lightBlue
-        }
-
-    ];
-
-
-    summaryCells.forEach(x => {
-
-        ws[x.cell].s = {
-
-            font:{
-                bold:true,
-                sz:16,
-                color:{
-                    rgb:x.color
-                }
-            },
-
-            fill:{
-                fgColor:{
-                    rgb:x.fill
-                }
-            },
-
-            alignment:{
-                horizontal:'center',
-                vertical:'center'
-            },
-
-            border:border
-
-        };
-
-        ws[x.cell].z =
-            '#,##0"₮"';
-
-    });
-
-
-    // ==========================================
-    // TABLE HEADER
-    // ==========================================
-
-    for(
-        let col = 0;
-        col <= 10;
-        col++
-    ){
-
-        const addr =
-            XLSX.utils.encode_cell({
-                r:7,
-                c:col
-            });
 
         ws[addr].s = {
 
@@ -4839,12 +4853,127 @@ function excelReport(){
 
         };
 
+    });
+
+
+    // =====================================================
+    // SUMMARY VALUES
+    // =====================================================
+
+    const summaryStyles = [
+
+        {
+            cell:'A6',
+            font:darkText,
+            fill:'F4F7FA'
+        },
+
+        {
+            cell:'C6',
+            font:darkGreen,
+            fill:lightGreen
+        },
+
+        {
+            cell:'E6',
+            font:red,
+            fill:lightRed
+        },
+
+        {
+            cell:'G6',
+            font:purple,
+            fill:lightPurple
+        },
+
+        {
+            cell:'I6',
+            font:blue,
+            fill:lightBlue
+        }
+
+    ];
+
+
+    summaryStyles.forEach(x => {
+
+        ws[x.cell].s = {
+
+            font:{
+                bold:true,
+                sz:15,
+                color:{
+                    rgb:x.font
+                }
+            },
+
+            fill:{
+                fgColor:{
+                    rgb:x.fill
+                }
+            },
+
+            alignment:{
+                horizontal:'center',
+                vertical:'center'
+            },
+
+            border:border
+
+        };
+
+
+        ws[x.cell].z =
+            '#,##0"₮"';
+
+    });
+
+
+    // =====================================================
+    // TABLE HEADER
+    // =====================================================
+
+    for(let col=0; col<=12; col++){
+
+        const addr =
+            XLSX.utils.encode_cell({
+                r:7,
+                c:col
+            });
+
+
+        ws[addr].s = {
+
+            font:{
+                bold:true,
+                sz:10,
+                color:{
+                    rgb:white
+                }
+            },
+
+            fill:{
+                fgColor:{
+                    rgb:darkGreen
+                }
+            },
+
+            alignment:{
+                horizontal:'center',
+                vertical:'center',
+                wrapText:true
+            },
+
+            border:border
+
+        };
+
     }
 
 
-    // ==========================================
-    // TABLE BODY
-    // ==========================================
+    // =====================================================
+    // DATA ROWS
+    // =====================================================
 
     const firstDataRow = 9;
 
@@ -4855,21 +4984,21 @@ function excelReport(){
 
 
     for(
-        let row = firstDataRow;
-        row <= lastDataRow;
+        let row=firstDataRow;
+        row<=lastDataRow;
         row++
     ){
 
         for(
-            let col = 0;
-            col <= 10;
+            let col=0;
+            col<=12;
             col++
         ){
 
             const addr =
                 XLSX.utils.encode_cell({
 
-                    r:row - 1,
+                    r:row-1,
                     c:col
 
                 });
@@ -4883,7 +5012,7 @@ function excelReport(){
             ws[addr].s = {
 
                 font:{
-                    sz:10,
+                    sz:9,
                     color:{
                         rgb:darkText
                     }
@@ -4903,7 +5032,8 @@ function excelReport(){
                     vertical:'center',
 
                     horizontal:
-                        col === 1
+                        col === 1 ||
+                        col === 11
                             ? 'left'
                             : 'center',
 
@@ -4918,12 +5048,13 @@ function excelReport(){
         }
 
 
-        // --------------------------------------
+        // =================================================
         // STATUS COLOR
-        // --------------------------------------
+        // =================================================
 
         const statusCell =
             ws[`E${row}`];
+
 
         if(statusCell){
 
@@ -4935,6 +5066,7 @@ function excelReport(){
 
                     font:{
                         bold:true,
+                        sz:9,
                         color:{
                             rgb:red
                         }
@@ -4956,6 +5088,7 @@ function excelReport(){
 
                     font:{
                         bold:true,
+                        sz:9,
                         color:{
                             rgb:darkGreen
                         }
@@ -4974,19 +5107,121 @@ function excelReport(){
         }
 
 
-        // --------------------------------------
+        // =================================================
+        // TRANSFER COLOR
+        // =================================================
+
+        const transferCell =
+            ws[`K${row}`];
+
+        const sourceCell =
+            ws[`L${row}`];
+
+
+        if(
+            transferCell &&
+            Number(transferCell.v || 0) > 0
+        ){
+
+            transferCell.s = {
+
+                ...transferCell.s,
+
+                font:{
+                    bold:true,
+                    sz:9,
+                    color:{
+                        rgb:purple
+                    }
+                },
+
+                fill:{
+                    fgColor:{
+                        rgb:lightPurple
+                    }
+                }
+
+            };
+
+
+            if(sourceCell){
+
+                sourceCell.s = {
+
+                    ...sourceCell.s,
+
+                    font:{
+                        bold:true,
+                        sz:9,
+                        color:{
+                            rgb:purple
+                        }
+                    },
+
+                    fill:{
+                        fgColor:{
+                            rgb:lightPurple
+                        }
+                    }
+
+                };
+
+            }
+
+        }
+
+
+        // =================================================
+        // EXPENSE COLOR
+        // =================================================
+
+        const expenseCell =
+            ws[`J${row}`];
+
+
+        if(
+            expenseCell &&
+            Number(expenseCell.v || 0) > 0
+        ){
+
+            expenseCell.s = {
+
+                ...expenseCell.s,
+
+                font:{
+                    bold:true,
+                    sz:9,
+                    color:{
+                        rgb:red
+                    }
+                },
+
+                fill:{
+                    fgColor:{
+                        rgb:lightRed
+                    }
+                }
+
+            };
+
+        }
+
+
+        // =================================================
         // MONEY FORMAT
-        // --------------------------------------
+        // =================================================
 
         [
             'H',
             'I',
             'J',
-            'K'
+            'K',
+            'M'
         ].forEach(col => {
 
             const cell =
                 ws[`${col}${row}`];
+
 
             if(cell){
 
@@ -5000,21 +5235,16 @@ function excelReport(){
     }
 
 
-    // ==========================================
-    // TOTAL ROW
-    // ==========================================
+    // =====================================================
+    // TOTAL ROW STYLE
+    // =====================================================
 
-    for(
-        let col = 0;
-        col <= 10;
-        col++
-    ){
+    for(let col=0; col<=12; col++){
 
         const addr =
             XLSX.utils.encode_cell({
 
-                r:totalExcelRow - 1,
-
+                r:totalExcelRow-1,
                 c:col
 
             });
@@ -5046,11 +5276,16 @@ function excelReport(){
             },
 
             alignment:{
+
                 horizontal:
                     col === 1
                         ? 'left'
                         : 'center',
-                vertical:'center'
+
+                vertical:'center',
+
+                wrapText:true
+
             },
 
             border:border
@@ -5064,11 +5299,13 @@ function excelReport(){
         'H',
         'I',
         'J',
-        'K'
+        'K',
+        'M'
     ].forEach(col => {
 
         const cell =
             ws[`${col}${totalExcelRow}`];
+
 
         if(cell){
 
@@ -5080,40 +5317,44 @@ function excelReport(){
     });
 
 
-    // ==========================================
-    // WIDTH
-    // ==========================================
+    // =====================================================
+    // COLUMN WIDTH
+    // =====================================================
 
     ws['!cols'] = [
 
-        {wch:5},
+        {wch:4},      // №
 
-        {wch:27},
+        {wch:22},     // фонд
 
-        {wch:10},
+        {wch:9},      // төрөл
 
-        {wch:11},
+        {wch:10},     // сар
 
-        {wch:12},
+        {wch:11},     // төлөв
 
-        {wch:9},
+        {wch:8},      // хүүхэд
 
-        {wch:13},
+        {wch:11},     // бүрэн төлсөн
 
-        {wch:15},
+        {wch:14},     // нийт төлөх
 
-        {wch:15},
+        {wch:14},     // цугласан
 
-        {wch:14},
+        {wch:13},     // зарлага
 
-        {wch:15}
+        {wch:15},     // шилжиж ирсэн
+
+        {wch:28},     // хаанаас шилжсэн
+
+        {wch:15}      // үлдэгдэл
 
     ];
 
 
-    // ==========================================
+    // =====================================================
     // ROW HEIGHT
-    // ==========================================
+    // =====================================================
 
     ws['!rows'] = [];
 
@@ -5130,7 +5371,7 @@ function excelReport(){
     };
 
     ws['!rows'][4] = {
-        hpt:22
+        hpt:24
     };
 
     ws['!rows'][5] = {
@@ -5138,33 +5379,62 @@ function excelReport(){
     };
 
     ws['!rows'][7] = {
-        hpt:34
+        hpt:36
     };
 
 
-    // ==========================================
-    // AUTOFILTER
-    // ==========================================
+    // =====================================================
+    // TRANSFER ОЛОН МӨРТЭЙ БОЛ ROW-Г ӨНДӨРЛӨНӨ
+    // =====================================================
+
+    reportData.forEach((r,index) => {
+
+        const lines =
+            String(r.transferSources || '')
+                .split('\n')
+                .length;
+
+
+        if(lines > 1){
+
+            ws['!rows'][8 + index] = {
+
+                hpt:
+                    Math.max(
+                        24,
+                        lines * 16
+                    )
+
+            };
+
+        }
+
+    });
+
+
+    // =====================================================
+    // FILTER
+    // =====================================================
 
     ws['!autofilter'] = {
 
         ref:
-            `A8:K${lastDataRow}`
+            `A8:M${lastDataRow}`
 
     };
 
 
-    // ==========================================
+    // =====================================================
     // PRINT AREA
-    // ==========================================
+    // =====================================================
 
     ws['!printArea'] =
-        `A1:K${totalExcelRow}`;
+        `A1:M${totalExcelRow}`;
 
 
-    // ==========================================
+    // =====================================================
     // A4 LANDSCAPE
-    // ==========================================
+    // =====================================================
 
     ws['!pageSetup'] = {
 
@@ -5174,54 +5444,37 @@ function excelReport(){
 
         fitToWidth:1,
 
-        fitToHeight:0
+        fitToHeight:0,
+
+        scale:80
 
     };
 
 
-    // ==========================================
+    // =====================================================
     // MARGINS
-    // ==========================================
+    // =====================================================
 
     ws['!margins'] = {
 
-        left:0.25,
+        left:0.2,
 
-        right:0.25,
+        right:0.2,
 
-        top:0.4,
+        top:0.35,
 
-        bottom:0.4,
+        bottom:0.35,
 
-        header:0.2,
+        header:0.15,
 
-        footer:0.2
-
-    };
-
-
-    // ==========================================
-    // FREEZE
-    // ==========================================
-
-    ws['!freeze'] = {
-
-        xSplit:0,
-
-        ySplit:8,
-
-        topLeftCell:'A9',
-
-        activePane:'bottomLeft',
-
-        state:'frozen'
+        footer:0.15
 
     };
 
 
-    // ==========================================
+    // =====================================================
     // WORKBOOK
-    // ==========================================
+    // =====================================================
 
     const wb =
         XLSX.utils.book_new();
@@ -5234,12 +5487,29 @@ function excelReport(){
     );
 
 
-    // ==========================================
+    wb.Props = {
+
+        Title:
+            'Ангийн фондын нэгдсэн тайлан',
+
+        Subject:
+            G.group_name || 'Ангийн фонд',
+
+        Author:
+            G.institution_name || 'Ангийн фонд',
+
+        CreatedDate:
+            new Date()
+
+    };
+
+
+    // =====================================================
     // FILE NAME
-    // ==========================================
+    // =====================================================
 
     let fileName =
-        `Angiin-fond-${G.academic_year}`;
+        `Angiin-fond-${G.academic_year || 'report'}`;
 
 
     if(selectedMonth !== 'all'){
