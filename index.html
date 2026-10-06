@@ -2856,7 +2856,50 @@ async function fundDetail(id){
  let childRows=rows.map(x=>{let c=DATA.children.find(z=>z.id===x.child_id),p=approvedPaid(id,x.child_id),rem=Math.max(0,Number(x.target_amount)-p);return `<div class="item row between"><span>${esc(c?.full_name||'')}</span><span class="pill ${rem===0?'ok':p?'warn':'bad'}">${money(p)} / ${money(x.target_amount)}</span></div>`}).join('');
  let ex=DATA.exp.filter(x=>x.fund_id===id).map(x=>`<div class="item"><div class="row between"><div><b>${esc(x.title)}</b> — ${money(x.amount)}<div class="muted">${x.expense_date} ${esc(x.description||'')}</div></div>${x.proof_path?`<button class="btn soft" onclick="viewProof('${esc(x.proof_path)}')">Баримт</button>`:''}</div></div>`).join('');
  modal(`<div class="row between"><h3>${esc(f.title)}</h3><button class="btn soft" onclick="closeModal()">✕</button></div><div class="grid" style="grid-template-columns:repeat(3,1fr)"><div class="card"><div class="statlabel">Цугласан</div><div class="statnum" style="color:#079b66">${money(st.paid)}</div></div><div class="card"><div class="statlabel">Зарлага</div><div class="statnum" style="color:#ef4c55">${money(st.exp)}</div></div><div class="card"><div class="statlabel">Үлдэгдэл</div><div class="statnum" style="color:#147ce5">${money(st.balance)}</div></div></div><div class="progress"><i style="width:${pct}%"></i></div><div class="muted" style="margin-top:5px">${st.paidCount}/${st.count} төлсөн · ${pct}%</div>
- ${M.role!=='parent'?`<h4>Хүүхэд тус бүр</h4>${childRows}<div class="two"><button class="btn primary" onclick="expenseModal('${id}')">＋ Зарлага</button>${f.status==='active'?`<button class="btn danger" onclick="closeFund('${id}')">Фонд хаах</button>`:''}</div>`:''}<h4>Зарлага</h4>${ex||'<div class="muted">Зарлага алга.</div>'}`);
+ ${M.role !== 'parent' ? `
+
+    <h4>Хүүхэд тус бүр</h4>
+
+    ${childRows}
+
+    ${
+        f.status === 'active'
+            ? `
+                <div class="two">
+
+                    <button
+                        class="btn primary"
+                        onclick="expenseModal('${id}')"
+                    >
+                        ＋ Зарлага
+                    </button>
+
+                    <button
+                        class="btn danger"
+                        onclick="closeFund('${id}')"
+                    >
+                        🔒 Фонд хаах
+                    </button>
+
+                </div>
+            `
+            : `
+                <div
+                    class="card"
+                    style="
+                        margin-top:12px;
+                        text-align:center;
+                    "
+                >
+                    <b>🔒 Хаагдсан фонд</b>
+                    <div class="muted">
+                        Энэ фонд зөвхөн харах горимд байна.
+                    </div>
+                </div>
+            `
+    }
+
+` : ''}<h4>Зарлага</h4>${ex||'<div class="muted">Зарлага алга.</div>'}`);
 }
 async function viewProof(path){
  let{data,error}=await sb.storage.from('af-proofs').createSignedUrl(path,300);
