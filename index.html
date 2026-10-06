@@ -5186,7 +5186,503 @@ DATA.requests =
  if(admin)DATA.memberships=z[k++]?.data||[];
  renderAccess();
 }
-function renderAccess(){let trial=new Date(G.trial_ends_at),active=hasWrite(),days=Math.max(0,Math.ceil((trial-new Date())/86400000));$('accessBanner').innerHTML=active?`<b>${G.access_ends_at&&new Date(G.access_ends_at)>new Date()?'✅ Эрх идэвхтэй':'🎁 Үнэгүй туршилт'}</b><div class="muted">${G.access_ends_at?'Дуусах: '+new Date(G.access_ends_at).toLocaleDateString() : days+' хоног үлдлээ'}</div>`:`<b>🔒 Туршилтын хугацаа дууссан</b><div class="muted">Мэдээлэл хадгалагдсан. Унших боломжтой.</div><div class="row" style="margin-top:8px"><span class="pill">1 сар 8,900₮</span><span class="pill">5+1 сар 34,900₮</span><span class="pill">Жил 59,900₮</span></div>`}
+async function renderAccess(){
+
+    const trial =
+        new Date(G.trial_ends_at);
+
+    const now =
+        new Date();
+
+    const subscriptionActive =
+        G.access_ends_at &&
+        new Date(G.access_ends_at) > now;
+
+    const trialActive =
+        trial > now;
+
+    const active =
+        subscriptionActive ||
+        trialActive;
+
+    const days =
+        Math.max(
+            0,
+            Math.ceil(
+                (trial - now) / 86400000
+            )
+        );
+
+    let request = null;
+
+    if(M?.role === 'owner'){
+
+        const { data } =
+            await sb
+                .from('af_subscription_requests')
+                .select(
+                    'id,plan_code,amount,status,created_at'
+                )
+                .eq('group_id', G.id)
+                .order(
+                    'created_at',
+                    { ascending:false }
+                )
+                .limit(1)
+                .maybeSingle();
+
+        request = data || null;
+    }
+function openSubscriptionModal(){
+
+    if(M?.role !== 'owner'){
+        return toast(
+            'Эрх сунгах хүсэлтийг зөвхөн эзэмшигч илгээнэ'
+        );
+    }
+
+    modal(`
+        <h3>💚 Эрх сунгах</h3>
+
+        <p class="muted">
+            Ангийн фондын ашиглах эрхийн
+            багцаа сонгоно уу.
+        </p>
+
+
+        <div
+            class="card"
+            style="cursor:pointer"
+            onclick="chooseSubscriptionPlan(
+                '1m',
+                8900,
+                '1 сар'
+            )"
+        >
+            <div class="row between">
+                <div>
+                    <b>1 сар</b>
+
+                    <div class="muted">
+                        1 сарын ашиглах эрх
+                    </div>
+                </div>
+
+                <b>8,900₮</b>
+            </div>
+        </div>
+
+
+        <div
+            class="card"
+            style="
+                cursor:pointer;
+                border:2px solid #12a56f;
+            "
+            onclick="chooseSubscriptionPlan(
+                '6m',
+                34900,
+                '5+1 сар'
+            )"
+        >
+            <div class="row between">
+
+                <div>
+                    <b>⭐ 5+1 сар</b>
+
+                    <div class="muted">
+                        5 сарын төлбөрөөр
+                        нийт 6 сар
+                    </div>
+                </div>
+
+                <b>34,900₮</b>
+
+            </div>
+        </div>
+
+
+        <div
+            class="card"
+            style="cursor:pointer"
+            onclick="chooseSubscriptionPlan(
+                'full_year',
+                59900,
+                'Full year'
+            )"
+        >
+            <div class="row between">
+
+                <div>
+                    <b>🎓 Full year</b>
+
+                    <div class="muted">
+                        Дараагийн 9-р сарын 1 хүртэл
+                    </div>
+                </div>
+
+                <b>59,900₮</b>
+
+            </div>
+        </div>
+    `);
+}
+
+
+function chooseSubscriptionPlan(
+    planCode,
+    amount,
+    planName
+){
+
+    modal(`
+        <h3>${esc(planName)}</h3>
+
+        <div
+            class="card"
+            style="
+                text-align:center;
+                background:#f2fff7;
+            "
+        >
+            <div class="muted">
+                Төлөх дүн
+            </div>
+
+            <div class="money">
+                ${money(amount)}
+            </div>
+        </div>
+
+
+        <div
+            class="card"
+            style="background:#f7fbff"
+        >
+            <b>🏦 Төлбөр шилжүүлэх</b>
+
+            <div
+                class="muted"
+                style="margin-top:7px"
+            >
+                Дансны мэдээллийг энд байрлуулна.
+            </div>
+        </div>
+
+
+        <div class="field">
+
+            <label>
+                Гүйлгээний баримт *
+            </label>
+
+            <input
+                id="subscriptionProof"
+                type="file"
+                accept="image/*"
+            >
+
+        </div>
+
+
+        <button
+            id="subscriptionSubmitBtn"
+            class="btn primary"
+            style="width:100%"
+            onclick="
+                submitSubscriptionRequest(
+                    '${planCode}',
+                    ${amount}
+                )
+            "
+        >
+            Төлбөр шалгуулах
+        </button>
+
+
+        <button
+            class="btn soft"
+            style="
+                width:100%;
+                margin-top:8px;
+            "
+            onclick="openSubscriptionModal()"
+        >
+            ← Багц сонголт
+        </button>
+    `);
+}
+
+
+async function submitSubscriptionRequest(
+    planCode,
+    amount
+){
+
+    if(M?.role !== 'owner'){
+        return toast(
+            'Зөвхөн ангийн эзэмшигч хүсэлт илгээнэ'
+        );
+    }
+
+
+    const file =
+        $('subscriptionProof')?.files?.[0];
+
+    if(!file){
+        return toast(
+            'Гүйлгээний баримт хавсаргана уу'
+        );
+    }
+
+
+    const button =
+        $('subscriptionSubmitBtn');
+
+    if(button){
+        button.disabled = true;
+        button.textContent =
+            'Илгээж байна...';
+    }
+
+
+    try{
+
+        /* =========================
+           PENDING ДАВХАРДАХГҮЙ
+        ========================= */
+
+        const {
+            data:pending,
+            error:pendingError
+        } =
+        await sb
+            .from('af_subscription_requests')
+            .select('id')
+            .eq('group_id', G.id)
+            .eq('status', 'pending')
+            .maybeSingle();
+
+
+        if(pendingError){
+            throw pendingError;
+        }
+
+
+        if(pending){
+
+            closeModal();
+
+            await renderAccess();
+
+            return toast(
+                'Таны хүсэлт аль хэдийн шалгагдаж байна'
+            );
+        }
+
+
+        /* =========================
+           БАРИМТ UPLOAD
+        ========================= */
+
+        const proof =
+            await upload(
+                file,
+                'subscription'
+            );
+
+
+        /* =========================
+           REQUEST
+        ========================= */
+
+        const {
+            error
+        } =
+        await sb
+            .from('af_subscription_requests')
+            .insert({
+
+                group_id:
+                    G.id,
+
+                requested_by:
+                    U.id,
+
+                plan_code:
+                    planCode,
+
+                amount:
+                    amount,
+
+                proof_path:
+                    proof
+
+            });
+
+
+        if(error){
+            throw error;
+        }
+
+
+        closeModal();
+
+        await renderAccess();
+
+        toast(
+            'Төлбөрийн хүсэлт амжилттай илгээгдлээ 🎉'
+        );
+
+    }
+    catch(error){
+
+        console.error(
+            'Subscription request error:',
+            error
+        );
+
+        toast(
+            error.message ||
+            'Хүсэлт илгээхэд алдаа гарлаа'
+        );
+
+        if(button){
+            button.disabled = false;
+            button.textContent =
+                'Төлбөр шалгуулах';
+        }
+    }
+}
+
+    /* =========================================
+       ИДЭВХТЭЙ ЭРХ
+    ========================================= */
+
+    if(active){
+
+        let html = '';
+
+        if(subscriptionActive){
+
+            html += `
+                <b>✅ Эрх идэвхтэй</b>
+
+                <div class="muted">
+                    Дуусах:
+                    ${new Date(
+                        G.access_ends_at
+                    ).toLocaleDateString('mn-MN')}
+                </div>
+            `;
+
+        }else{
+
+            html += `
+                <b>🎁 Үнэгүй туршилт</b>
+
+                <div class="muted">
+                    ${days} хоног үлдлээ
+                </div>
+            `;
+        }
+
+
+        if(
+            M?.role === 'owner' &&
+            request?.status === 'pending'
+        ){
+
+            html += `
+                <div
+                    class="muted"
+                    style="
+                        margin-top:5px;
+                        color:#b46a00;
+                    "
+                >
+                    ⏳ Эрх сунгах хүсэлт шалгагдаж байна
+                </div>
+            `;
+
+        }else if(M?.role === 'owner'){
+
+            html += `
+                <button
+                    type="button"
+                    class="link"
+                    style="
+                        border:0;
+                        background:none;
+                        padding:4px 0 0;
+                        font-size:12px !important;
+                    "
+                    onclick="openSubscriptionModal()"
+                >
+                    Эрх сунгах →
+                </button>
+            `;
+        }
+
+        $('accessBanner').innerHTML =
+            html;
+
+        return;
+    }
+
+
+    /* =========================================
+       ЭРХ ДУУССАН
+    ========================================= */
+
+    let html = `
+        <b>🔒 Эрхийн хугацаа дууссан</b>
+
+        <div class="muted">
+            Мэдээлэл хадгалагдсан.
+            Унших боломжтой.
+        </div>
+    `;
+
+
+    if(
+        M?.role === 'owner' &&
+        request?.status === 'pending'
+    ){
+
+        html += `
+            <div
+                class="muted"
+                style="
+                    margin-top:6px;
+                    color:#b46a00;
+                "
+            >
+                ⏳ Төлбөрийн хүсэлт шалгагдаж байна
+            </div>
+        `;
+
+    }else if(M?.role === 'owner'){
+
+        html += `
+            <button
+                class="btn primary"
+                style="
+                    margin-top:8px;
+                    padding:8px 12px;
+                    font-size:12px !important;
+                "
+                onclick="openSubscriptionModal()"
+            >
+                Эрх сунгах
+            </button>
+        `;
+    }
+
+
+    $('accessBanner').innerHTML =
+        html;
+}
 function render(id){if(id==='home')home();if(id==='children')children();if(id==='funds')funds();if(id==='payments')payments();if(id==='report')report();if(id==='settings')settings()}
 function approvedPaid(f,c){return DATA.payments.filter(p=>p.child_id===c&&p.status==='approved').flatMap(p=>p.af_payment_allocations||[]).filter(a=>a.fund_id===f).reduce((s,a)=>s+Number(a.amount),0)}function fstats(f){let rows=DATA.fc.filter(x=>x.fund_id===f.id),target=rows.reduce((s,x)=>s+Number(x.target_amount),0),paid=rows.reduce((s,x)=>s+approvedPaid(f.id,x.child_id),0),exp=DATA.exp.filter(x=>x.fund_id===f.id).reduce((s,x)=>s+Number(x.amount),0);return{target,paid,exp,balance:Number(f.carry_in||0)+paid-exp,count:rows.length,paidCount:rows.filter(x=>approvedPaid(f.id,x.child_id)>=Number(x.target_amount)).length}}
 
