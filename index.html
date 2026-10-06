@@ -1208,7 +1208,9 @@ h4{
 <div id="home" class="page"></div><div id="children" class="page hidden"></div><div id="funds" class="page hidden"></div><div id="payments" class="page hidden"></div><div id="report" class="page hidden"></div><div id="settings" class="page hidden"></div></div></div></section><div id="modal" class="modal hidden" onclick="if(event.target===this)closeModal()"><div id="modalBody" class="modalbox"></div></div>
 <script>
 const SUPABASE_URL="https://fjvjtujwnbsonycgxuuu.supabase.co";const SUPABASE_KEY="sb_publishable_0QwVZZJsw_J0iHTov07o5A_ykK11Uai";const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-let U=null,G=null,M=null,DATA={}; let INVITE_CHILD_FLOW = false; const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const money=n=>new Intl.NumberFormat('mn-MN').format(Number(n||0))+'₮';function toast(s){$('toast').textContent=s;$('toast').classList.remove('hidden');setTimeout(()=>$('toast').classList.add('hidden'),2500)}function modal(h){$('modalBody').innerHTML=h;$('modal').classList.remove('hidden')}async function closeModal(){
+let U=null,G=null,M=null,DATA={}; let FUND_VIEW_MONTH = new Date()
+    .toISOString()
+    .slice(0, 7); let INVITE_CHILD_FLOW = false; const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const money=n=>new Intl.NumberFormat('mn-MN').format(Number(n||0))+'₮';function toast(s){$('toast').textContent=s;$('toast').classList.remove('hidden');setTimeout(()=>$('toast').classList.add('hidden'),2500)}function modal(h){$('modalBody').innerHTML=h;$('modal').classList.remove('hidden')}async function closeModal(){
 
     $('modal').classList.add('hidden');
 
@@ -2426,9 +2428,240 @@ function children(){
   .map((c,i)=>{let st=childStatus(c.id),ct=DATA.contacts.find(x=>x.child_id===c.id);return `<div class="list-card row between" data-child-row="${c.id}" data-name="${esc(c.full_name)}" onclick="childDetail('${c.id}')" style="cursor:pointer"><div class="row"><div class="avatar-mini ${i%2?'girl':''}">${i%2?'👧':'👦'}</div><div><b>${esc(c.full_name)}</b><div class="muted">${ct?esc(ct.relationship)+' · '+esc(maskPhone(ct.phone)):'Холбоо барих мэдээлэл'}</div></div></div><div class="row"><span class="pill ${st[1]}">${st[0]}</span><b>›</b></div></div>`}).join('')||'<div class="card muted">Хүүхэд бүртгэгдээгүй байна.</div>'}</div>`;
 }async function reviewChild(id,status){if(!hasWrite())return toast('Эрх дууссан');let{error}=await sb.rpc('af_review_child_request',{p_id:id,p_status:status});if(error)return toast(error.message);await refresh();children()}
 function funds(){
- $('funds').innerHTML=`<div class="row between"><h3>Фонд</h3>${M.role!=='parent'?`<button class="btn primary" onclick="fundModal()">＋ Шинэ фонд</button>`:''}</div>
- ${DATA.funds.map((f,i)=>{let st=fstats(f),pct=st.count?Math.round(st.paidCount/st.count*100):0,ico=f.kind==='monthly'?'📅':i%2?'🎁':'🚌';return `<div class="fund-card" onclick="fundDetail('${f.id}')" style="cursor:pointer"><div class="fund-icon ${f.kind==='special'?'special':''}">${ico}</div><div class="fund-main"><div class="fund-title">${esc(f.title)}</div><div class="fund-sub">Төлөвлөгөө: ${money(Number(f.amount_per_child)*st.count)}</div><div class="progress" style="margin-top:6px"><i style="width:${pct}%"></i></div><div class="fund-sub">${st.paidCount}/${st.count} төлсөн · ${pct}%</div></div><b>›</b></div>`}).join('')||'<div class="card muted">Фонд алга.</div>'}
- ${M.role!=='parent'?`<button class="btn primary" style="width:100%;margin-top:8px" onclick="monthlyModal()">📅 Сарын фондууд үүсгэх</button>`:''}`;
+
+    const [year, month] = FUND_VIEW_MONTH
+        .split('-')
+        .map(Number);
+
+    const monthStart =
+        `${FUND_VIEW_MONTH}-01`;
+
+    const monthFunds = DATA.funds.filter(f => {
+
+        if(f.fund_month){
+            return f.fund_month.slice(0,7) === FUND_VIEW_MONTH;
+        }
+
+        if(f.month_key){
+            return f.month_key === FUND_VIEW_MONTH;
+        }
+
+        return false;
+    });
+
+    const monthLabel =
+        `${year} оны ${month}-р сар`;
+
+    $('funds').innerHTML = `
+
+        <div class="row between">
+
+            <h3>Фонд</h3>
+
+            ${
+                M.role !== 'parent'
+                    ? `
+                        <button
+                            class="btn primary"
+                            onclick="fundModal()"
+                        >
+                            ＋ Шинэ фонд
+                        </button>
+                    `
+                    : ''
+            }
+
+        </div>
+
+
+        <div
+            class="card"
+            style="
+                display:flex;
+                align-items:center;
+                justify-content:space-between;
+                gap:10px;
+            "
+        >
+
+            <button
+                class="btn soft"
+                onclick="changeFundMonth(-1)"
+            >
+                ‹
+            </button>
+
+            <div
+                style="
+                    text-align:center;
+                    flex:1;
+                "
+            >
+
+                <b>
+                    📅 ${monthLabel}
+                </b>
+
+                <div class="muted">
+                    Энэ сарын фондууд
+                </div>
+
+            </div>
+
+            <button
+                class="btn soft"
+                onclick="changeFundMonth(1)"
+            >
+                ›
+            </button>
+
+        </div>
+
+
+        <div>
+
+            ${
+                monthFunds
+                    .map((f,i) => {
+
+                        let st = fstats(f);
+
+                        let pct = st.count
+                            ? Math.round(
+                                st.paidCount /
+                                st.count *
+                                100
+                            )
+                            : 0;
+
+                        let ico =
+                            f.kind === 'monthly'
+                                ? '📅'
+                                : i % 2
+                                    ? '🎁'
+                                    : '🚌';
+
+                        let typeText =
+                            f.kind === 'monthly'
+                                ? 'Үндсэн сарын фонд'
+                                : 'Тусгай фонд';
+
+                        return `
+
+                            <div
+                                class="fund-card"
+                                onclick="fundDetail('${f.id}')"
+                                style="cursor:pointer"
+                            >
+
+                                <div
+                                    class="fund-icon ${
+                                        f.kind === 'special'
+                                            ? 'special'
+                                            : ''
+                                    }"
+                                >
+                                    ${ico}
+                                </div>
+
+                                <div class="fund-main">
+
+                                    <div class="fund-title">
+                                        ${esc(f.title)}
+                                    </div>
+
+                                    <div class="fund-sub">
+                                        ${typeText}
+                                    </div>
+
+                                    <div class="fund-sub">
+                                        Нийт зорилго:
+                                        ${
+                                            money(
+                                                Number(
+                                                    f.amount_per_child
+                                                ) *
+                                                st.count
+                                            )
+                                        }
+                                    </div>
+
+                                    <div
+                                        class="progress"
+                                        style="margin-top:6px"
+                                    >
+                                        <i
+                                            style="width:${pct}%"
+                                        ></i>
+                                    </div>
+
+                                    <div class="fund-sub">
+                                        ${st.paidCount}/${st.count}
+                                        төлсөн · ${pct}%
+                                    </div>
+
+                                </div>
+
+                                <b>›</b>
+
+                            </div>
+
+                        `;
+
+                    })
+                    .join('')
+
+                ||
+
+                `
+                    <div class="card muted">
+                        📭 ${monthLabel}-д фонд алга.
+                    </div>
+                `
+            }
+
+        </div>
+
+
+        ${
+            M.role !== 'parent'
+                ? `
+                    <button
+                        class="btn primary"
+                        style="
+                            width:100%;
+                            margin-top:8px;
+                        "
+                        onclick="monthlyModal()"
+                    >
+                        📅 Сарын үндсэн фондууд үүсгэх
+                    </button>
+                `
+                : ''
+        }
+
+    `;
+}
+ function changeFundMonth(step){
+
+    let [year, month] = FUND_VIEW_MONTH
+        .split('-')
+        .map(Number);
+
+    let d = new Date(
+        year,
+        month - 1 + step,
+        1
+    );
+
+    FUND_VIEW_MONTH =
+        d.getFullYear() +
+        '-' +
+        String(
+            d.getMonth() + 1
+        ).padStart(2,'0');
+
+    funds();
 }
 function fundModal(){
  if(!hasWrite())return toast('Эрх дууссан');
@@ -2441,7 +2674,39 @@ function fundModal(){
  <div class="field"><label>Хүлээн авах данс</label><select id="fbankmode" onchange="$('customBank').classList.toggle('hidden',this.value==='default')"><option value="default">Ангийн үндсэн данс</option><option value="custom">Өөр данс</option></select></div>
  <div id="customBank" class="hidden"><div class="field"><label>Банк</label><input id="fbn"></div><div class="field"><label>Данс</label><input id="fba"></div><div class="field"><label>Эзэмшигч</label><input id="fbh"></div></div>
  <button class="btn primary" style="width:100%" onclick="saveFund('special')">Фонд үүсгэх</button>`);
-}async function saveFund(kind,monthKey=null,titleOverride=null,dueOverride=null){let title=titleOverride||$('ft').value.trim(),amt=Number($('fa').value),due=dueOverride||$('fd').value,desc=titleOverride?'':$('fdesc').value.trim();if(!title||!amt||!due)return toast('Мэдээллээ бөглөнө үү');let custom=!titleOverride&&$('fbankmode')?.value==='custom';let bank={bank_name:custom?$('fbn').value.trim():G.bank_name,bank_account:custom?$('fba').value.trim():G.bank_account,bank_holder:custom?$('fbh').value.trim():G.bank_holder};let{data:f,error}=await sb.from('af_funds').insert({group_id:G.id,title,kind,amount_per_child:amt,due_date:due,description:desc,month_key:monthKey,created_by:U.id,...bank}).select().single();if(error)return toast(error.message);let kids=titleOverride?DATA.children:($('scope').value==='all'?DATA.children:DATA.children.filter(c=>[...document.querySelectorAll('#pick input:checked')].some(x=>x.value===c.id)));if(!kids.length)return toast('Хүүхэд сонгоно уу');let{error:e}=await sb.from('af_fund_children').insert(kids.map(c=>({fund_id:f.id,child_id:c.id,target_amount:amt})));if(e)return toast(e.message);
+}async function saveFund(kind,monthKey=null,titleOverride=null,dueOverride=null){let title=titleOverride||$('ft').value.trim(),amt=Number($('fa').value),due=dueOverride||$('fd').value,desc=titleOverride?'':$('fdesc').value.trim();if(!title||!amt||!due)return toast('Мэдээллээ бөглөнө үү');let custom=!titleOverride&&$('fbankmode')?.value==='custom';let bank={bank_name:custom?$('fbn').value.trim():G.bank_name,bank_account:custom?$('fba').value.trim():G.bank_account,bank_holder:custom?$('fbh').value.trim():G.bank_holder};let fundMonth =
+    monthKey
+        ? `${monthKey}-01`
+        : `${FUND_VIEW_MONTH}-01`;
+
+let { data:f, error } =
+    await sb
+        .from('af_funds')
+        .insert({
+
+            group_id: G.id,
+
+            title: title,
+
+            kind: kind,
+
+            amount_per_child: amt,
+
+            due_date: due,
+
+            description: desc,
+
+            month_key: monthKey,
+
+            fund_month: fundMonth,
+
+            created_by: U.id,
+
+            ...bank
+
+        })
+        .select()
+        .single();if(error)return toast(error.message);let kids=titleOverride?DATA.children:($('scope').value==='all'?DATA.children:DATA.children.filter(c=>[...document.querySelectorAll('#pick input:checked')].some(x=>x.value===c.id)));if(!kids.length)return toast('Хүүхэд сонгоно уу');let{error:e}=await sb.from('af_fund_children').insert(kids.map(c=>({fund_id:f.id,child_id:c.id,target_amount:amt})));if(e)return toast(e.message);
 
 if(!titleOverride){
     closeModal();
