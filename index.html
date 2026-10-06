@@ -5522,7 +5522,7 @@ function settings(){
  $('settings').innerHTML=`<h3>Тохиргоо</h3><div class="card">
  <div class="settings-item" onclick="settingsInfo()"><div class="settings-ico">🏫</div><div style="flex:1"><b>Ангийн мэдээлэл</b></div><b>›</b></div>
  <div class="settings-item" onclick="settingsBank()"><div class="settings-ico" style="background:#e8f5ff">🏦</div><div style="flex:1"><b>Фондын дансны мэдээлэл</b></div><b>›</b></div>
- <div class="settings-item" onclick="memberRequests()"><div class="settings-ico" style="background:#e9faef">👥</div><div style="flex:1"><b>Гишүүдийн хүсэлт</b></div>${DATA.requests.filter(x=>x.status==='pending').length?`<span class="pill bad">${DATA.requests.filter(x=>x.status==='pending').length}</span>`:''}<b>›</b></div>
+ 
  <div class="settings-item" onclick="funds()"><div class="settings-ico" style="background:#f4edff">⚙️</div><div style="flex:1"><b>Фондын тохиргоо</b></div><b>›</b></div>
  <div class="settings-item" onclick="ownerTransferInfo()"><div class="settings-ico" style="background:#fff0ef">👤</div><div style="flex:1"><b>Админ солих</b></div><b>›</b></div>
  <div class="settings-item" onclick="closeGroupInfo()" style="color:#e23d44"><div class="settings-ico" style="background:#fff0ef">🗑️</div><div style="flex:1"><b>Ангийг хаах</b></div><b>›</b></div></div>
@@ -5569,143 +5569,7 @@ function settings(){
     </div>
 </div>`;
 }
- function memberRequests(){
 
-    const pending =
-        (DATA.requests || [])
-            .filter(x => x.status === 'pending');
-
-
-    if(!pending.length){
-
-        modal(`
-
-            <h3>👥 Гишүүдийн хүсэлт</h3>
-
-            <div
-                style="
-                    text-align:center;
-                    padding:35px 15px 25px;
-                "
-            >
-
-                <div
-                    style="
-                        font-size:46px;
-                        margin-bottom:12px;
-                    "
-                >
-                    👥
-                </div>
-
-                <div
-                    style="
-                        font-size:17px;
-                        font-weight:800;
-                        color:#1e293b;
-                    "
-                >
-                    Гишүүний хүсэлт алга
-                </div>
-
-                <div
-                    class="muted"
-                    style="
-                        margin-top:8px;
-                        line-height:1.5;
-                    "
-                >
-                    Одоогоор зөвшөөрөл хүлээж буй
-                    хүүхдийн бүртгэлийн хүсэлт байхгүй байна.
-                </div>
-
-            </div>
-
-            <button
-                class="btn soft"
-                style="width:100%"
-                onclick="closeModal()"
-            >
-                Хаах
-            </button>
-
-        `);
-
-        return;
-    }
-
-
-    const html =
-        pending.map(r => `
-
-            <div class="card">
-
-                <div class="row between">
-
-                    <div>
-
-                        <b style="font-size:16px">
-                            🧒 ${esc(r.child_name || r.name || 'Хүүхэд')}
-                        </b>
-
-                        <div
-                            class="muted"
-                            style="margin-top:5px"
-                        >
-                            Зөвшөөрөл хүлээж байна
-                        </div>
-
-                    </div>
-
-                    <span class="pill bad">
-                        Хүлээгдэж буй
-                    </span>
-
-                </div>
-
-
-                <div
-                    class="row"
-                    style="
-                        gap:8px;
-                        margin-top:14px;
-                    "
-                >
-
-                    <button
-                        class="btn primary"
-                        style="flex:1"
-                        onclick="
-                            closeModal();
-                            children();
-                        "
-                    >
-                        Хүсэлтийг шалгах
-                    </button>
-
-                </div>
-
-            </div>
-
-        `).join('');
-
-
-    modal(`
-
-        <h3>👥 Гишүүдийн хүсэлт</h3>
-
-        <div
-            class="muted"
-            style="margin-bottom:12px"
-        >
-            ${pending.length} хүсэлт зөвшөөрөл хүлээж байна.
-        </div>
-
-        ${html}
-
-    `);
-
-}
  function copyInviteLink(){
     if(!G?.invite_code) return toast('Урилгын код олдсонгүй');
 
