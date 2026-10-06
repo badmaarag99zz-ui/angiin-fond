@@ -4214,7 +4214,370 @@ function reportBalances(){
         }
     `);
 }
- function excelReport(){let ws=XLSX.utils.json_to_sheet(DATA.reportRows||[]),wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Тайлан');XLSX.writeFile(wb,`Angiin-fond-${G.academic_year}.xlsx`)}function pdfReport(){let{jsPDF}=window.jspdf,doc=new jsPDF();doc.text('Angiin fond report',14,16);doc.text(`${G.institution_name} / ${G.group_name} / ${G.academic_year}`,14,24);let y=34;(DATA.reportRows||[]).forEach(r=>{doc.text(`${r['Фонд']}: income ${r['Цугласан']}, expense ${r['Зарлага']}, balance ${r['Үлдэгдэл']}`,14,y);y+=8;if(y>280){doc.addPage();y=20}});doc.save(`Angiin-fond-${G.academic_year}.pdf`)}
+function excelReport(){
+
+    // Тайлан дээр одоо сонгогдсон filter
+    const selectedFundIds =
+        DATA.reportFilteredFundIds || DATA.funds.map(f => f.id);
+
+    const funds = DATA.funds.filter(
+        f => selectedFundIds.includes(f.id)
+    );
+
+
+    // ==============================
+    // EXCEL МӨРҮҮД
+    // ==============================
+
+    const rows = funds.map(f => {
+
+        const s = fstats(f);
+
+        const fundChildren =
+            DATA.fc.filter(
+                x => x.fund_id === f.id
+            );
+
+        const fullPaid =
+            fundChildren.filter(x => {
+
+                const paid =
+                    approvedPaid(
+                        f.id,
+                        x.child_id
+                    );
+
+                return paid >= Number(
+                    x.target_amount || 0
+                );
+
+            }).length;
+
+
+        const unpaid =
+            Math.max(
+                0,
+                fundChildren.length - fullPaid
+            );
+
+
+        const totalTarget =
+            fundChildren.reduce(
+                (sum,x) =>
+                    sum +
+                    Number(
+                        x.target_amount || 0
+                    ),
+                0
+            );
+
+
+        // Сар
+        let monthKey = '';
+
+        if(f.kind === 'monthly'){
+
+            monthKey =
+                f.month_key ||
+                f.fund_month?.slice(0,7) ||
+                '';
+
+        }else{
+
+            monthKey =
+                f.fund_month?.slice(0,7) ||
+                f.month_key ||
+                '';
+
+        }
+
+
+        let monthLabel = '';
+
+        if(monthKey){
+
+            const [year,month] =
+                monthKey
+                    .split('-')
+                    .map(Number);
+
+            monthLabel =
+                `${year} оны ${month}-р сар`;
+
+        }
+
+
+        // Төлөв
+        let status = '';
+
+        if(f.status === 'closed'){
+
+            status = 'Хаагдсан';
+
+        }else{
+
+            status = 'Идэвхтэй';
+
+        }
+
+
+        return {
+
+            'Фондын нэр':
+                f.title || '',
+
+            'Төрөл':
+                f.kind === 'monthly'
+                    ? 'Сарын фонд'
+                    : 'Тусгай фонд',
+
+            'Сар':
+                monthLabel,
+
+            'Төлөв':
+                status,
+
+            'Хүүхдийн тоо':
+                fundChildren.length,
+
+            'Бүрэн төлсөн':
+                fullPaid,
+
+            'Төлөөгүй / дутуу':
+                unpaid,
+
+            'Нэг хүүхдийн дүн':
+                Number(
+                    f.amount_per_child || 0
+                ),
+
+            'Нийт төлөх':
+                totalTarget,
+
+            'Цугласан':
+                Number(
+                    s.paid || 0
+                ),
+
+            'Зарлага':
+                Number(
+                    s.exp || 0
+                ),
+
+            'Шилжиж ирсэн':
+                Number(
+                    f.carry_in || 0
+                ),
+
+            'Үлдэгдэл':
+                Number(
+                    s.balance || 0
+                ),
+
+            'Үүсгэсэн огноо':
+                f.created_at
+                    ? new Date(
+                        f.created_at
+                    ).toLocaleDateString()
+                    : '',
+
+            'Хаасан огноо':
+                f.closed_at
+                    ? new Date(
+                        f.closed_at
+                    ).toLocaleDateString()
+                    : ''
+
+        };
+
+    });
+
+
+    // ==============================
+    // НИЙТ МӨР
+    // ==============================
+
+    const totalRow = {
+
+        'Фондын нэр':
+            'НИЙТ',
+
+        'Төрөл':
+            '',
+
+        'Сар':
+            '',
+
+        'Төлөв':
+            '',
+
+        'Хүүхдийн тоо':
+            '',
+
+        'Бүрэн төлсөн':
+            '',
+
+        'Төлөөгүй / дутуу':
+            '',
+
+        'Нэг хүүхдийн дүн':
+            '',
+
+        'Нийт төлөх':
+            rows.reduce(
+                (sum,r) =>
+                    sum +
+                    Number(
+                        r['Нийт төлөх'] || 0
+                    ),
+                0
+            ),
+
+        'Цугласан':
+            rows.reduce(
+                (sum,r) =>
+                    sum +
+                    Number(
+                        r['Цугласан'] || 0
+                    ),
+                0
+            ),
+
+        'Зарлага':
+            rows.reduce(
+                (sum,r) =>
+                    sum +
+                    Number(
+                        r['Зарлага'] || 0
+                    ),
+                0
+            ),
+
+        'Шилжиж ирсэн':
+            rows.reduce(
+                (sum,r) =>
+                    sum +
+                    Number(
+                        r['Шилжиж ирсэн'] || 0
+                    ),
+                0
+            ),
+
+        'Үлдэгдэл':
+            rows.reduce(
+                (sum,r) =>
+                    sum +
+                    Number(
+                        r['Үлдэгдэл'] || 0
+                    ),
+                0
+            ),
+
+        'Үүсгэсэн огноо':
+            '',
+
+        'Хаасан огноо':
+            ''
+
+    };
+
+
+    rows.push(totalRow);
+
+
+    // ==============================
+    // SHEET ҮҮСГЭХ
+    // ==============================
+
+    const ws =
+        XLSX.utils.json_to_sheet(
+            rows
+        );
+
+
+    // Баганын өргөн
+    ws['!cols'] = [
+
+        { wch: 28 }, // Фондын нэр
+        { wch: 16 }, // Төрөл
+        { wch: 18 }, // Сар
+        { wch: 14 }, // Төлөв
+        { wch: 14 }, // Хүүхдийн тоо
+        { wch: 14 }, // Бүрэн төлсөн
+        { wch: 18 }, // Төлөөгүй / дутуу
+        { wch: 18 }, // Нэг хүүхдийн дүн
+        { wch: 18 }, // Нийт төлөх
+        { wch: 16 }, // Цугласан
+        { wch: 16 }, // Зарлага
+        { wch: 18 }, // Шилжиж ирсэн
+        { wch: 16 }, // Үлдэгдэл
+        { wch: 18 }, // Үүсгэсэн
+        { wch: 18 }  // Хаасан
+
+    ];
+
+
+    // ==============================
+    // WORKBOOK
+    // ==============================
+
+    const wb =
+        XLSX.utils.book_new();
+
+
+    XLSX.utils.book_append_sheet(
+        wb,
+        ws,
+        'Нэгдсэн тайлан'
+    );
+
+
+    // ==============================
+    // ФАЙЛЫН НЭР
+    // ==============================
+
+    const fundType =
+        document.getElementById(
+            'reportFundType'
+        )?.value || 'all';
+
+    const month =
+        document.getElementById(
+            'reportMonth'
+        )?.value || 'all';
+
+
+    let fileName =
+        `Angiin-fond-${G.academic_year}`;
+
+    if(month !== 'all'){
+
+        fileName +=
+            `-${month}`;
+
+    }
+
+    if(fundType === 'monthly'){
+
+        fileName +=
+            '-sariin-fond';
+
+    }
+
+    if(fundType === 'special'){
+
+        fileName +=
+            '-tusgai-fond';
+
+    }
+
+
+    XLSX.writeFile(
+        wb,
+        `${fileName}.xlsx`
+    );
+
+}function pdfReport(){let{jsPDF}=window.jspdf,doc=new jsPDF();doc.text('Angiin fond report',14,16);doc.text(`${G.institution_name} / ${G.group_name} / ${G.academic_year}`,14,24);let y=34;(DATA.reportRows||[]).forEach(r=>{doc.text(`${r['Фонд']}: income ${r['Цугласан']}, expense ${r['Зарлага']}, balance ${r['Үлдэгдэл']}`,14,y);y+=8;if(y>280){doc.addPage();y=20}});doc.save(`Angiin-fond-${G.academic_year}.pdf`)}
 function settings(){
  $('settings').innerHTML=`<h3>Тохиргоо</h3><div class="card">
  <div class="settings-item" onclick="settingsInfo()"><div class="settings-ico">🏫</div><div style="flex:1"><b>Ангийн мэдээлэл</b></div><b>›</b></div>
