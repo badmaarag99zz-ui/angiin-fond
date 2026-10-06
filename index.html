@@ -2979,7 +2979,24 @@ function expenseModal(fid){
  <div class="field"><label>Зураг / баримт (заавал) *</label><input id="ep" type="file" accept="image/*"></div><button class="btn primary" style="width:100%" onclick="saveExpense('${fid}')">Зарлага нэмэх</button>`);
 }async function upload(file,prefix){let path=`${U.id}/${prefix}-${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g,'_')}`;let{error}=await sb.storage.from('af-proofs').upload(path,file);if(error)throw error;return path}async function saveExpense(fid){if(!hasWrite())return toast('Эрх дууссан');let file=$('ep').files[0];if(!$('et').value.trim()||!Number($('ea').value)||!$('ed').value||!file)return toast('Нэр, дүн, огноо, зураг заавал');try{let p=await upload(file,'expense');let{error}=await sb.from('af_expenses').insert({fund_id:fid,title:$('et').value.trim(),amount:Number($('ea').value),expense_date:$('ed').value,description:$('edes').value.trim(),proof_path:p,created_by:U.id});if(error)throw error;closeModal();await refresh();fundDetail(fid)}catch(e){toast(e.message)}}
 async function closeFund(fid){if(!hasWrite())return toast('Эрх дууссан');let f=DATA.funds.find(x=>x.id===fid),bal=fstats(f).balance,targets=DATA.funds.filter(x=>x.id!==fid&&x.status==='active'&&(f.kind==='special'?x.kind==='monthly':x.kind==='monthly'&&x.due_date>f.due_date)).sort((a,b)=>a.due_date.localeCompare(b.due_date));modal(`<h3>Фонд хаах</h3><p>Үлдэгдэл: <b>${money(bal)}</b></p><div class="field"><label>Үлдэгдэл шилжүүлэх фонд</label><select id="to"><option value="">Шилжүүлэхгүй</option>${targets.map(x=>`<option value="${x.id}">${esc(x.title)}</option>`).join('')}</select></div><button class="btn primary" onclick="doClose('${fid}',${bal})">Хаах</button>`)}async function doClose(fid,bal){let to=$('to').value;if(to&&bal>0){let t=DATA.funds.find(x=>x.id===to);await sb.from('af_funds').update({carry_in:Number(t.carry_in||0)+bal}).eq('id',to);await sb.from('af_transfers').insert({from_fund_id:fid,to_fund_id:to,amount:bal,note:'Хаалтын үлдэгдэл',created_by:U.id})}let{error}=await sb.from('af_funds').update({status:'closed',closed_at:new Date().toISOString()}).eq('id',fid);if(error)return toast(error.message);closeModal();await refresh();funds()}
-function myChildren(){return DATA.children.filter(c=>DATA.fc.some(fc=>fc.child_id===c.id))}function payments(){if(M.role!=='parent'){$('payments').innerHTML=`<h3>Төлөлтийн хүсэлтүүд</h3>${DATA.payments.filter(x=>x.status==='pending').map(p=>{let c=DATA.children.find(x=>x.id===p.child_id);return `<div class="card row between"><div><b>${esc(c?.full_name||'')}</b> — ${money(p.total_amount)}<div class="muted">${new Date(p.created_at).toLocaleString()}</div></div><div><button class="btn primary" onclick="reviewPay('${p.id}','approved')">Зөвшөөрөх</button> <button class="btn danger" onclick="reviewPay('${p.id}','rejected')">Татгалзах</button></div></div>`}).join('')||'<div class="card muted">Хүлээгдэж буй төлөлт алга.</div>'}`;return}$('payments').innerHTML=`<div class="row between"><h3>Миний төлөлт</h3><button class="btn primary" onclick="payModal()">Төлөлт хийх</button></div><div class="card muted">Төлөлт нь нэг хүүхэд + нэг хүлээн авах дансаар багцлагдана. Админ банкны гүйлгээг шалгаж батална.</div>`}
+function myChildren(){
+
+    if(M.role !== 'parent'){
+        return DATA.children;
+    }
+
+    const myChildIds = DATA.contacts
+        .filter(
+            contact => contact.user_id === U.id
+        )
+        .map(
+            contact => contact.child_id
+        );
+
+    return DATA.children.filter(
+        child => myChildIds.includes(child.id)
+    );
+}function payments(){if(M.role!=='parent'){$('payments').innerHTML=`<h3>Төлөлтийн хүсэлтүүд</h3>${DATA.payments.filter(x=>x.status==='pending').map(p=>{let c=DATA.children.find(x=>x.id===p.child_id);return `<div class="card row between"><div><b>${esc(c?.full_name||'')}</b> — ${money(p.total_amount)}<div class="muted">${new Date(p.created_at).toLocaleString()}</div></div><div><button class="btn primary" onclick="reviewPay('${p.id}','approved')">Зөвшөөрөх</button> <button class="btn danger" onclick="reviewPay('${p.id}','rejected')">Татгалзах</button></div></div>`}).join('')||'<div class="card muted">Хүлээгдэж буй төлөлт алга.</div>'}`;return}$('payments').innerHTML=`<div class="row between"><h3>Миний төлөлт</h3><button class="btn primary" onclick="payModal()">Төлөлт хийх</button></div><div class="card muted">Төлөлт нь нэг хүүхэд + нэг хүлээн авах дансаар багцлагдана. Админ банкны гүйлгээг шалгаж батална.</div>`}
 async function reviewPay(id,status){if(!hasWrite())return toast('Эрх дууссан');let{error}=await sb.rpc('af_approve_payment',{p_id:id,p_status:status});if(error)return toast(error.message);await refresh();payments()}
 function payModal(){
  let kids=myChildren();if(!kids.length)return toast('Таны аккаунттай холбогдсон хүүхэд алга');
