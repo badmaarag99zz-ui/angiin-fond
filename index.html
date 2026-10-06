@@ -3373,7 +3373,6 @@ $('payments').innerHTML = `
         `
     }
 
-`;
 async function reviewPay(id,status){if(!hasWrite())return toast('Эрх дууссан');let{error}=await sb.rpc('af_approve_payment',{p_id:id,p_status:status});if(error)return toast(error.message);await refresh();payments()}
 function payModal(){
  let kids=myChildren();if(!kids.length)return toast('Таны аккаунттай холбогдсон хүүхэд алга');
