@@ -1103,6 +1103,40 @@ h4{
     font-weight:950;
     color:#14253b;
 }
+ /* ===== LOGIN TITLE FINAL FIX ===== */
+
+#auth h1.auth-title{
+    display:flex !important;
+    align-items:center !important;
+    gap:12px !important;
+
+    font-size:30px !important;
+    font-weight:950 !important;
+    line-height:1.2 !important;
+
+    margin-top:25px !important;
+    margin-bottom:8px !important;
+}
+
+#auth h1.auth-title::before{
+    display:none !important;
+    content:none !important;
+}
+
+#auth h1.auth-title .auth-logo{
+    width:46px !important;
+    height:46px !important;
+    min-width:46px !important;
+
+    object-fit:cover !important;
+    border-radius:12px !important;
+}
+
+#auth h1.auth-title span{
+    font-size:30px !important;
+    font-weight:950 !important;
+    color:#14253b !important;
+}
 </style></head><body>
 <div id="toast" class="toast hidden"></div>
 <section id="auth" class="wrap" style="max-width:480px;padding-top:8vh"><div class="card"><h1 class="auth-title">
