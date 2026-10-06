@@ -3137,6 +3137,20 @@ body.af-intro-modal-open{overflow:hidden!important}
     }
 
 }
+
+/* ===== LEGAL MODAL — FINAL CLICK/FIX ===== */
+#afInfoModal{
+    position:fixed !important;
+    inset:0 !important;
+    z-index:30000 !important;
+}
+#afInfoModal.hidden{
+    display:none !important;
+}
+#afInfoModal:not(.hidden){
+    display:flex !important;
+}
+
 </style></head><body>
 <div id="toast" class="toast hidden"></div>
 <section id="auth" class="wrap" style="max-width:480px;padding-top:8vh"><div class="card"><div class="auth-brand-banner">
@@ -4197,10 +4211,13 @@ body.af-intro-modal-open{overflow:hidden!important}
 </div>
 
 
-<!-- =========================================
-     LEGAL / INFO MODAL
-========================================= -->
+</section>
 
+</section><!-- /#auth -->
+
+<!-- =========================================
+     LEGAL / INFO MODAL — VIEWPORT LEVEL
+========================================= -->
 <div id="afInfoModal" class="af-info-modal hidden">
 
     <div class="af-info-backdrop" onclick="closeAfInfoModal()"></div>
@@ -4238,9 +4255,7 @@ body.af-intro-modal-open{overflow:hidden!important}
     </div>
 
 </div>
-</section>
-
-</section><!-- /#auth --><section id="app" class="hidden"><div class="top"><div class="wrap"><div class="brand">
+<section id="app" class="hidden"><div class="top"><div class="wrap"><div class="brand">
     <img src="angiin-fond-logo.png" class="brand-logo" alt="Ангийн фонд">
     Ангийн фонд
 </div><button class="btn soft" onclick="logout()">Гарах</button></div></div><div class="wrap">
