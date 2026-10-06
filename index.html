@@ -1686,6 +1686,23 @@ if(yearError){
 }
 
 DATA.currentYear = currentYear;
+ const { data: activeChildYears, error: childYearError } =
+    await sb
+        .from('af_child_years')
+        .select('child_id')
+        .eq('group_year_id', currentYear.id)
+        .eq('status', 'active');
+
+if(childYearError){
+    console.error(childYearError);
+    return toast('Хүүхдийн жилийн мэдээлэл ачаалж чадсангүй');
+}
+
+DATA.activeChildIds =
+    new Set(
+        (activeChildYears || [])
+            .map(x => x.child_id)
+    );
  let qs=[
 sb
     .from('af_funds')
@@ -1700,7 +1717,11 @@ sb
 let r = await Promise.all(qs);
 
 DATA.funds = r[0].data || [];
-DATA.children = r[1].data || [];
+DATA.children =
+    (r[1].data || []).filter(
+        child =>
+            DATA.activeChildIds.has(child.id)
+    );
 
 /* =========================================
    ЗӨВХӨН CURRENT ЖИЛИЙН ТӨЛӨЛТ
@@ -1870,7 +1891,80 @@ function childDetail(id){
                 ${funds || '<div class="muted">Фондын төлөлт алга.</div>'}
             </div>
         </div>
+         ${M.role !== 'parent' ? `
+    <button
+        class="btn danger"
+        style="
+            width:100%;
+            margin-top:16px;
+        "
+        onclick="confirmRemoveChild('${id}')"
+    >
+        🚪 Ангиас хасах
+    </button>
+` : ''}
     `);
+
+}
+ async function confirmRemoveChild(childId){
+
+    if(M.role === 'parent'){
+        return toast('Эрх хүрэхгүй байна');
+    }
+
+    if(!hasWrite()){
+        return toast('Эрх дууссан');
+    }
+
+
+    const child =
+        DATA.children.find(
+            c => c.id === childId
+        );
+
+    if(!child){
+        return toast('Хүүхэд олдсонгүй');
+    }
+
+
+    const ok = confirm(
+        `${child.full_name}-ийг ангиас хасах уу?\n\n` +
+        `• Хүүхдийн өмнөх төлөлт устахгүй\n` +
+        `• Фондын түүх устахгүй\n` +
+        `• Тайлангийн мэдээлэл хадгалагдана\n` +
+        `• Энэ хичээлийн жилийн идэвхтэй хүүхдийн жагсаалтаас хасагдана\n` +
+        `• Өөр active хүүхэдгүй бол эцэг эхийн энэ ангийн эрх мөн хаагдана`
+    );
+
+    if(!ok){
+        return;
+    }
+
+
+    const { error } =
+        await sb.rpc(
+            'af_remove_child_from_group',
+            {
+                p_child_id: childId
+            }
+        );
+
+
+    if(error){
+        console.error(error);
+        return toast(error.message);
+    }
+
+
+    closeModal();
+
+    await refresh();
+
+    children();
+
+    toast(
+        `${child.full_name} ангиас хасагдлаа`
+    );
 }
 
 function switchChildDetailTab(tab, btn){
