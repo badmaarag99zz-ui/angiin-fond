@@ -2414,12 +2414,76 @@ let mf = DATA.funds.find(
         f.kind === 'monthly' &&
         f.month_key === currentMonth
 );
- let ms=mf?fstats(mf):{paid:0,balance:0,paidCount:0,count:0},pct=ms.count?Math.round(ms.paidCount/ms.count*100):0;
+ let ms=mf?fstats(mf):{paid:0,balance:0,paidCount:0,count:0},pct=ms.count?Math.round(ms.paidCount/ms.count*100):0; let myChild = null;
+let myContact = null;
+
+if(M.role === 'parent'){
+
+    myContact = DATA.contacts.find(
+        x => x.user_id === U.id
+    );
+
+    if(myContact){
+        myChild = DATA.children.find(
+            x => x.id === myContact.child_id
+        );
+    }
+}
  $('home').innerHTML=`
  <div class="hero-class"><div class="hero-ill">
     ${classCoverHTML()}
 </div><div class="hero-body"><div class="row between"><div><b>${esc(G.group_name)} ангийн фонд</b><div class="muted">Хамтдаа хүүхдүүдийнхээ төлөө 💚</div></div></div></div></div>
+${
+    M.role === 'parent' && myChild
+        ? `
+            <div
+                class="card"
+                onclick="childDetail('${myChild.id}')"
+                style="
+                    cursor:pointer;
+                    background:#fff;
+                "
+            >
+                <div class="row between">
 
+                    <div class="row">
+
+                        <div
+                            class="avatar-mini"
+                            style="
+                                width:48px;
+                                height:48px;
+                                font-size:24px;
+                            "
+                        >
+                            🧒
+                        </div>
+
+                        <div>
+                            <div class="muted">
+                                Миний хүүхэд
+                            </div>
+
+                            <b>
+                                ${esc(myChild.full_name)}
+                            </b>
+
+                            <div class="muted">
+                                ${esc(G.group_name)}
+                                ·
+                                ${esc(myContact.relationship || '')}
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <b>›</b>
+
+                </div>
+            </div>
+        `
+        : ''
+}
  ${mf?`<div class="card" onclick="fundDetail('${mf.id}')" style="cursor:pointer;background:linear-gradient(135deg,#eafff1,#f8fffb)"><div class="row between"><div><b>📅 ${esc(mf.title)}</b><div class="money">${money(ms.paid)}</div></div><b>›</b></div><div class="progress"><i style="width:${pct}%"></i></div><div class="row between muted" style="margin-top:5px"><span>${pct}%</span><span>${ms.paidCount}/${ms.count} төлсөн</span></div></div>`:''}
  <div class="row between" style="margin-top:12px"><b>Сүүлийн үйлдлүүд</b><span class="link" onclick="tab('report',document.querySelectorAll('#nav button')[4])">Бүгд ›</span></div>
  <div class="card">
