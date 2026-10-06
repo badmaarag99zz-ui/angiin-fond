@@ -1077,9 +1077,38 @@ h4{
     top:22px !important;
     transform:none !important;
 }
+ /* ===== LOGIN LOGO ===== */
+
+#auth .auth-title{
+    display:flex !important;
+    align-items:center !important;
+    gap:12px !important;
+}
+
+#auth .auth-title::before{
+    display:none !important;
+    content:none !important;
+}
+
+#auth .auth-logo{
+    width:46px;
+    height:46px;
+    object-fit:cover;
+    border-radius:13px;
+    flex-shrink:0;
+    box-shadow:0 3px 10px rgba(0,0,0,.10);
+}
+
+#auth .auth-title span{
+    font-weight:950;
+    color:#14253b;
+}
 </style></head><body>
 <div id="toast" class="toast hidden"></div>
-<section id="auth" class="wrap" style="max-width:480px;padding-top:8vh"><div class="card"><h1>Ангийн фонд</h1><p class="muted">Анги, бүлгийн сангийн ил тод бүртгэл.</p><div class="tabs"><button class="btn primary" onclick="authTab('login')">Нэвтрэх</button><button class="btn soft" onclick="authTab('register')">Бүртгүүлэх</button></div><div id="loginBox"><div class="field">
+<section id="auth" class="wrap" style="max-width:480px;padding-top:8vh"><div class="card"><h1 class="auth-title">
+    <img src="angiin-fond-logo.png" class="auth-logo" alt="Ангийн фонд">
+    <span>Ангийн фонд</span>
+</h1><p class="muted">Анги, бүлгийн сангийн ил тод бүртгэл.</p><div class="tabs"><button class="btn primary" onclick="authTab('login')">Нэвтрэх</button><button class="btn soft" onclick="authTab('register')">Бүртгүүлэх</button></div><div id="loginBox"><div class="field">
     <label>Утасны дугаар</label>
     <input
         id="le"
