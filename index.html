@@ -2909,7 +2909,7 @@ async function viewProof(path){
 
 function expenseModal(fid){
  modal(`<h3>Зарлага нэмэх</h3><div class="field"><label>Фонд</label><input value="${esc(DATA.funds.find(x=>x.id===fid)?.title||'')}" readonly></div>
- <div class="field"><label>Ангилал</label><div class="segment"><button type="button" class="on">🧹 Цэвэрлэгээ</button><button type="button">📋 Хэрэглээний хэрэгсэл</button><button type="button">🔗 Аялал</button><button type="button">🎁 Бэлэг</button><button type="button">••• Бусад</button></div></div>
+ 
  <div class="field"><label>Гарчиг *</label><input id="et" placeholder="Жишээ: Цэвэрлэгээний зардал"></div><div class="field"><label>Дүн (₮) *</label><input id="ea" type="number"></div>
  <div class="field"><label>Огноо *</label><input id="ed" type="date" value="${new Date().toISOString().slice(0,10)}"></div><div class="field"><label>Тайлбар</label><textarea id="edes"></textarea></div>
  <div class="field"><label>Зураг / баримт (заавал) *</label><input id="ep" type="file" accept="image/*"></div><button class="btn primary" style="width:100%" onclick="saveExpense('${fid}')">Зарлага нэмэх</button>`);
