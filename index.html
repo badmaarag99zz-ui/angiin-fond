@@ -4216,310 +4216,637 @@ function reportBalances(){
 }
 function excelReport(){
 
-    // Тайлан дээр одоо сонгогдсон filter
+    // ==========================================
+    // 1. ОДООГИЙН ТАЙЛАНГИЙН FILTER
+    // ==========================================
+
     const selectedFundIds =
-        DATA.reportFilteredFundIds || DATA.funds.map(f => f.id);
-
-    const funds = DATA.funds.filter(
-        f => selectedFundIds.includes(f.id)
-    );
-
-
-    // ==============================
-    // EXCEL МӨРҮҮД
-    // ==============================
-
-    const rows = funds.map(f => {
-
-        const s = fstats(f);
-
-        const fundChildren =
-            DATA.fc.filter(
-                x => x.fund_id === f.id
-            );
-
-        const fullPaid =
-            fundChildren.filter(x => {
-
-                const paid =
-                    approvedPaid(
-                        f.id,
-                        x.child_id
-                    );
-
-                return paid >= Number(
-                    x.target_amount || 0
-                );
-
-            }).length;
-
-
-        const unpaid =
-            Math.max(
-                0,
-                fundChildren.length - fullPaid
-            );
-
-
-        const totalTarget =
-            fundChildren.reduce(
-                (sum,x) =>
-                    sum +
-                    Number(
-                        x.target_amount || 0
-                    ),
-                0
-            );
-
-
-        // Сар
-        let monthKey = '';
-
-        if(f.kind === 'monthly'){
-
-            monthKey =
-                f.month_key ||
-                f.fund_month?.slice(0,7) ||
-                '';
-
-        }else{
-
-            monthKey =
-                f.fund_month?.slice(0,7) ||
-                f.month_key ||
-                '';
-
-        }
-
-
-        let monthLabel = '';
-
-        if(monthKey){
-
-            const [year,month] =
-                monthKey
-                    .split('-')
-                    .map(Number);
-
-            monthLabel =
-                `${year} оны ${month}-р сар`;
-
-        }
-
-
-        // Төлөв
-        let status = '';
-
-        if(f.status === 'closed'){
-
-            status = 'Хаагдсан';
-
-        }else{
-
-            status = 'Идэвхтэй';
-
-        }
-
-
-        return {
-
-            'Фондын нэр':
-                f.title || '',
-
-            'Төрөл':
-                f.kind === 'monthly'
-                    ? 'Сарын фонд'
-                    : 'Тусгай фонд',
-
-            'Сар':
-                monthLabel,
-
-            'Төлөв':
-                status,
-
-            'Хүүхдийн тоо':
-                fundChildren.length,
-
-            'Бүрэн төлсөн':
-                fullPaid,
-
-            'Төлөөгүй / дутуу':
-                unpaid,
-
-            'Нэг хүүхдийн дүн':
-                Number(
-                    f.amount_per_child || 0
-                ),
-
-            'Нийт төлөх':
-                totalTarget,
-
-            'Цугласан':
-                Number(
-                    s.paid || 0
-                ),
-
-            'Зарлага':
-                Number(
-                    s.exp || 0
-                ),
-
-            'Шилжиж ирсэн':
-                Number(
-                    f.carry_in || 0
-                ),
-
-            'Үлдэгдэл':
-                Number(
-                    s.balance || 0
-                ),
-
-            'Үүсгэсэн огноо':
-                f.created_at
-                    ? new Date(
-                        f.created_at
-                    ).toLocaleDateString()
-                    : '',
-
-            'Хаасан огноо':
-                f.closed_at
-                    ? new Date(
-                        f.closed_at
-                    ).toLocaleDateString()
-                    : ''
-
-        };
-
-    });
-
-
-    // ==============================
-    // НИЙТ МӨР
-    // ==============================
-
-    const totalRow = {
-
-        'Фондын нэр':
-            'НИЙТ',
-
-        'Төрөл':
-            '',
-
-        'Сар':
-            '',
-
-        'Төлөв':
-            '',
-
-        'Хүүхдийн тоо':
-            '',
-
-        'Бүрэн төлсөн':
-            '',
-
-        'Төлөөгүй / дутуу':
-            '',
-
-        'Нэг хүүхдийн дүн':
-            '',
-
-        'Нийт төлөх':
-            rows.reduce(
-                (sum,r) =>
-                    sum +
-                    Number(
-                        r['Нийт төлөх'] || 0
-                    ),
-                0
-            ),
-
-        'Цугласан':
-            rows.reduce(
-                (sum,r) =>
-                    sum +
-                    Number(
-                        r['Цугласан'] || 0
-                    ),
-                0
-            ),
-
-        'Зарлага':
-            rows.reduce(
-                (sum,r) =>
-                    sum +
-                    Number(
-                        r['Зарлага'] || 0
-                    ),
-                0
-            ),
-
-        'Шилжиж ирсэн':
-            rows.reduce(
-                (sum,r) =>
-                    sum +
-                    Number(
-                        r['Шилжиж ирсэн'] || 0
-                    ),
-                0
-            ),
-
-        'Үлдэгдэл':
-            rows.reduce(
-                (sum,r) =>
-                    sum +
-                    Number(
-                        r['Үлдэгдэл'] || 0
-                    ),
-                0
-            ),
-
-        'Үүсгэсэн огноо':
-            '',
-
-        'Хаасан огноо':
-            ''
-
-    };
-
-
-    rows.push(totalRow);
-
-
-    // ==============================
-    // SHEET ҮҮСГЭХ
-    // ==============================
-
-    const ws =
-        XLSX.utils.json_to_sheet(
-            rows
+        DATA.reportFilteredFundIds ||
+        DATA.funds.map(f => f.id);
+
+    const funds =
+        DATA.funds.filter(
+            f => selectedFundIds.includes(f.id)
         );
 
 
-    // Баганын өргөн
-    ws['!cols'] = [
+    if(!funds.length){
+        return toast('Тайлангийн мэдээлэл алга.');
+    }
 
-        { wch: 28 }, // Фондын нэр
-        { wch: 16 }, // Төрөл
-        { wch: 18 }, // Сар
-        { wch: 14 }, // Төлөв
-        { wch: 14 }, // Хүүхдийн тоо
-        { wch: 14 }, // Бүрэн төлсөн
-        { wch: 18 }, // Төлөөгүй / дутуу
-        { wch: 18 }, // Нэг хүүхдийн дүн
-        { wch: 18 }, // Нийт төлөх
-        { wch: 16 }, // Цугласан
-        { wch: 16 }, // Зарлага
-        { wch: 18 }, // Шилжиж ирсэн
-        { wch: 16 }, // Үлдэгдэл
-        { wch: 18 }, // Үүсгэсэн
-        { wch: 18 }  // Хаасан
+
+    // ==========================================
+    // 2. FILTER-ИЙН НЭР
+    // ==========================================
+
+    const fundType =
+        document.getElementById(
+            'reportFundType'
+        )?.value || 'all';
+
+    const selectedMonth =
+        document.getElementById(
+            'reportMonth'
+        )?.value || 'all';
+
+
+    let fundTypeLabel = 'Бүх фонд';
+
+    if(fundType === 'monthly'){
+        fundTypeLabel = 'Сарын фонд';
+    }
+
+    if(fundType === 'special'){
+        fundTypeLabel = 'Тусгай фонд';
+    }
+
+
+    let monthLabel = 'Бүх сар';
+
+    if(selectedMonth !== 'all'){
+
+        const [y,m] =
+            selectedMonth
+                .split('-')
+                .map(Number);
+
+        monthLabel =
+            `${y} оны ${m}-р сар`;
+    }
+
+
+    // ==========================================
+    // 3. ФОНД БҮРИЙН МЭДЭЭЛЭЛ
+    // ==========================================
+
+    const reportData =
+        funds.map(f => {
+
+            const s = fstats(f);
+
+            const fundChildren =
+                DATA.fc.filter(
+                    fc => fc.fund_id === f.id
+                );
+
+
+            const totalTarget =
+                fundChildren.reduce(
+                    (sum,fc) =>
+                        sum +
+                        Number(
+                            fc.target_amount || 0
+                        ),
+                    0
+                );
+
+
+            const fullPaid =
+                fundChildren.filter(fc => {
+
+                    const paid =
+                        approvedPaid(
+                            f.id,
+                            fc.child_id
+                        );
+
+                    return paid >=
+                        Number(
+                            fc.target_amount || 0
+                        );
+
+                }).length;
+
+
+            const unpaid =
+                Math.max(
+                    0,
+                    fundChildren.length -
+                    fullPaid
+                );
+
+
+            let fundMonth = '';
+
+            if(f.kind === 'monthly'){
+
+                fundMonth =
+                    f.month_key ||
+                    f.fund_month?.slice(0,7) ||
+                    '';
+
+            }else{
+
+                fundMonth =
+                    f.fund_month?.slice(0,7) ||
+                    f.month_key ||
+                    '';
+            }
+
+
+            let fundMonthLabel = '';
+
+            if(fundMonth){
+
+                const [year,month] =
+                    fundMonth
+                        .split('-')
+                        .map(Number);
+
+                fundMonthLabel =
+                    `${year}.${String(month).padStart(2,'0')}`;
+            }
+
+
+            return {
+
+                name:
+                    f.title || '',
+
+                type:
+                    f.kind === 'monthly'
+                        ? 'Сарын'
+                        : 'Тусгай',
+
+                month:
+                    fundMonthLabel,
+
+                status:
+                    f.status === 'closed'
+                        ? 'Хаагдсан'
+                        : 'Идэвхтэй',
+
+                children:
+                    fundChildren.length,
+
+                fullPaid:
+                    fullPaid,
+
+                unpaid:
+                    unpaid,
+
+                perChild:
+                    Number(
+                        f.amount_per_child || 0
+                    ),
+
+                target:
+                    totalTarget,
+
+                income:
+                    Number(
+                        s.paid || 0
+                    ),
+
+                expense:
+                    Number(
+                        s.exp || 0
+                    ),
+
+                carry:
+                    Number(
+                        f.carry_in || 0
+                    ),
+
+                balance:
+                    Number(
+                        s.balance || 0
+                    )
+
+            };
+
+        });
+
+
+    // ==========================================
+    // 4. НЭГДСЭН ДҮН
+    // ==========================================
+
+    const totals =
+        reportData.reduce(
+            (a,r) => {
+
+                a.target += r.target;
+                a.income += r.income;
+                a.expense += r.expense;
+                a.carry += r.carry;
+                a.balance += r.balance;
+
+                return a;
+
+            },
+            {
+                target:0,
+                income:0,
+                expense:0,
+                carry:0,
+                balance:0
+            }
+        );
+
+
+    // ==========================================
+    // 5. SHEET-ИЙН ӨГӨГДӨЛ
+    // ==========================================
+
+    const aoa = [
+
+        [
+            'АНГИЙН ФОНДЫН НЭГДСЭН ТАЙЛАН'
+        ],
+
+        [
+            'Байгууллага:',
+            G.institution_name || '',
+            '',
+            'Анги / бүлэг:',
+            G.group_name || ''
+        ],
+
+        [
+            'Хичээлийн жил:',
+            G.academic_year || '',
+            '',
+            'Тайлан:',
+            `${fundTypeLabel} / ${monthLabel}`
+        ],
+
+        [],
+
+        [
+            'НЭГДСЭН ҮЗҮҮЛЭЛТ'
+        ],
+
+        [
+            'Нийт төлөх',
+            'Цугласан',
+            'Зарлага',
+            'Үлдэгдэл'
+        ],
+
+        [
+            totals.target,
+            totals.income,
+            totals.expense,
+            totals.balance
+        ],
+
+        [],
+
+        [
+            'ДЭЛГЭРЭНГҮЙ ТАЙЛАН'
+        ],
+
+        [
+            '№',
+            'Фондын нэр',
+            'Төрөл',
+            'Сар',
+            'Төлөв',
+            'Хүүхэд',
+            'Бүрэн төлсөн',
+            'Дутуу / төлөөгүй',
+            'Нэг хүүхдийн дүн',
+            'Нийт төлөх',
+            'Цугласан',
+            'Зарлага',
+            'Шилжиж ирсэн',
+            'Үлдэгдэл'
+        ]
 
     ];
 
 
-    // ==============================
-    // WORKBOOK
-    // ==============================
+    reportData.forEach(
+        (r,index) => {
+
+            aoa.push([
+
+                index + 1,
+
+                r.name,
+
+                r.type,
+
+                r.month,
+
+                r.status,
+
+                r.children,
+
+                r.fullPaid,
+
+                r.unpaid,
+
+                r.perChild,
+
+                r.target,
+
+                r.income,
+
+                r.expense,
+
+                r.carry,
+
+                r.balance
+
+            ]);
+
+        }
+    );
+
+
+    // ==========================================
+    // 6. НИЙТ МӨР
+    // ==========================================
+
+    aoa.push([
+
+        '',
+
+        'НИЙТ',
+
+        '',
+
+        '',
+
+        '',
+
+        '',
+
+        '',
+
+        '',
+
+        '',
+
+        totals.target,
+
+        totals.income,
+
+        totals.expense,
+
+        totals.carry,
+
+        totals.balance
+
+    ]);
+
+
+    // ==========================================
+    // 7. WORKSHEET
+    // ==========================================
+
+    const ws =
+        XLSX.utils.aoa_to_sheet(
+            aoa
+        );
+
+
+    // ==========================================
+    // 8. MERGE
+    // ==========================================
+
+    ws['!merges'] = [
+
+        // Гол гарчиг
+        {
+            s:{r:0,c:0},
+            e:{r:0,c:13}
+        },
+
+        // Нэгдсэн үзүүлэлт
+        {
+            s:{r:4,c:0},
+            e:{r:4,c:13}
+        },
+
+        // Дэлгэрэнгүй тайлан
+        {
+            s:{r:8,c:0},
+            e:{r:8,c:13}
+        }
+
+    ];
+
+
+    // ==========================================
+    // 9. БАГАНЫН ӨРГӨН
+    // ==========================================
+
+    ws['!cols'] = [
+
+        {wch:5},   // №
+
+        {wch:28},  // Фонд
+
+        {wch:11},  // Төрөл
+
+        {wch:11},  // Сар
+
+        {wch:12},  // Төлөв
+
+        {wch:9},   // Хүүхэд
+
+        {wch:13},  // Бүрэн төлсөн
+
+        {wch:16},  // Дутуу
+
+        {wch:17},  // Нэг хүүхдийн дүн
+
+        {wch:15},  // Нийт төлөх
+
+        {wch:15},  // Цугласан
+
+        {wch:15},  // Зарлага
+
+        {wch:16},  // Шилжиж ирсэн
+
+        {wch:15}   // Үлдэгдэл
+
+    ];
+
+
+    // ==========================================
+    // 10. МӨРИЙН ӨНДӨР
+    // ==========================================
+
+    ws['!rows'] = [];
+
+    ws['!rows'][0] = {
+        hpt:30
+    };
+
+    ws['!rows'][4] = {
+        hpt:24
+    };
+
+    ws['!rows'][5] = {
+        hpt:24
+    };
+
+    ws['!rows'][6] = {
+        hpt:28
+    };
+
+    ws['!rows'][8] = {
+        hpt:24
+    };
+
+    ws['!rows'][9] = {
+        hpt:32
+    };
+
+
+    // ==========================================
+    // 11. МӨНГӨНИЙ FORMAT
+    // ==========================================
+
+    const moneyFormat =
+        '#,##0"₮"';
+
+
+    // Summary мөнгө
+    [
+        'A7',
+        'B7',
+        'C7',
+        'D7'
+    ].forEach(addr => {
+
+        if(ws[addr]){
+            ws[addr].z = moneyFormat;
+        }
+
+    });
+
+
+    // Хүснэгтийн эхний data row = 11
+    const firstDataRow = 11;
+
+    const lastDataRow =
+        firstDataRow +
+        reportData.length -
+        1;
+
+    const totalRow =
+        lastDataRow + 1;
+
+
+    // I - N багануудын мөнгө
+    for(
+        let row = firstDataRow;
+        row <= totalRow;
+        row++
+    ){
+
+        [
+            'I',
+            'J',
+            'K',
+            'L',
+            'M',
+            'N'
+        ].forEach(col => {
+
+            const cell =
+                ws[`${col}${row}`];
+
+            if(cell){
+                cell.z = moneyFormat;
+            }
+
+        });
+
+    }
+
+
+    // ==========================================
+    // 12. AUTOFILTER
+    // ==========================================
+
+    ws['!autofilter'] = {
+
+        ref:
+            `A10:N${lastDataRow}`
+
+    };
+
+
+    // ==========================================
+    // 13. PRINT AREA
+    // ==========================================
+
+    ws['!printArea'] =
+        `A1:N${totalRow}`;
+
+
+    // ==========================================
+    // 14. PAGE SETUP — A4 LANDSCAPE
+    // ==========================================
+
+    ws['!pageSetup'] = {
+
+        paperSize: 9,
+
+        orientation:
+            'landscape',
+
+        fitToWidth:
+            1,
+
+        fitToHeight:
+            0,
+
+        scale:
+            80
+
+    };
+
+
+    // ==========================================
+    // 15. MARGIN
+    // ==========================================
+
+    ws['!margins'] = {
+
+        left:0.25,
+
+        right:0.25,
+
+        top:0.45,
+
+        bottom:0.45,
+
+        header:0.2,
+
+        footer:0.2
+
+    };
+
+
+    // ==========================================
+    // 16. FREEZE
+    // ==========================================
+
+    ws['!freeze'] = {
+
+        xSplit:0,
+
+        ySplit:10,
+
+        topLeftCell:'A11',
+
+        activePane:'bottomLeft',
+
+        state:'frozen'
+
+    };
+
+
+    // ==========================================
+    // 17. WORKBOOK
+    // ==========================================
 
     const wb =
         XLSX.utils.book_new();
@@ -4532,42 +4859,34 @@ function excelReport(){
     );
 
 
-    // ==============================
-    // ФАЙЛЫН НЭР
-    // ==============================
-
-    const fundType =
-        document.getElementById(
-            'reportFundType'
-        )?.value || 'all';
-
-    const month =
-        document.getElementById(
-            'reportMonth'
-        )?.value || 'all';
-
+    // ==========================================
+    // 18. ФАЙЛЫН НЭР
+    // ==========================================
 
     let fileName =
         `Angiin-fond-${G.academic_year}`;
 
-    if(month !== 'all'){
+
+    if(selectedMonth !== 'all'){
 
         fileName +=
-            `-${month}`;
+            `-${selectedMonth}`;
 
     }
+
 
     if(fundType === 'monthly'){
 
         fileName +=
-            '-sariin-fond';
+            '-sariin';
 
     }
+
 
     if(fundType === 'special'){
 
         fileName +=
-            '-tusgai-fond';
+            '-tusgai';
 
     }
 
@@ -4577,7 +4896,8 @@ function excelReport(){
         `${fileName}.xlsx`
     );
 
-}function pdfReport(){let{jsPDF}=window.jspdf,doc=new jsPDF();doc.text('Angiin fond report',14,16);doc.text(`${G.institution_name} / ${G.group_name} / ${G.academic_year}`,14,24);let y=34;(DATA.reportRows||[]).forEach(r=>{doc.text(`${r['Фонд']}: income ${r['Цугласан']}, expense ${r['Зарлага']}, balance ${r['Үлдэгдэл']}`,14,y);y+=8;if(y>280){doc.addPage();y=20}});doc.save(`Angiin-fond-${G.academic_year}.pdf`)}
+}
+ function pdfReport(){let{jsPDF}=window.jspdf,doc=new jsPDF();doc.text('Angiin fond report',14,16);doc.text(`${G.institution_name} / ${G.group_name} / ${G.academic_year}`,14,24);let y=34;(DATA.reportRows||[]).forEach(r=>{doc.text(`${r['Фонд']}: income ${r['Цугласан']}, expense ${r['Зарлага']}, balance ${r['Үлдэгдэл']}`,14,y);y+=8;if(y>280){doc.addPage();y=20}});doc.save(`Angiin-fond-${G.academic_year}.pdf`)}
 function settings(){
  $('settings').innerHTML=`<h3>Тохиргоо</h3><div class="card">
  <div class="settings-item" onclick="settingsInfo()"><div class="settings-ico">🏫</div><div style="flex:1"><b>Ангийн мэдээлэл</b></div><b>›</b></div>
