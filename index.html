@@ -3304,20 +3304,32 @@ function payments(){
         }).join('');
 
 
-        $('payments').innerHTML = `
-            <h3>
-                Төлөлтийн хүсэлтүүд
-            </h3>
+     $('payments').innerHTML = `
 
-            ${
-                cards ||
-                `
-                    <div class="card muted">
-                        Хүлээгдэж буй төлөлт алга.
-                    </div>
-                `
-            }
-        `;
+    <div class="row between">
+
+        <h3>
+            Төлөлтийн хүсэлтүүд
+        </h3>
+
+        <button
+            class="btn primary"
+            onclick="adminPaymentModal()"
+        >
+            ＋ Төлөлт бүртгэх
+        </button>
+
+    </div>
+
+    ${
+        cards ||
+        `
+            <div class="card muted">
+                Хүлээгдэж буй төлөлт алга.
+            </div>
+        `
+    }
+`;
 
         return;
     }
@@ -3522,7 +3534,272 @@ function payments(){
 }
 
 async function reviewPay(id,status){if(!hasWrite())return toast('Эрх дууссан');let{error}=await sb.rpc('af_approve_payment',{p_id:id,p_status:status});if(error)return toast(error.message);await refresh();payments()}
-function payModal(){
+function adminPaymentModal(){
+
+    if(M.role === 'parent'){
+        return toast('Эрх хүрэхгүй байна');
+    }
+
+    if(!hasWrite()){
+        return toast('Эрх дууссан');
+    }
+
+    if(!DATA.children.length){
+        return toast('Бүртгэлтэй хүүхэд алга');
+    }
+
+
+    modal(`
+
+        <h3>
+            Төлөлт бүртгэх
+        </h3>
+
+
+        <div class="field">
+
+            <label>
+                Хүүхэд *
+            </label>
+
+            <select
+                id="adminPayChild"
+                onchange="adminPaymentFundOptions()"
+            >
+
+                <option value="">
+                    Хүүхэд сонгоно уу
+                </option>
+
+                ${[...DATA.children]
+                    .sort(
+                        (a,b) =>
+                            a.full_name.localeCompare(
+                                b.full_name,
+                                'mn'
+                            )
+                    )
+                    .map(c => `
+                        <option value="${c.id}">
+                            ${esc(c.full_name)}
+                        </option>
+                    `)
+                    .join('')
+                }
+
+            </select>
+
+        </div>
+
+
+        <div id="adminPayFundArea">
+
+            <div class="muted">
+                Эхлээд хүүхэд сонгоно уу.
+            </div>
+
+        </div>
+
+    `);
+}
+ function adminPaymentFundOptions(){
+
+    const childId =
+        $('adminPayChild').value;
+
+
+    if(!childId){
+
+        $('adminPayFundArea').innerHTML =
+            '<div class="muted">Эхлээд хүүхэд сонгоно уу.</div>';
+
+        return;
+    }
+
+
+    const funds =
+        DATA.funds.filter(f => {
+
+            if(f.status !== 'active'){
+                return false;
+            }
+
+
+            const fc =
+                DATA.fc.find(
+                    x =>
+                        x.fund_id === f.id &&
+                        x.child_id === childId
+                );
+
+
+            if(!fc){
+                return false;
+            }
+
+
+            const remaining =
+                Number(fc.target_amount) -
+                approvedPaid(
+                    f.id,
+                    childId
+                );
+
+
+            return remaining > 0;
+
+        });
+
+
+    if(!funds.length){
+
+        $('adminPayFundArea').innerHTML = `
+
+            <div class="card muted">
+                Энэ хүүхдэд төлөх үлдэгдэлтэй фонд алга.
+            </div>
+
+        `;
+
+        return;
+    }
+
+
+    $('adminPayFundArea').innerHTML = `
+
+        <div class="field">
+
+            <label>
+                Фонд *
+            </label>
+
+            <select
+                id="adminPayFund"
+                onchange="adminPaymentAmount()"
+            >
+
+                <option value="">
+                    Фонд сонгоно уу
+                </option>
+
+                ${funds.map(f => {
+
+                    const fc =
+                        DATA.fc.find(
+                            x =>
+                                x.fund_id === f.id &&
+                                x.child_id === childId
+                        );
+
+                    const remaining =
+                        Number(fc.target_amount) -
+                        approvedPaid(
+                            f.id,
+                            childId
+                        );
+
+                    return `
+
+                        <option
+                            value="${f.id}"
+                            data-remaining="${remaining}"
+                        >
+                            ${esc(f.title)}
+                            ·
+                            ${money(remaining)}
+                        </option>
+
+                    `;
+
+                }).join('')}
+
+            </select>
+
+        </div>
+
+
+        <div class="field">
+
+            <label>
+                Төлсөн дүн *
+            </label>
+
+            <input
+                id="adminPayAmount"
+                type="number"
+                min="1"
+                placeholder="0"
+            >
+
+        </div>
+
+
+        <div class="field">
+
+            <label>
+                Төлсөн огноо *
+            </label>
+
+            <input
+                id="adminPayDate"
+                type="date"
+                value="${new Date().toISOString().slice(0,10)}"
+            >
+
+        </div>
+
+
+        <div class="field">
+
+            <label>
+                Тайлбар
+            </label>
+
+            <textarea
+                id="adminPayNote"
+                placeholder="Жишээ: Дансаар шилжүүлсэн"
+            ></textarea>
+
+        </div>
+
+
+        <button
+            class="btn primary"
+            style="width:100%"
+            onclick="saveAdminPayment()"
+        >
+            ✓ Төлөлт бүртгэх
+        </button>
+
+    `;
+}
+ function adminPaymentAmount(){
+
+    const select =
+        $('adminPayFund');
+
+    const option =
+        select.options[
+            select.selectedIndex
+        ];
+
+
+    if(!option || !option.value){
+        $('adminPayAmount').value = '';
+        return;
+    }
+
+
+    const remaining =
+        Number(
+            option.dataset.remaining || 0
+        );
+
+
+    $('adminPayAmount').value =
+        remaining;
+}
+ function payModal(){
  let kids=myChildren();if(!kids.length)return toast('Таны аккаунттай холбогдсон хүүхэд алга');
  modal(`<h3>Төлөлт хийх</h3><div class="field"><label>Хүүхэд</label><select id="pc" onchange="payOptions()">${kids.map(c=>`<option value="${c.id}">${esc(c.full_name)}</option>`).join('')}</select></div><div id="payOpts"></div>`);payOptions();
 }
