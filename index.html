@@ -1043,6 +1043,41 @@ h4{
     font-size:11px !important;
     line-height:1.2 !important;
 }
+ /* ===== MY GROUPS HERO - SINGLE ACTION ===== */
+
+.groups-hero{
+    padding:22px 88px 22px 20px !important;
+}
+
+.groups-toolbar{
+    display:block !important;
+}
+
+.groups-actions{
+    display:block !important;
+    width:100% !important;
+    margin:16px 0 0 !important;
+}
+
+.groups-actions .btn{
+    width:100% !important;
+    min-height:50px !important;
+
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+
+    border-radius:14px !important;
+
+    font-size:14px !important;
+    font-weight:900 !important;
+}
+
+/* Сургуулийн icon-ыг тексттэй хэсэгт байрлуулна */
+.groups-hero:after{
+    top:22px !important;
+    transform:none !important;
+}
 </style></head><body>
 <div id="toast" class="toast hidden"></div>
 <section id="auth" class="wrap" style="max-width:480px;padding-top:8vh"><div class="card"><h1>Ангийн фонд</h1><p class="muted">Анги, бүлгийн сангийн ил тод бүртгэл.</p><div class="tabs"><button class="btn primary" onclick="authTab('login')">Нэвтрэх</button><button class="btn soft" onclick="authTab('register')">Бүртгүүлэх</button></div><div id="loginBox"><div class="field">
@@ -1159,7 +1194,7 @@ h4{
     <div id="friendlyGreeting" style="font-size:25px;font-weight:950;letter-spacing:-.7px;margin-bottom:4px;padding-right:78px">Сайн байна уу 👋</div>
     <div class="groups-toolbar">
       <div><h2>Миний анги / бүлгүүд</h2><div class="muted">Өөрийн удирддаг болон эцэг эхээр нэгдсэн бүх анги, бүлэг энд харагдана.</div></div>
-      <div class="groups-actions"><button class="btn primary" onclick="openCreateGroup()">＋ Анги / бүлэг үүсгэх</button></div>
+      <div class="groups-actions"><button class="btn primary" onclick="openCreateGroup()">＋ Шинэ анги / бүлэг үүсгэх</button></div>
     </div>
   </div>
   <div id="groups"></div>
