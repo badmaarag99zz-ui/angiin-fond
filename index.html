@@ -3263,6 +3263,27 @@ body.af-intro-modal-open{overflow:hidden!important}
 #auth #afLandingIntro details summary::after{
     font-size:20px !important;
 }
+ /* ===== INTRO LIST ROW TEXT — FORCE BIGGER ===== */
+
+/* Бүх жагсаалтын мөр */
+#auth #afLandingIntro li{
+    font-size:16px !important;
+    line-height:1.55 !important;
+}
+
+/* li дотор өөр tag-аар font-size дарсан байвал */
+#auth #afLandingIntro li > span,
+#auth #afLandingIntro li > div,
+#auth #afLandingIntro li > b,
+#auth #afLandingIntro li > strong{
+    font-size:16px !important;
+    line-height:1.55 !important;
+}
+
+/* ✓ тэмдэгтэй жижиг box-уудын текстийг хүчээр */
+#auth #afLandingIntro ul li *{
+    font-size:16px !important;
+}
 </style></head><body>
 <div id="toast" class="toast hidden"></div>
 <section id="auth" class="wrap" style="max-width:480px;padding-top:8vh"><div class="card"><div class="auth-brand-banner">
