@@ -2552,14 +2552,22 @@ function funds(){
                             f.kind === 'monthly'
                                 ? 'Үндсэн сарын фонд'
                                 : 'Тусгай фонд';
+let isClosed = f.status === 'closed';
 
+let statusText = isClosed
+    ? `<span class="pill" style="margin-left:6px">🔒 Хаагдсан</span>`
+    : '';
                         return `
 
                             <div
-                                class="fund-card"
-                                onclick="fundDetail('${f.id}')"
-                                style="cursor:pointer"
-                            >
+                             <div
+    class="fund-card"
+    onclick="fundDetail('${f.id}')"
+    style="
+        cursor:pointer;
+        ${isClosed ? 'opacity:0.68;' : ''}
+    "
+>
 
                                 <div
                                     class="fund-icon ${
@@ -2573,10 +2581,10 @@ function funds(){
 
                                 <div class="fund-main">
 
-                                    <div class="fund-title">
-                                        ${esc(f.title)}
-                                    </div>
-
+                                 <div class="fund-title">
+    ${esc(f.title)}
+    ${statusText}
+</div>
                                     <div class="fund-sub">
                                         ${typeText}
                                     </div>
