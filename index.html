@@ -3383,6 +3383,40 @@ body.af-intro-modal-open{overflow:hidden!important}
 #auth #afLandingIntro details > summary:hover{
     color:#078b5c !important;
 }
+ /* =========================================
+   FINAL CTA — VISIBILITY FIX
+========================================= */
+
+/* Ногоон хэсгийн үндсэн гарчиг */
+#auth #afLandingIntro .af-final h3{
+    color:#ffffff !important;
+}
+
+/* Ногоон хэсгийн тайлбар */
+#auth #afLandingIntro .af-final p{
+    color:rgba(255,255,255,.90) !important;
+    font-size:16px !important;
+    line-height:1.7 !important;
+}
+
+/* Доод жижиг тайлбар */
+#auth #afLandingIntro .af-final small{
+    color:rgba(255,255,255,.88) !important;
+    font-size:13px !important;
+}
+
+/* Үнэгүй эхлүүлэх товч */
+#auth #afLandingIntro .af-start-btn{
+    position:relative !important;
+    z-index:5 !important;
+
+    cursor:pointer !important;
+
+    color:#087b50 !important;
+    background:#ffffff !important;
+
+    pointer-events:auto !important;
+}
 </style></head><body>
 <div id="toast" class="toast hidden"></div>
 <section id="auth" class="wrap" style="max-width:480px;padding-top:8vh"><div class="card"><div class="auth-brand-banner">
@@ -4471,7 +4505,7 @@ body.af-intro-modal-open{overflow:hidden!important}
         <button
             type="button"
             class="af-start-btn"
-            onclick="showRegister()"
+           onclick="startAfRegister()"
         >
             Үнэгүй эхлүүлэх →
         </button>
@@ -11891,4 +11925,43 @@ document.addEventListener(
 
     }
 );
+ function startAfRegister(){
+
+    // Танилцуулгыг хаана
+    const intro =
+        document.getElementById("afLandingIntro");
+
+    if(intro){
+        intro.classList.remove("af-intro-open");
+    }
+
+    document.body.classList.remove(
+        "af-intro-modal-open"
+    );
+
+
+    // Login/Register хэсгийн Register tab-ыг олно
+    const registerTab =
+        document.querySelector(
+            '#auth .tabs button:nth-child(2)'
+        );
+
+    if(registerTab){
+
+        registerTab.click();
+
+        setTimeout(() => {
+
+            document
+                .getElementById("auth")
+                ?.scrollIntoView({
+                    behavior:"smooth",
+                    block:"start"
+                });
+
+        },100);
+
+    }
+
+}
 </script></body></html>
