@@ -1717,14 +1717,38 @@ function maskPhone(p){
         : p;
 }
 function childDetail(id){
+ function switchChildDetailTab(tab, btn){
+
+    document
+        .querySelectorAll('#childDetailTabs button')
+        .forEach(x => x.classList.remove('on'));
+
+    btn.classList.add('on');
+
+    document
+        .getElementById('childGeneralTab')
+        .classList.toggle('hidden', tab !== 'general');
+
+    document
+        .getElementById('childPaymentTab')
+        .classList.toggle('hidden', tab !== 'payment');
+}
  let c=DATA.children.find(x=>x.id===id);if(!c)return;let cs=DATA.contacts.filter(x=>x.child_id===id),st=childPaidStats(id);
  let funds=DATA.fc.filter(x=>x.child_id===id).map(fc=>{let f=DATA.funds.find(x=>x.id===fc.fund_id),p=approvedPaid(fc.fund_id,id);return f?`<div class="item row between"><div><b>${esc(f.title)}</b><div class="muted">${f.due_date}</div></div><span class="pill ${p>=Number(fc.target_amount)?'ok':p?'warn':'bad'}">${money(p)} / ${money(fc.target_amount)}</span></div>`:''}).join('');
  modal(`<div class="row between"><h3>${esc(c.full_name)}</h3><button class="btn soft" onclick="closeModal()">✕</button></div>
  <div class="row"><div class="avatar-mini" style="width:58px;height:58px;font-size:30px">🧒</div><div><b>${esc(c.full_name)}</b><div class="muted">${esc(G.group_name)} · ${esc(G.academic_year)}</div></div></div>
- <div class="segment"><button class="on">Ерөнхий</button><button>Төлөлт</button><button>Хичээл</button></div>
- <div class="card"><b>Ерөнхий мэдээлэл</b><div class="item"><span class="muted">Анги</span><br>${esc(G.group_name)}</div><div class="item"><span class="muted">Хичээлийн жил</span><br>${esc(G.academic_year)}</div>
- ${cs.map((x,i)=>`<div class="item"><span class="muted">${i?'Нэмэлт хүн':'Үндсэн холбоо барих'}</span><br>${esc(x.name)} (${esc(x.relationship)}) · ${esc(maskPhone(x.phone))}</div>`).join('')}</div>
- <div class="card"><b>Төлөлт</b><div class="muted">Нийт төлсөн ${money(st.paid)} · Үлдэгдэл ${money(st.remaining)}</div>${funds||'<div class="muted">Фондын төлөлт алга.</div>'}</div>`);
+ <div class="segment" id="childDetailTabs">
+    <button class="on" onclick="switchChildDetailTab('general',this)">Ерөнхий</button>
+    <button onclick="switchChildDetailTab('payment',this)">Төлөлт</button>
+</div>
+<div id="childGeneralTab"> <div class="card"><b>Ерөнхий мэдээлэл</b><div class="item"><span class="muted">Анги</span><br>${esc(G.group_name)}</div><div class="item"><span class="muted">Хичээлийн жил</span><br>${esc(G.academic_year)}</div>
+${cs.map((x,i)=>`<div class="item"><span class="muted">${i?'Нэмэлт хүн':'Үндсэн холбоо барих'}</span><br>${esc(x.name)} (${esc(x.relationship)}) · ${esc(maskPhone(x.phone))}</div>`).join('')}</div>
+
+</div>
+
+<div id="childPaymentTab" class="hidden">
+    <div class="card"><b>Төлөлт</b><div class="muted">Нийт төлсөн ${money(st.paid)} · Үлдэгдэл ${money(st.remaining)}</div>${funds||'<div class="muted">Фондын төлөлт алга.</div>'}</div>
+</div><div class="muted">Нийт төлсөн ${money(st.paid)} · Үлдэгдэл ${money(st.remaining)}</div>${funds||'<div class="muted">Фондын төлөлт алга.</div>'}</div>`);
 }
 function filterChildren(mode='all'){
  document.querySelectorAll('#childSeg button').forEach(x=>x.classList.toggle('on',x.dataset.mode===mode));
