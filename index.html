@@ -2495,6 +2495,103 @@ h4{
 #auth .af-about-arrow.open{
     transform:rotate(180deg);
 }
+
+
+/* =========================================================
+   APP INTRO — FULL SCREEN MODAL (FINAL)
+========================================================= */
+#auth .af-about-trigger{
+    padding:28px 24px 34px !important;
+}
+
+#auth #afLandingIntro{
+    display:none !important;
+    position:fixed !important;
+    inset:0 !important;
+    z-index:1000 !important;
+    width:min(100%, 500px) !important;
+    max-width:500px !important;
+    height:100dvh !important;
+    margin:0 auto !important;
+    padding:0 !important;
+    overflow-y:auto !important;
+    overscroll-behavior:contain;
+    background:#fff !important;
+    box-shadow:0 0 70px rgba(15,35,55,.28) !important;
+}
+
+#auth #afLandingIntro.af-intro-open{
+    display:block !important;
+}
+
+#auth .af-modal-topbar{
+    position:sticky;
+    top:0;
+    z-index:20;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    padding:12px 16px;
+    background:rgba(255,255,255,.96);
+    border-bottom:1px solid #e5eee9;
+    backdrop-filter:blur(14px);
+}
+
+#auth .af-modal-topbar-brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    min-width:0;
+}
+
+#auth .af-modal-topbar-brand img{
+    width:42px;
+    height:42px;
+    border-radius:12px;
+    object-fit:cover;
+    flex-shrink:0;
+}
+
+#auth .af-modal-topbar-brand b{
+    display:block;
+    color:#10233e;
+    font-size:14px !important;
+    font-weight:950;
+    line-height:1.25;
+}
+
+#auth .af-modal-topbar-brand small{
+    display:block;
+    margin-top:2px;
+    color:#718096;
+    font-size:11px !important;
+}
+
+#auth .af-modal-close{
+    width:42px;
+    height:42px;
+    min-width:42px;
+    border:1px solid #dfeae5;
+    border-radius:13px;
+    background:#f4faf7;
+    color:#24473b;
+    font-size:18px !important;
+    font-weight:900;
+    cursor:pointer;
+}
+
+#auth #afLandingIntro .af-section:first-of-type{
+    border-top:0;
+}
+
+@media(max-width:500px){
+    #auth #afLandingIntro{
+        width:100% !important;
+        max-width:none !important;
+    }
+}
+
 </style></head><body>
 <div id="toast" class="toast hidden"></div>
 <section id="auth" class="wrap" style="max-width:480px;padding-top:8vh"><div class="card"><div class="auth-brand-banner">
@@ -2643,7 +2740,18 @@ h4{
     </button>
 
 </div>
-<section class="af-landing" id="afLandingIntro">
+<section class="af-landing" id="afLandingIntro" aria-hidden="true">
+
+    <div class="af-modal-topbar">
+        <div class="af-modal-topbar-brand">
+            <img src="angiin-fond-logo.png" alt="Ангийн фонд">
+            <div>
+                <b>Аппын дэлгэрэнгүй танилцуулга</b>
+                <small>Ангийн фонд</small>
+            </div>
+        </div>
+        <button type="button" class="af-modal-close" onclick="toggleAppIntro(false)" aria-label="Хаах">✕</button>
+    </div>
 
     <!-- INTRO -->
     <div class="af-section af-intro">
@@ -10185,40 +10293,29 @@ async function finishChangePhone(){
     }
 }
  sb.auth.onAuthStateChange((e,s)=>{if(e==='SIGNED_OUT')location.reload()});document.addEventListener('DOMContentLoaded',boot);
- function toggleAppIntro(){
+ function toggleAppIntro(forceOpen){
 
-    const intro =
-        document.getElementById('afLandingIntro');
-
-    const arrow =
-        document.getElementById('afAboutArrow');
-
+    const intro = document.getElementById('afLandingIntro');
+    const arrow = document.getElementById('afAboutArrow');
     if(!intro) return;
 
-    const opening =
-        !intro.classList.contains('af-intro-open');
+    const opening = typeof forceOpen === 'boolean'
+        ? forceOpen
+        : !intro.classList.contains('af-intro-open');
 
-    intro.classList.toggle(
-        'af-intro-open',
-        opening
-    );
-
-    arrow?.classList.toggle(
-        'open',
-        opening
-    );
+    intro.classList.toggle('af-intro-open', opening);
+    arrow?.classList.toggle('open', opening);
+    intro.setAttribute('aria-hidden', opening ? 'false' : 'true');
+    document.body.style.overflow = opening ? 'hidden' : '';
 
     if(opening){
-
-        setTimeout(() => {
-
-            intro.scrollIntoView({
-                behavior:'smooth',
-                block:'start'
-            });
-
-        },100);
-
+        intro.scrollTop = 0;
     }
 }
+
+document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape' && document.getElementById('afLandingIntro')?.classList.contains('af-intro-open')){
+        toggleAppIntro(false);
+    }
+});
 </script></body></html>
