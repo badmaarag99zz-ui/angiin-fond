@@ -2387,6 +2387,114 @@ h4{
 #auth .af-landing{
     margin-top:0 !important;
 }
+ /* =========================================
+   APP INTRO OPEN BUTTON
+========================================= */
+
+#auth .af-about-trigger{
+    padding:42px 18px 55px;
+}
+
+#auth .af-about-btn{
+    width:100%;
+
+    display:flex;
+    align-items:center;
+    gap:13px;
+
+    padding:15px;
+
+    border:1px solid #d8ebe3;
+    border-radius:16px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #f0faf6,
+            #f8fbef
+        );
+
+    cursor:pointer;
+
+    text-align:left;
+
+    box-shadow:
+        0 6px 18px rgba(15,23,42,.05);
+}
+
+#auth .af-about-btn-icon{
+    width:44px;
+    height:44px;
+    min-width:44px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:13px;
+
+    background:#fff;
+
+    font-size:21px;
+
+    box-shadow:
+        0 3px 10px rgba(15,23,42,.06);
+}
+
+#auth .af-about-btn-text{
+    flex:1;
+}
+
+#auth .af-about-btn-text b{
+    display:block;
+
+    color:#10233e;
+
+    font-size:12px;
+    font-weight:950;
+}
+
+#auth .af-about-btn-text small{
+    display:block;
+
+    margin-top:4px;
+
+    color:#718096;
+
+    font-size:9px;
+    line-height:1.4;
+}
+
+#auth .af-about-arrow{
+    color:#079263;
+
+    font-size:22px;
+    font-weight:900;
+
+    transition:transform .25s ease;
+}
+
+
+/* Танилцуулгыг анх нууж байна */
+
+#auth #afLandingIntro{
+    display:none;
+    margin-top:0 !important;
+}
+
+
+/* Нээгдсэн үед */
+
+#auth #afLandingIntro.af-intro-open{
+    display:block;
+}
+
+
+/* Arrow */
+
+#auth .af-about-arrow.open{
+    transform:rotate(180deg);
+}
 </style></head><body>
 <div id="toast" class="toast hidden"></div>
 <section id="auth" class="wrap" style="max-width:480px;padding-top:8vh"><div class="card"><div class="auth-brand-banner">
@@ -2517,8 +2625,25 @@ h4{
  <!-- =========================================================
      АНГИЙН ФОНД — ДЭЛГЭРЭНГҮЙ ТАНИЛЦУУЛГА
 ========================================================= -->
+<div class="af-about-trigger">
 
-<section class="af-landing">
+    <button
+        type="button"
+        class="af-about-btn"
+        onclick="toggleAppIntro()"
+    >
+        <span class="af-about-btn-icon">📖</span>
+
+        <span class="af-about-btn-text">
+            <b>Аппын дэлгэрэнгүй танилцуулга</b>
+            <small>Ангийн фонд хэрхэн ажилладагтай танилцах</small>
+        </span>
+
+        <span id="afAboutArrow" class="af-about-arrow">⌄</span>
+    </button>
+
+</div>
+<section class="af-landing" id="afLandingIntro">
 
     <!-- INTRO -->
     <div class="af-section af-intro">
@@ -10060,4 +10185,40 @@ async function finishChangePhone(){
     }
 }
  sb.auth.onAuthStateChange((e,s)=>{if(e==='SIGNED_OUT')location.reload()});document.addEventListener('DOMContentLoaded',boot);
+ function toggleAppIntro(){
+
+    const intro =
+        document.getElementById('afLandingIntro');
+
+    const arrow =
+        document.getElementById('afAboutArrow');
+
+    if(!intro) return;
+
+    const opening =
+        !intro.classList.contains('af-intro-open');
+
+    intro.classList.toggle(
+        'af-intro-open',
+        opening
+    );
+
+    arrow?.classList.toggle(
+        'open',
+        opening
+    );
+
+    if(opening){
+
+        setTimeout(() => {
+
+            intro.scrollIntoView({
+                behavior:'smooth',
+                block:'start'
+            });
+
+        },100);
+
+    }
+}
 </script></body></html>
