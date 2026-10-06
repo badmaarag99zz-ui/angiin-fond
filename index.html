@@ -3429,6 +3429,85 @@ body.af-intro-modal-open{overflow:hidden!important}
 
     pointer-events:auto !important;
 }
+ /* =========================================
+   LOGIN — PWA INSTALL BUTTON
+========================================= */
+
+.auth-install-btn{
+    width:100%;
+
+    margin:28px 0 14px;
+    padding:12px 13px;
+
+    display:flex;
+    align-items:center;
+    gap:11px;
+
+    border:1px solid #cfe8dc;
+    border-radius:15px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #f1fff8,
+            #eef9ff
+        );
+
+    cursor:pointer;
+    text-align:left;
+
+    box-shadow:
+        0 5px 16px rgba(45,84,117,.06);
+}
+
+.auth-install-btn img{
+    width:45px;
+    height:45px;
+    min-width:45px;
+
+    object-fit:cover;
+
+    border-radius:11px;
+
+    box-shadow:
+        0 2px 7px rgba(0,0,0,.10);
+}
+
+.auth-install-text{
+    flex:1;
+    min-width:0;
+}
+
+.auth-install-text b{
+    display:block;
+
+    font-size:14px !important;
+    font-weight:950;
+
+    color:#10233e;
+}
+
+.auth-install-text span{
+    display:block;
+
+    margin-top:3px;
+
+    font-size:11px !important;
+    line-height:1.35;
+
+    color:#72839a;
+}
+
+.auth-install-arrow{
+    font-size:23px;
+    font-weight:900;
+
+    color:#079263;
+}
+
+.auth-install-btn:active{
+    transform:scale(.985);
+}
 </style></head><body>
 <div id="toast" class="toast hidden"></div>
 <section id="auth" class="wrap" style="max-width:480px;padding-top:8vh"><div class="card"><div class="auth-brand-banner">
@@ -3466,7 +3545,28 @@ body.af-intro-modal-open{overflow:hidden!important}
     onclick="openForgotPassword()"
 >
     Нууц үгээ мартсан?
-</button></div><div id="registerBox" class="hidden">
+</button> <!-- ===== PWA INSTALL BUTTON ===== -->
+
+<button
+    id="installAppBtn"
+    type="button"
+    class="auth-install-btn hidden"
+    onclick="installAngiinFond()"
+>
+    <img
+        src="/icon-192.png"
+        alt="Ангийн фонд"
+    >
+
+    <div class="auth-install-text">
+        <b>📲 Апп суулгах</b>
+        <span>Утасныхаа нүүрэнд нэмээд апп шиг ашиглаарай</span>
+    </div>
+
+    <div class="auth-install-arrow">
+        ›
+    </div>
+</button>  </div><div id="registerBox" class="hidden">
 
     <div id="registerForm">
 
@@ -13573,5 +13673,159 @@ if ("serviceWorker" in navigator) {
     });
 
 }
+  /* =========================================
+   PWA INSTALL
+========================================= */
+
+let deferredInstallPrompt = null;
+
+const isIOSDevice =
+    /iphone|ipad|ipod/i.test(navigator.userAgent);
+
+const isStandalone =
+    window.matchMedia("(display-mode: standalone)").matches ||
+    window.navigator.standalone === true;
+
+
+/* Android / Chrome install боломжтой болсон үед */
+
+window.addEventListener(
+    "beforeinstallprompt",
+    function(event){
+
+        event.preventDefault();
+
+        deferredInstallPrompt = event;
+
+        showInstallButton();
+
+    }
+);
+
+
+/* Install товч харуулах */
+
+function showInstallButton(){
+
+    const btn =
+        document.getElementById("installAppBtn");
+
+    if(!btn) return;
+
+
+    /* Аль хэдийн суулгасан бол харуулахгүй */
+
+    if(isStandalone){
+
+        btn.classList.add("hidden");
+
+        return;
+    }
+
+
+    /*
+       iPhone дээр browser install event байдаггүй.
+       Тиймээс заавар харуулахын тулд товчийг гаргана.
+    */
+
+    if(
+        deferredInstallPrompt ||
+        isIOSDevice
+    ){
+
+        btn.classList.remove("hidden");
+
+    }
+
+}
+
+
+/* Install */
+
+async function installAngiinFond(){
+
+    /* ==============================
+       IPHONE / IPAD
+    ============================== */
+
+    if(isIOSDevice){
+
+        alert(
+            "📲 Ангийн фонд суулгах\n\n" +
+            "1. Safari browser-оор сайтаа нээнэ.\n\n" +
+            "2. Доод талын Share ⬆️ товчийг дарна.\n\n" +
+            "3. “Add to Home Screen” сонгоно.\n\n" +
+            "4. “Add” дарна."
+        );
+
+        return;
+    }
+
+
+    /* ==============================
+       ANDROID / CHROME
+    ============================== */
+
+    if(!deferredInstallPrompt){
+
+        alert(
+            "Апп суулгах боломж одоогоор идэвхжээгүй байна.\n\n" +
+            "Chrome browser-оор сайтаа нээгээд дахин оролдоно уу."
+        );
+
+        return;
+    }
+
+
+    deferredInstallPrompt.prompt();
+
+    await deferredInstallPrompt.userChoice;
+
+    deferredInstallPrompt = null;
+
+
+    const btn =
+        document.getElementById("installAppBtn");
+
+    if(btn){
+
+        btn.classList.add("hidden");
+
+    }
+
+}
+
+
+/* Амжилттай суусан */
+
+window.addEventListener(
+    "appinstalled",
+    function(){
+
+        deferredInstallPrompt = null;
+
+        const btn =
+            document.getElementById("installAppBtn");
+
+        if(btn){
+
+            btn.classList.add("hidden");
+
+        }
+
+        console.log(
+            "✅ Ангийн фонд утсанд суулгагдлаа."
+        );
+
+    }
+);
+
+
+/* iPhone-д эхнээс нь товч гаргах */
+
+window.addEventListener(
+    "DOMContentLoaded",
+    showInstallButton
+);
 </script>
 </body></html>
