@@ -2436,18 +2436,25 @@ function funds(){
     const monthStart =
         `${FUND_VIEW_MONTH}-01`;
 
-    const monthFunds = DATA.funds.filter(f => {
+  const monthFunds = DATA.funds.filter(f => {
 
-        if(f.fund_month){
-            return f.fund_month.slice(0,7) === FUND_VIEW_MONTH;
-        }
+    // Үндсэн сарын фонд бол month_key-г баримтална
+    if(f.kind === 'monthly' && f.month_key){
+        return f.month_key === FUND_VIEW_MONTH;
+    }
 
-        if(f.month_key){
-            return f.month_key === FUND_VIEW_MONTH;
-        }
+    // Тусгай фонд бол fund_month-г баримтална
+    if(f.kind === 'special' && f.fund_month){
+        return f.fund_month.slice(0,7) === FUND_VIEW_MONTH;
+    }
 
-        return false;
-    });
+    // Хуучин өгөгдлийн fallback
+    if(f.fund_month){
+        return f.fund_month.slice(0,7) === FUND_VIEW_MONTH;
+    }
+
+    return false;
+});
 
     const monthLabel =
         `${year} оны ${month}-р сар`;
