@@ -6571,12 +6571,10 @@ function chooseSubscriptionPlan(
         </button>
        `);
 
-    const phone =
-        String(
-            U?.user_metadata?.phone ||
-            U?.phone ||
-            ""
-        )
+   const phone =
+    String(U?.email || "")
+        .replace("@auth.angiin-fond.local", "")
+        .replace(/^976/, "")
         .replace(/\D/g, "")
         .slice(-8);
 
