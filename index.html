@@ -4035,6 +4035,339 @@ body.af-guide-open{
         padding:13px 12px;
     }
 }
+ /* =========================================
+   АШИГЛАХ ЗААВАР — DETAILED VERSION
+========================================= */
+
+.af-guide-content{
+    padding:14px !important;
+    background:#f7fafc;
+}
+
+
+/* QUICK START */
+
+.af-guide-quick{
+    padding:18px;
+
+    border:1px solid #bfe8d5;
+    border-radius:18px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #effff6,
+            #eef8ff
+        );
+
+    margin-bottom:20px;
+}
+
+.af-guide-quick-title{
+    color:#087b50;
+
+    font-size:18px;
+    font-weight:950;
+}
+
+.af-guide-quick > p{
+    margin:6px 0 14px;
+
+    color:#64748b;
+
+    font-size:13px !important;
+    line-height:1.55;
+}
+
+.af-guide-flow{
+    display:flex;
+    flex-direction:column;
+    align-items:stretch;
+    gap:4px;
+}
+
+.af-guide-flow span{
+    padding:9px 12px;
+
+    background:#fff;
+
+    border:1px solid #dce9e4;
+    border-radius:11px;
+
+    color:#25384e;
+
+    font-size:13px !important;
+    font-weight:850;
+
+    text-align:center;
+}
+
+.af-guide-flow i{
+    color:#079263;
+
+    font-size:15px;
+    font-style:normal;
+
+    text-align:center;
+}
+
+
+/* SECTION LABEL */
+
+.af-guide-section-label{
+    margin:5px 3px 10px;
+
+    color:#72839a;
+
+    font-size:11px;
+    font-weight:950;
+
+    letter-spacing:.7px;
+}
+
+
+/* ACCORDION */
+
+.af-guide-detail{
+    margin-bottom:9px;
+
+    overflow:hidden;
+
+    background:#fff;
+
+    border:1px solid #e0e9f0;
+    border-radius:15px;
+}
+
+.af-guide-detail summary{
+    position:relative;
+
+    display:flex;
+    align-items:center;
+    gap:11px;
+
+    padding:13px 40px 13px 12px;
+
+    cursor:pointer;
+
+    list-style:none;
+
+    user-select:none;
+}
+
+.af-guide-detail summary::-webkit-details-marker{
+    display:none;
+}
+
+.af-guide-detail summary::after{
+    content:"+";
+
+    position:absolute;
+
+    right:14px;
+    top:50%;
+
+    transform:translateY(-50%);
+
+    color:#079263;
+
+    font-size:22px;
+    font-weight:800;
+}
+
+.af-guide-detail[open] summary::after{
+    content:"−";
+}
+
+.af-guide-detail[open] summary{
+    background:#f7fffb;
+
+    border-bottom:1px solid #e4eee9;
+}
+
+
+/* NUMBER */
+
+.af-guide-num{
+    width:31px;
+    height:31px;
+    min-width:31px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:10px;
+
+    background:#dcf8e8;
+    color:#087b50;
+
+    font-size:12px !important;
+    font-weight:950;
+}
+
+
+/* SUMMARY */
+
+.af-guide-summary-text{
+    flex:1;
+    min-width:0;
+}
+
+.af-guide-summary-text b{
+    display:block;
+
+    color:#14253b;
+
+    font-size:14px !important;
+    font-weight:950;
+}
+
+.af-guide-summary-text small{
+    display:block;
+
+    margin-top:3px;
+
+    color:#7a8b9e;
+
+    font-size:10px !important;
+    line-height:1.4;
+}
+
+
+/* BODY */
+
+.af-guide-body{
+    padding:14px 15px 16px;
+}
+
+.af-guide-body p{
+    margin:0 0 12px;
+
+    color:#5f7186;
+
+    font-size:13px !important;
+    line-height:1.7;
+}
+
+.af-guide-body h5{
+    margin:15px 0 7px;
+
+    color:#20354d;
+
+    font-size:13px;
+    font-weight:950;
+}
+
+.af-guide-body h5:first-child{
+    margin-top:0;
+}
+
+.af-guide-body ol,
+.af-guide-body ul{
+    margin:8px 0 14px;
+    padding-left:22px;
+
+    color:#52677e;
+}
+
+.af-guide-body li{
+    margin:7px 0;
+
+    padding-left:2px;
+
+    font-size:13px;
+    line-height:1.6;
+}
+
+.af-guide-body b{
+    color:#24384e;
+}
+
+
+/* TIP */
+
+.af-guide-tip{
+    margin-top:12px;
+    padding:11px 12px;
+
+    border:1px solid #ccebdd;
+    border-radius:12px;
+
+    background:#effcf6;
+
+    color:#42705d;
+
+    font-size:12px;
+    line-height:1.6;
+}
+
+
+/* WARNING */
+
+.af-guide-warning{
+    margin-top:12px;
+    padding:11px 12px;
+
+    border:1px solid #f2dfac;
+    border-radius:12px;
+
+    background:#fff9e9;
+
+    color:#7d642b;
+
+    font-size:12px;
+    line-height:1.6;
+}
+
+
+/* BOTTOM */
+
+.af-guide-bottom{
+    margin:18px 0 5px;
+    padding:15px;
+
+    border-radius:14px;
+
+    background:#eaf5ff;
+
+    color:#496a87;
+
+    font-size:12px;
+    line-height:1.6;
+
+    text-align:center;
+}
+
+
+/* MOBILE */
+
+@media(max-width:500px){
+
+    .af-guide-content{
+        padding:11px !important;
+    }
+
+    .af-guide-quick{
+        padding:15px;
+    }
+
+    .af-guide-detail summary{
+        padding:
+            12px
+            38px
+            12px
+            11px;
+    }
+
+    .af-guide-body{
+        padding:
+            13px
+            13px
+            15px;
+    }
+
+}
 </style></head><body>
 <div id="toast" class="toast hidden"></div>
 <section id="auth" class="wrap" style="max-width:480px;padding-top:8vh"><div class="card"><div class="auth-brand-banner">
@@ -4211,6 +4544,7 @@ body.af-guide-open{
 
     <div class="af-guide-box">
 
+        <!-- HEADER -->
         <div class="af-guide-head">
 
             <div>
@@ -4218,167 +4552,638 @@ body.af-guide-open{
                 <span>Ангийн фонд аппыг алхам алхмаар ашиглах</span>
             </div>
 
-            <button
-                type="button"
-                onclick="closeAfGuide()"
-            >×</button>
+            <button type="button" onclick="closeAfGuide()">×</button>
 
         </div>
 
 
         <div class="af-guide-content">
 
-            <div class="af-guide-step">
-                <div class="af-guide-number">1</div>
-                <div>
-                    <h4>📲 Утсандаа апп суулгах</h4>
-                    <p>
-                        Login нүүрэн дээрх <b>“📲 Апп суулгах”</b>
-                        товчийг дарж утасныхаа нүүрэнд нэмнэ.
-                        Цаашид Ангийн фонд аппыг шууд нээгээд ашиглана.
-                    </p>
+            <!-- QUICK START -->
+            <div class="af-guide-quick">
+
+                <div class="af-guide-quick-title">
+                    ⚡ 5 минутанд эхлэх
                 </div>
+
+                <p>
+                    Анх удаа ашиглаж байгаа бол эхлээд
+                    энэ дарааллаар яваарай.
+                </p>
+
+                <div class="af-guide-flow">
+                    <span>📲 Апп суулгах</span>
+                    <i>↓</i>
+                    <span>👤 Бүртгүүлэх</span>
+                    <i>↓</i>
+                    <span>🏫 Анги үүсгэх</span>
+                    <i>↓</i>
+                    <span>🔗 Эцэг эхээ урих</span>
+                    <i>↓</i>
+                    <span>💰 Фонд үүсгэх</span>
+                </div>
+
             </div>
 
-            <div class="af-guide-step">
-                <div class="af-guide-number">2</div>
-                <div>
-                    <h4>🏫 Анги / бүлэг үүсгэх</h4>
-                    <p>
-                        Бүртгэлээрээ нэвтэрсний дараа
-                        <b>“+ Шинэ анги / бүлэг үүсгэх”</b> товчийг дарна.
-                        Сургууль эсвэл цэцэрлэг, анги / бүлгийн нэр,
-                        хичээлийн жилээ оруулж үүсгэнэ.
-                    </p>
-                </div>
+
+            <div class="af-guide-section-label">
+                📚 ДЭЛГЭРЭНГҮЙ ЗААВАР
             </div>
 
-            <div class="af-guide-step">
-                <div class="af-guide-number">3</div>
-                <div>
-                    <h4>🔗 Эцэг эхчүүдээ урих</h4>
-                    <p>
-                        Ангийн урилгын холбоосыг эцэг эхчүүдэд илгээнэ.
-                        Эцэг эх урилгын холбоосоор орж өөрийн бүртгэлээр
-                        тухайн анги / бүлэгт нэгдэнэ.
-                    </p>
-                </div>
-            </div>
 
-            <div class="af-guide-step">
-                <div class="af-guide-number">4</div>
-                <div>
-                    <h4>👧 Хүүхэд бүртгүүлэх</h4>
-                    <p>
-                        Эцэг эх хүүхдийн нэр, үндсэн болон нэмэлт
-                        холбоо барих дугаараа бүртгүүлнэ.
-                        Ангийн админ хүсэлтийг шалгаж
-                        <b>зөвшөөрөх эсвэл татгалзана.</b>
-                    </p>
-                </div>
-            </div>
+            <!-- 1 -->
+            <details class="af-guide-detail" open>
 
-            <div class="af-guide-step">
-                <div class="af-guide-number">5</div>
-                <div>
-                    <h4>💰 Фонд үүсгэх</h4>
-                    <p>
-                        <b>Фонд</b> хэсгээс сарын фонд эсвэл
-                        тусгай зориулалтын фонд үүсгэж,
-                        хүүхэд бүрийн төлөх дүнг тохируулна.
-                    </p>
-                </div>
-            </div>
+                <summary>
+                    <span class="af-guide-num">1</span>
 
-            <div class="af-guide-step">
-                <div class="af-guide-number">6</div>
-                <div>
-                    <h4>💳 Төлбөр бүртгэх</h4>
-                    <p>
-                        Эцэг эх төлбөрөө шилжүүлсний дараа
-                        төлбөрийн мэдээлэл болон баримтаа илгээнэ.
-                        Админ хүсэлтийг шалгаж батална.
-                        Мөн админ төлбөрийг гараар бүртгэх боломжтой.
-                    </p>
-                </div>
-            </div>
+                    <span class="af-guide-summary-text">
+                        <b>📲 Утсандаа апп суулгах</b>
+                        <small>Ангийн фонд аппыг утасныхаа нүүрэнд нэмэх</small>
+                    </span>
+                </summary>
 
-            <div class="af-guide-step">
-                <div class="af-guide-number">7</div>
-                <div>
-                    <h4>🧾 Зарлага бүртгэх</h4>
-                    <p>
-                        Аль фондоос, юунд, хэдэн төгрөг зарцуулснаа
-                        бүртгэж зарлагын баримтыг хавсаргана.
-                    </p>
-                </div>
-            </div>
+                <div class="af-guide-body">
 
-            <div class="af-guide-step">
-                <div class="af-guide-number">8</div>
-                <div>
-                    <h4>📊 Тайлан харах</h4>
                     <p>
-                        Орлого, зарлага, үлдэгдэл болон төлөлтийн
-                        мэдээллийг нэг дор харна.
-                        Админ тайлангаа <b>Excel</b> файлаар гаргаж болно.
+                        Login нүүрэн дээр байрлах
+                        <b>“📲 Апп суулгах”</b>
+                        товчийг ашиглана.
                     </p>
-                </div>
-            </div>
 
-            <div class="af-guide-step">
-                <div class="af-guide-number">9</div>
-                <div>
-                    <h4>🔄 Фонд хаах, үлдэгдэл шилжүүлэх</h4>
-                    <p>
-                        Дууссан фондыг хааж үлдэгдлийг дараагийн
-                        тохирох фонд руу шилжүүлж болно.
-                        Хаасан фонд устахгүй бөгөөд түүхэнд хадгалагдана.
-                    </p>
-                </div>
-            </div>
+                    <h5>🤖 Android</h5>
 
-            <div class="af-guide-step">
-                <div class="af-guide-number">10</div>
-                <div>
-                    <h4>🎓 Анги дэвшүүлэх</h4>
-                    <p>
-                        Хичээлийн жил дуусахад ангиа дараагийн
-                        хичээлийн жил рүү дэвшүүлнэ.
-                        Өмнөх жилийн бүртгэл, тайлан түүхэндээ хадгалагдана.
-                    </p>
-                </div>
-            </div>
+                    <ol>
+                        <li>Chrome browser-оор Ангийн фонд сайтыг нээнэ.</li>
+                        <li><b>“📲 Апп суулгах”</b> товчийг дарна.</li>
+                        <li>Гарч ирсэн Install / Суулгах товчийг дарна.</li>
+                        <li>Ангийн фонд утасны нүүрэнд нэмэгдэнэ.</li>
+                    </ol>
 
-            <div class="af-guide-step">
-                <div class="af-guide-number">11</div>
-                <div>
-                    <h4>👨‍👩‍👧 Эцэг эхийн харах мэдээлэл</h4>
-                    <p>
-                        Эцэг эх өөрийн хүүхдийн мэдээлэл,
-                        төлөлтийн түүх болон ангийн сангийн
-                        нийт мэдээллийг харна.
-                        Бусад хүүхдийн хувийн мэдээлэл харагдахгүй.
-                    </p>
-                </div>
-            </div>
+                    <h5>🍎 iPhone / iPad</h5>
 
-            <div class="af-guide-step">
-                <div class="af-guide-number">12</div>
-                <div>
-                    <h4>👑 Эрх сунгах</h4>
-                    <p>
-                        Эрхийн багцаа сонгож төлбөр шилжүүлээд
-                        баримтаа илгээнэ.
-                        Хүсэлт батлагдсаны дараа ангийн ашиглах
-                        эрх автоматаар сунгагдана.
-                    </p>
+                    <ol>
+                        <li>Safari browser-оор Ангийн фонд сайтыг нээнэ.</li>
+                        <li><b>“📲 Апп суулгах”</b> товчийг дарна.</li>
+                        <li>Доод талын <b>Share ⬆️</b> товчийг дарна.</li>
+                        <li><b>Add to Home Screen</b> сонгоно.</li>
+                        <li><b>Add</b> дарна.</li>
+                    </ol>
+
+                    <div class="af-guide-tip">
+                        💡 Суулгасны дараа утасныхаа нүүрэн дээрх
+                        <b>Ангийн фонд</b> icon-оос шууд нээнэ.
+                    </div>
+
                 </div>
+
+            </details>
+
+
+            <!-- 2 -->
+            <details class="af-guide-detail">
+
+                <summary>
+                    <span class="af-guide-num">2</span>
+
+                    <span class="af-guide-summary-text">
+                        <b>👤 Бүртгэл үүсгэх, нэвтрэх</b>
+                        <small>Утасны дугаараараа бүртгэл үүсгэх</small>
+                    </span>
+                </summary>
+
+                <div class="af-guide-body">
+
+                    <h5>Шинэ хэрэглэгч</h5>
+
+                    <ol>
+                        <li><b>Бүртгүүлэх</b> хэсгийг сонгоно.</li>
+                        <li>Овог нэрээ оруулна.</li>
+                        <li>Өөрийн 8 оронтой утасны дугаарыг оруулна.</li>
+                        <li>6-аас дээш тэмдэгттэй нууц үг үүсгэнэ.</li>
+                        <li>Утас баталгаажуулах үйлдлийг хийнэ.</li>
+                        <li>Баталгаажсаны дараа бүртгэл үүснэ.</li>
+                    </ol>
+
+                    <h5>Дараагийн удаа нэвтрэх</h5>
+
+                    <p>
+                        Бүртгэлтэй <b>утасны дугаар + нууц үг</b>-ээ
+                        ашиглан шууд нэвтэрнэ.
+                    </p>
+
+                    <div class="af-guide-tip">
+                        🔐 Нууц үгээ мартсан бол
+                        <b>“Нууц үгээ мартсан?”</b> хэсгээр
+                        утасны дугаараа дахин баталгаажуулж
+                        шинэ нууц үг тохируулна.
+                    </div>
+
+                </div>
+
+            </details>
+
+
+            <!-- 3 -->
+            <details class="af-guide-detail">
+
+                <summary>
+                    <span class="af-guide-num">3</span>
+
+                    <span class="af-guide-summary-text">
+                        <b>🏫 Анги / бүлэг үүсгэх</b>
+                        <small>Сургууль эсвэл цэцэрлэгийн бүлгээ нээх</small>
+                    </span>
+                </summary>
+
+                <div class="af-guide-body">
+
+                    <ol>
+                        <li>Нэвтэрсний дараа <b>Миний анги / бүлгүүд</b> нүүр нээгдэнэ.</li>
+                        <li><b>“+ Шинэ анги / бүлэг үүсгэх”</b> товчийг дарна.</li>
+                        <li>Сургууль эсвэл цэцэрлэгээ сонгоно.</li>
+                        <li>Байгууллагын нэрээ оруулна.</li>
+                        <li>Анги / бүлгийн нэрээ оруулна.</li>
+                        <li>Хичээлийн жилээ сонгоно.</li>
+                        <li>Мэдээллээ шалгаад ангиа үүсгэнэ.</li>
+                    </ol>
+
+                    <div class="af-guide-tip">
+                        👑 Анги / бүлгийг үүсгэсэн хэрэглэгч
+                        тухайн ангийн үндсэн удирдах эрхтэй байна.
+                    </div>
+
+                </div>
+
+            </details>
+
+
+            <!-- 4 -->
+            <details class="af-guide-detail">
+
+                <summary>
+                    <span class="af-guide-num">4</span>
+
+                    <span class="af-guide-summary-text">
+                        <b>🔗 Эцэг эхчүүдээ урих</b>
+                        <small>Урилгын холбоосоор ангидаа нэгдэх</small>
+                    </span>
+                </summary>
+
+                <div class="af-guide-body">
+
+                    <ol>
+                        <li>Анги / бүлгээ нээнэ.</li>
+                        <li>Тухайн ангийн урилгын холбоосыг авна.</li>
+                        <li>Messenger, чат зэрэг сувгаар эцэг эхчүүддээ илгээнэ.</li>
+                        <li>Эцэг эх урилгын холбоос дээр дарна.</li>
+                        <li>Өөрийн бүртгэлээр нэвтэрч хүүхдээ бүртгүүлнэ.</li>
+                    </ol>
+
+                    <div class="af-guide-warning">
+                        ⚠️ Эцэг эхийг админ гараар хүүхэдтэй нь
+                        бүртгэхгүй. Эцэг эх <b>өөрөө урилгын холбоосоор</b>
+                        хүүхдийн хүсэлтээ илгээнэ.
+                    </div>
+
+                </div>
+
+            </details>
+
+
+            <!-- 5 -->
+            <details class="af-guide-detail">
+
+                <summary>
+                    <span class="af-guide-num">5</span>
+
+                    <span class="af-guide-summary-text">
+                        <b>👧 Хүүхэд бүртгүүлэх, батлах</b>
+                        <small>Эцэг эх хүсэлт илгээж, админ батална</small>
+                    </span>
+                </summary>
+
+                <div class="af-guide-body">
+
+                    <h5>👨‍👩‍👧 Эцэг эх</h5>
+
+                    <ol>
+                        <li>Урилгын холбоосоор анги / бүлэгт орно.</li>
+                        <li>Хүүхдийн нэрийг оруулна.</li>
+                        <li>Үндсэн холбоо барих дугаарыг оруулна.</li>
+                        <li>Нэмэлт холбоо барих дугаарыг оруулна.</li>
+                        <li>Хүсэлтээ илгээнэ.</li>
+                    </ol>
+
+                    <h5>👑 Админ</h5>
+
+                    <ol>
+                        <li>Ирсэн хүүхдийн хүсэлтийг нээнэ.</li>
+                        <li>Мэдээллийг шалгана.</li>
+                        <li><b>Зөвшөөрөх</b> эсвэл <b>Татгалзах</b> сонголт хийнэ.</li>
+                    </ol>
+
+                    <div class="af-guide-tip">
+                        💡 Хүүхэд зөвшөөрөгдсөний дараа тухайн
+                        хичээлийн жилийн хүүхдийн жагсаалтад орно.
+                    </div>
+
+                </div>
+
+            </details>
+
+
+            <!-- 6 -->
+            <details class="af-guide-detail">
+
+                <summary>
+                    <span class="af-guide-num">6</span>
+
+                    <span class="af-guide-summary-text">
+                        <b>💰 Фонд үүсгэх</b>
+                        <small>Сарын болон тусгай фонд хөтлөх</small>
+                    </span>
+                </summary>
+
+                <div class="af-guide-body">
+
+                    <p>
+                        <b>Фонд</b> хэсэгт тухайн ангийн
+                        цуглуулах мөнгийг зориулалтаар нь тусад нь хөтөлнө.
+                    </p>
+
+                    <h5>📅 Сарын фонд</h5>
+
+                    <p>
+                        Тухайн сарын тогтмол ангийн фондод ашиглана.
+                        Сар бүр тусдаа харагдана.
+                    </p>
+
+                    <h5>⭐ Тусгай фонд</h5>
+
+                    <p>
+                        Урлагийн үзлэг, аялал, арга хэмжээ зэрэг
+                        тусгай зориулалтын мөнгөнд ашиглана.
+                    </p>
+
+                    <ol>
+                        <li><b>Фонд</b> хэсгийг нээнэ.</li>
+                        <li>Шинэ фонд үүсгэнэ.</li>
+                        <li>Фондын төрөл, нэр, сар болон дүнг тохируулна.</li>
+                        <li>Хадгална.</li>
+                    </ol>
+
+                    <div class="af-guide-tip">
+                        📌 Тусгай фонд үүсгэсэн сард л тухайн
+                        сарын фондын жагсаалтад харагдана.
+                    </div>
+
+                </div>
+
+            </details>
+
+
+            <!-- 7 -->
+            <details class="af-guide-detail">
+
+                <summary>
+                    <span class="af-guide-num">7</span>
+
+                    <span class="af-guide-summary-text">
+                        <b>💳 Төлбөр бүртгэх</b>
+                        <small>Эцэг эхийн хүсэлт болон админы бүртгэл</small>
+                    </span>
+                </summary>
+
+                <div class="af-guide-body">
+
+                    <h5>👨‍👩‍👧 Эцэг эх төлбөр илгээх</h5>
+
+                    <ol>
+                        <li><b>Төлбөр</b> хэсгийг нээнэ.</li>
+                        <li>Хүүхдээ сонгоно.</li>
+                        <li>Төлөх фонд / фондуудаа сонгоно.</li>
+                        <li>Төлсөн дүнгээ оруулна.</li>
+                        <li>Төлбөрийн баримтаа хавсаргана.</li>
+                        <li>Хүсэлтээ илгээнэ.</li>
+                        <li>Админ шалгаж батална.</li>
+                    </ol>
+
+                    <h5>👑 Админ гараар бүртгэх</h5>
+
+                    <p>
+                        Админ мөн төлбөр хүлээн авсан тохиолдолд
+                        хүүхэд, фонд, дүн, огноог сонгон
+                        төлбөрийг шууд бүртгэж болно.
+                    </p>
+
+                    <div class="af-guide-tip">
+                        💡 Хэсэгчлэн төлөлт хийсэн бол төлсөн дүн
+                        бүртгэгдэж, үлдэгдэл нь үргэлжлэн харагдана.
+                    </div>
+
+                </div>
+
+            </details>
+
+
+            <!-- 8 -->
+            <details class="af-guide-detail">
+
+                <summary>
+                    <span class="af-guide-num">8</span>
+
+                    <span class="af-guide-summary-text">
+                        <b>🧾 Зарлага бүртгэх</b>
+                        <small>Фондын зарцуулалтыг баримттай бүртгэх</small>
+                    </span>
+                </summary>
+
+                <div class="af-guide-body">
+
+                    <ol>
+                        <li><b>Фонд</b> хэсгээс зарлага гарах фондыг сонгоно.</li>
+                        <li><b>Зарлага нэмэх</b> үйлдлийг сонгоно.</li>
+                        <li>Зарлагын нэрийг оруулна.</li>
+                        <li>Дүнг оруулна.</li>
+                        <li>Огноог сонгоно.</li>
+                        <li>Шаардлагатай тайлбарыг бичнэ.</li>
+                        <li>Зарлагын баримтыг хавсаргана.</li>
+                        <li>Хадгална.</li>
+                    </ol>
+
+                    <div class="af-guide-warning">
+                        🧾 Зарлага бүртгэхэд
+                        <b>баримт хавсаргах шаардлагатай.</b>
+                    </div>
+
+                </div>
+
+            </details>
+
+
+            <!-- 9 -->
+            <details class="af-guide-detail">
+
+                <summary>
+                    <span class="af-guide-num">9</span>
+
+                    <span class="af-guide-summary-text">
+                        <b>📊 Тайлан харах</b>
+                        <small>Орлого, зарлага, үлдэгдлээ хянах</small>
+                    </span>
+                </summary>
+
+                <div class="af-guide-body">
+
+                    <p>
+                        <b>Тайлан</b> хэсгээс ангийн сангийн
+                        санхүүгийн мэдээллийг нэг дор харна.
+                    </p>
+
+                    <ul>
+                        <li>Нийт цугласан төлбөр</li>
+                        <li>Нийт зарлага</li>
+                        <li>Үлдэгдэл</li>
+                        <li>Хүүхдийн төлөлтийн төлөв</li>
+                        <li>Фонд тус бүрийн үлдэгдэл</li>
+                        <li>Шилжиж ирсэн үлдэгдэл</li>
+                    </ul>
+
+                    <p>
+                        Фондын төрөл болон сараар шүүж
+                        хүссэн мэдээллээ тусад нь харах боломжтой.
+                    </p>
+
+                    <div class="af-guide-tip">
+                        📥 Админ дэлгэрэнгүй тайлангаа
+                        <b>Excel</b> файлаар гаргаж болно.
+                    </div>
+
+                </div>
+
+            </details>
+
+
+            <!-- 10 -->
+            <details class="af-guide-detail">
+
+                <summary>
+                    <span class="af-guide-num">10</span>
+
+                    <span class="af-guide-summary-text">
+                        <b>🔄 Фонд хаах, үлдэгдэл шилжүүлэх</b>
+                        <small>Дууссан фондын үлдэгдлийг зохицуулах</small>
+                    </span>
+                </summary>
+
+                <div class="af-guide-body">
+
+                    <ol>
+                        <li>Хаах гэж байгаа фондыг нээнэ.</li>
+                        <li>Тухайн фондын үлдэгдлийг шалгана.</li>
+                        <li><b>Фонд хаах</b> үйлдлийг сонгоно.</li>
+                        <li>Үлдэгдэлтэй бол шилжүүлэх фондыг сонгоно.</li>
+                        <li>Хаалтыг баталгаажуулна.</li>
+                    </ol>
+
+                    <div class="af-guide-tip">
+                        🔒 Хаасан фонд устахгүй.
+                        Өмнөх төлбөр, зарлага, шилжүүлгийн мэдээлэл
+                        түүхэнд хадгалагдана.
+                    </div>
+
+                    <div class="af-guide-warning">
+                        ⚠️ Өөр фондоос шилжиж ирсэн үлдэгдэл нь
+                        хүүхдийн төлбөр гэж тооцогдохгүй.
+                    </div>
+
+                </div>
+
+            </details>
+
+
+            <!-- 11 -->
+            <details class="af-guide-detail">
+
+                <summary>
+                    <span class="af-guide-num">11</span>
+
+                    <span class="af-guide-summary-text">
+                        <b>🎓 Анги дэвшүүлэх</b>
+                        <small>Шинэ хичээлийн жил эхлүүлэх</small>
+                    </span>
+                </summary>
+
+                <div class="af-guide-body">
+
+                    <p>
+                        Хичээлийн жил дуусахад
+                        <b>Тохиргоо → Анги дэвшүүлэх</b>
+                        үйлдлийг ашиглана.
+                    </p>
+
+                    <ol>
+                        <li>Дараагийн анги / бүлгийн нэрийг оруулна.</li>
+                        <li>Шинэ хичээлийн жилийг сонгоно.</li>
+                        <li>Мэдээллээ шалгана.</li>
+                        <li>Дэвшүүлэх үйлдлийг баталгаажуулна.</li>
+                    </ol>
+
+                    <div class="af-guide-tip">
+                        📚 Өмнөх хичээлийн жилийн мэдээлэл
+                        устахгүй бөгөөд түүхэнд хадгалагдана.
+                    </div>
+
+                </div>
+
+            </details>
+
+
+            <!-- 12 -->
+            <details class="af-guide-detail">
+
+                <summary>
+                    <span class="af-guide-num">12</span>
+
+                    <span class="af-guide-summary-text">
+                        <b>👨‍👩‍👧 Эцэг эх юу харж болох вэ?</b>
+                        <small>Хүүхдийн мэдээлэл ба нууцлал</small>
+                    </span>
+                </summary>
+
+                <div class="af-guide-body">
+
+                    <p>Эцэг эх:</p>
+
+                    <ul>
+                        <li>Өөрийн хүүхдийн мэдээллийг харна.</li>
+                        <li>Өөрийн хүүхдийн төлөлтийн түүхийг харна.</li>
+                        <li>Фондын нийт мэдээллийг харна.</li>
+                        <li>Ангийн сангийн нийт орлого, зарлага, үлдэгдлийг хянах боломжтой.</li>
+                    </ul>
+
+                    <div class="af-guide-warning">
+                        🔐 Бусад хүүхдийн нэр, хувийн мэдээлэл,
+                        төлөлтийн хувийн мэдээлэл эцэг эхэд
+                        харагдахгүй.
+                    </div>
+
+                </div>
+
+            </details>
+
+
+            <!-- 13 -->
+            <details class="af-guide-detail">
+
+                <summary>
+                    <span class="af-guide-num">13</span>
+
+                    <span class="af-guide-summary-text">
+                        <b>👑 Ангийн эрх сунгах</b>
+                        <small>Багц сонгох, төлбөрийн хүсэлт илгээх</small>
+                    </span>
+                </summary>
+
+                <div class="af-guide-body">
+
+                    <p>Ангийн админ ашиглах эрхээ сунгахдаа:</p>
+
+                    <ol>
+                        <li>Эрхийн багцаа сонгоно.</li>
+                        <li>Апп дээр харагдах данс руу төлбөрөө шилжүүлнэ.</li>
+                        <li>Аппын өгсөн <b>гүйлгээний утгыг</b> ашиглана.</li>
+                        <li>Гүйлгээний баримтаа хавсаргана.</li>
+                        <li>Эрх сунгах хүсэлтээ илгээнэ.</li>
+                        <li>Хүсэлт батлагдсаны дараа эрх автоматаар сунгагдана.</li>
+                    </ol>
+
+                    <h5>Эрхийн багцууд</h5>
+
+                    <ul>
+                        <li><b>1 сар — 8,900₮</b></li>
+                        <li><b>5+1 сар — 34,900₮</b></li>
+                        <li><b>Бүтэн жил — 59,900₮</b></li>
+                    </ul>
+
+                    <div class="af-guide-tip">
+                        🎁 Шинээр үүсгэсэн анги / бүлэгт
+                        <b>7 хоногийн Full Trial</b> ашиглах боломжтой.
+                    </div>
+
+                </div>
+
+            </details>
+
+
+            <!-- 14 -->
+            <details class="af-guide-detail">
+
+                <summary>
+                    <span class="af-guide-num">14</span>
+
+                    <span class="af-guide-summary-text">
+                        <b>❓ Асуудал гарвал</b>
+                        <small>Түгээмэл тохиолдлууд</small>
+                    </span>
+                </summary>
+
+                <div class="af-guide-body">
+
+                    <h5>Хүүхэд харагдахгүй байна</h5>
+
+                    <p>
+                        Хүүхдийн бүртгэлийн хүсэлтийг админ
+                        зөвшөөрсөн эсэхийг шалгана.
+                    </p>
+
+                    <h5>Төлбөр батлагдаагүй байна</h5>
+
+                    <p>
+                        Төлбөрийн хүсэлт админд хүлээгдэж байгаа
+                        эсэхийг шалгана. Админ баталсны дараа
+                        төлөлтөд орно.
+                    </p>
+
+                    <h5>Урилгын холбоосоор орж чадахгүй байна</h5>
+
+                    <p>
+                        Зөв урилгын холбоос ашиглаж байгаа эсэх,
+                        мөн интернет холболтоо шалгана.
+                    </p>
+
+                    <h5>Нууц үгээ мартсан</h5>
+
+                    <p>
+                        Login нүүрний
+                        <b>“Нууц үгээ мартсан?”</b>
+                        хэсгийг ашиглана.
+                    </p>
+
+                    <h5>Аппын мэдээлэл шинэчлэгдэхгүй байна</h5>
+
+                    <p>
+                        Ангийн фонд нь интернет холболттой үед
+                        серверийн мэдээллийг шинэчилдэг тул
+                        интернет холболтоо шалгаад дахин оролдоно.
+                    </p>
+
+                </div>
+
+            </details>
+
+
+            <div class="af-guide-bottom">
+                📘 Зааврыг хүссэн үедээ Login нүүрнээс
+                дахин нээж харах боломжтой.
             </div>
 
         </div>
 
     </div>
+
+</div>
 
 </div>
  <!-- =========================================================
