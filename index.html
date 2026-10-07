@@ -13475,8 +13475,35 @@ function settings(){
             🔗 Урилгын линк хуулах
         </button>
     </div>
+    <div
+    class="settings-item"
+    onclick="deleteEmptyGroupInfo()"
+    style="
+        margin-top:12px;
+        color:#dc2626;
+        border-top:1px solid #fee2e2;
+    "
+>
+    <div
+        class="settings-ico"
+        style="background:#fff1f2"
+    >
+        🗑️
+    </div>
+
+    <div style="flex:1">
+        <b>Анги / бүлэг устгах</b>
+
+        <div class="muted">
+            Зөвхөн хоосон анги устгана
+        </div>
+    </div>
+
+    <b>›</b>
+</div>
 </div>`;
 }
+ 
 async function academicYearHistory(){
 
     if(!G?.id){
@@ -16313,5 +16340,118 @@ document.addEventListener(
 
     }
 );
+  function deleteEmptyGroupInfo(){
+
+    if(!G || !M){
+        return;
+    }
+
+    if(M.role !== 'owner'){
+        return toast(
+            'Зөвхөн ангийн эзэмшигч устгах боломжтой'
+        );
+    }
+
+    modal(`
+
+        <h3 style="color:#dc2626">
+            🗑️ Анги / бүлэг устгах
+        </h3>
+
+        <p>
+            <b>${esc(G.group_name)}</b>
+            ангийг устгах гэж байна.
+        </p>
+
+        <div style="
+            background:#fff1f2;
+            border:1px solid #fecdd3;
+            border-radius:14px;
+            padding:14px;
+            margin:15px 0;
+            color:#9f1239;
+            line-height:1.5;
+        ">
+            ⚠️ Зөвхөн хүүхэд болон фонд
+            бүртгэгдээгүй хоосон ангийг
+            устгах боломжтой.
+        </div>
+
+        <button
+            class="btn"
+            style="
+                width:100%;
+                background:#dc2626;
+                color:white;
+            "
+            onclick="confirmDeleteEmptyGroup()"
+        >
+            🗑️ Устгах
+        </button>
+
+        <button
+            class="btn soft"
+            style="width:100%;margin-top:8px"
+            onclick="closeModal()"
+        >
+            Болих
+        </button>
+
+    `);
+}
+
+
+async function confirmDeleteEmptyGroup(){
+
+    if(!G || !M || M.role !== 'owner'){
+        return;
+    }
+
+    const groupName = G.group_name;
+
+    const ok = confirm(
+        `"${groupName}" ангийг бүр мөсөн устгах уу?\n\n` +
+        `Энэ үйлдлийг буцаах боломжгүй.`
+    );
+
+    if(!ok){
+        return;
+    }
+
+
+    const { error } = await sb.rpc(
+        'af_delete_empty_group',
+        {
+            p_group_id: G.id
+        }
+    );
+
+
+    if(error){
+
+        console.error(
+            'Delete group error:',
+            error
+        );
+
+        return toast(
+            error.message ||
+            'Анги устгаж чадсангүй'
+        );
+    }
+
+
+    closeModal();
+
+    G = null;
+    M = null;
+    DATA = {};
+
+    toast(
+        'Анги амжилттай устлаа 🗑️'
+    );
+
+    await loadGroups();
+}
 </script>
 </body></html>
