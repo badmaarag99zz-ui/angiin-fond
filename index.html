@@ -4632,6 +4632,26 @@ body.af-guide-open{
     }
 
 }
+ /* ===== SUPER ADMIN OVERVIEW ===== */
+
+#superAdminStats .super-admin-overview{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:8px;
+}
+
+#superAdminStats .super-admin-overview .card{
+    margin:0;
+    text-align:center;
+}
+
+@media(max-width:600px){
+
+    #superAdminStats .super-admin-overview{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+}
 </style></head><body>
 <div id="toast" class="toast hidden"></div>
 <section id="auth" class="wrap" style="max-width:480px;padding-top:8vh"><div class="card"><div class="auth-brand-banner">
@@ -7288,7 +7308,19 @@ async function loadSuperAdminRequests(){
 
 
     try{
+const {
+    data: adminStats,
+    error: adminStatsError
+} = await sb.rpc(
+    'af_super_admin_stats'
+);
 
+if(adminStatsError){
+    throw adminStatsError;
+}
+
+const overview =
+    adminStats?.[0] || {};
         const {
             data,
             error
@@ -7323,56 +7355,62 @@ SUPER_ADMIN_REQUESTS = requests;
             ).length;
 
 
-        if(stats){
+       if(stats){
 
-            stats.innerHTML = `
-                <div
-                    class="three"
-                    style="margin:16px 0"
-                >
+    stats.innerHTML = `
 
-                    <div class="card">
+        <div
+            class="four super-admin-overview"
+            style="margin:16px 0"
+        >
 
-                        <div class="statlabel">
-                            Хүлээгдэж байна
-                        </div>
-
-                        <div class="statnum">
-                            ${pendingCount}
-                        </div>
-
-                    </div>
-
-
-                    <div class="card">
-
-                        <div class="statlabel">
-                            Зөвшөөрсөн
-                        </div>
-
-                        <div class="statnum">
-                            ${approvedCount}
-                        </div>
-
-                    </div>
-
-
-                    <div class="card">
-
-                        <div class="statlabel">
-                            Татгалзсан
-                        </div>
-
-                        <div class="statnum">
-                            ${rejectedCount}
-                        </div>
-
-                    </div>
-
+            <div class="card">
+                <div class="statlabel">
+                    👤 Нийт хэрэглэгч
                 </div>
-            `;
-        }
 
+                <div class="statnum">
+                    ${Number(overview.total_users || 0)}
+                </div>
+            </div>
+
+
+            <div class="card">
+                <div class="statlabel">
+                    🏫 Анги / бүлэг
+                </div>
+
+                <div class="statnum">
+                    ${Number(overview.total_groups || 0)}
+                </div>
+            </div>
+
+
+            <div class="card">
+                <div class="statlabel">
+                    🎁 Trial
+                </div>
+
+                <div class="statnum">
+                    ${Number(overview.trial_groups || 0)}
+                </div>
+            </div>
+
+
+            <div class="card">
+                <div class="statlabel">
+                    🟢 Идэвхтэй эрх
+                </div>
+
+                <div class="statnum">
+                    ${Number(overview.active_groups || 0)}
+                </div>
+            </div>
+
+        </div>
+
+    `;
+}
 
         if(!requests.length){
 
