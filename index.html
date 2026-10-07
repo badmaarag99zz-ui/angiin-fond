@@ -5881,7 +5881,39 @@ let SUPER_ADMIN_REQUESTS = [];
         window.location.href = window.location.pathname;
     }
 }function ay(){let d=new Date(),y=d.getFullYear();return d.getMonth()>=8?`${y}–${y+1}`:`${y-1}–${y}`}
-function authTab(x){$('loginBox').classList.toggle('hidden',x!=='login');$('registerBox').classList.toggle('hidden',x!=='register')}let PHONE_VERIFY_SESSION = null;
+function authTab(x){
+
+    const loginBox =
+        document.getElementById('loginBox');
+
+    const registerBox =
+        document.getElementById('registerBox');
+
+
+    if(!loginBox || !registerBox){
+
+        console.error(
+            'AUTH ERROR:',
+            {
+                loginBox: !!loginBox,
+                registerBox: !!registerBox
+            }
+        );
+
+        return;
+    }
+
+
+    loginBox.classList.toggle(
+        'hidden',
+        x !== 'login'
+    );
+
+    registerBox.classList.toggle(
+        'hidden',
+        x !== 'register'
+    );
+}let PHONE_VERIFY_SESSION = null;
 let PHONE_REGISTER_DATA = null;
 async function login(){
 
