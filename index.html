@@ -5670,6 +5670,24 @@ function subscriptionRequestCard(r){
                         )}
                     </b>
 
+                             </div>
+
+
+                <!-- ===== REQUESTER PHONE ===== -->
+
+                <div
+                    class="row between"
+                    style="margin-top:8px"
+                >
+
+                    <span class="muted">
+                        Бүртгэлтэй дугаар
+                    </span>
+
+                    <b>
+                        📱 ${esc(r.requester_phone || '—')}
+                    </b>
+
                 </div>
 
 
@@ -5681,7 +5699,6 @@ function subscriptionRequestCard(r){
                     <span class="muted">
                         Төлбөр
                     </span>
-
                     <b
                         style="
                             font-size:18px;
