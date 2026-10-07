@@ -6445,24 +6445,87 @@ function chooseSubscriptionPlan(
         </div>
 
 
-        <div
-            class="card"
-            style="background:#f7fbff"
-        >
+       <div
+    class="card"
+    style="background:#f7fbff"
+>
+    <b>🏦 Төлбөр шилжүүлэх</b>
 
-            <b>
-                🏦 Төлбөр шилжүүлэх
-            </b>
+    <div style="
+        margin-top:12px;
+        display:grid;
+        gap:8px;
+    ">
 
-            <div
-                class="muted"
-                style="margin-top:7px"
+        <div class="row between">
+            <span class="muted">Банк</span>
+            <b>ХААН Банк</b>
+        </div>
+
+        <div class="row between">
+            <span class="muted">IBAN</span>
+            <b>53000500</b>
+        </div>
+
+        <div class="row between">
+            <span class="muted">Дансны дугаар</span>
+            <b>5001803761</b>
+        </div>
+
+        <div class="row between">
+            <span class="muted">Данс эзэмшигч</span>
+            <b>Бадмаараг</b>
+        </div>
+
+    </div>
+
+    <div style="
+        margin-top:14px;
+        padding-top:12px;
+        border-top:1px solid #dce8f2;
+    ">
+
+        <div class="muted">
+            Гүйлгээний утга
+        </div>
+
+        <div style="
+            margin-top:6px;
+            display:flex;
+            align-items:center;
+            gap:8px;
+        ">
+
+            <b
+                id="subscriptionTransferNote"
+                style="
+                    flex:1;
+                    padding:10px 11px;
+                    background:#fff;
+                    border:1px solid #dce8f2;
+                    border-radius:10px;
+                    font-size:13px;
+                    word-break:break-word;
+                "
+            ></b>
+
+            <button
+                type="button"
+                class="btn soft"
+                style="padding:9px 10px"
+                onclick="copySubscriptionTransferNote()"
             >
-                Дансны мэдээллийг энд байрлуулна.
-            </div>
+                📋 Хуулах
+            </button>
 
         </div>
 
+        <div class="muted" style="margin-top:6px">
+            ⚠️ Гүйлгээний утгыг өөрчлөхгүй оруулна уу.
+        </div>
+
+    </div>
+</div>
 
         <div class="field">
 
@@ -6506,10 +6569,64 @@ function chooseSubscriptionPlan(
         >
             ← Багц сонголт
         </button>
-    `);
+       `);
+
+    const phone =
+        String(
+            U?.user_metadata?.phone ||
+            U?.phone ||
+            ""
+        )
+        .replace(/\D/g, "")
+        .slice(-8);
+
+    const transferNote =
+        `${phone || "УТАСНЫ ДУГААР"}-Ангийн фонд апп`;
+
+    const noteEl =
+        document.getElementById(
+            "subscriptionTransferNote"
+        );
+
+    if(noteEl){
+        noteEl.textContent = transferNote;
+    }
 }
 
+async function copySubscriptionTransferNote(){
 
+    const el =
+        document.getElementById(
+            "subscriptionTransferNote"
+        );
+
+    const text =
+        el?.textContent?.trim();
+
+    if(!text){
+        return toast(
+            "Гүйлгээний утга олдсонгүй"
+        );
+    }
+
+    try{
+
+        await navigator.clipboard.writeText(text);
+
+        toast(
+            "Гүйлгээний утга хуулагдлаа 📋"
+        );
+
+    }catch(error){
+
+        console.error(error);
+
+        toast(
+            "Хуулах боломжгүй байна"
+        );
+
+    }
+}
 /* =========================================================
    SUBMIT SUBSCRIPTION REQUEST
 ========================================================= */
