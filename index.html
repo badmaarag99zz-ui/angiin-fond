@@ -4737,6 +4737,104 @@ body.af-guide-open{
     </button>
 
 </div>
+ <!-- =========================================
+     REGISTER BOX — RESTORED
+========================================= -->
+
+<div id="registerBox" class="hidden">
+
+    <div id="registerForm">
+
+        <div class="field">
+            <label>Овог нэр</label>
+            <input
+                id="rn"
+                type="text"
+                placeholder="Овог нэр"
+            >
+        </div>
+
+        <div class="field">
+            <label>Утасны дугаар</label>
+            <input
+                id="rpPhone"
+                type="tel"
+                inputmode="numeric"
+                maxlength="8"
+                placeholder="99112233"
+            >
+        </div>
+
+        <div class="field">
+            <label>Нууц үг</label>
+            <input
+                id="rp"
+                type="password"
+                minlength="6"
+                placeholder="6-аас дээш тэмдэгт"
+            >
+        </div>
+
+        <button
+            id="registerStartBtn"
+            class="btn primary"
+            style="width:100%"
+            onclick="startPhoneRegistration()"
+        >
+            Утас баталгаажуулах
+        </button>
+
+    </div>
+
+
+    <div id="verifyBox" class="hidden">
+
+        <div
+            class="card"
+            style="background:#f0fff6"
+        >
+
+            <b>📱 Утас баталгаажуулах</b>
+
+            <p
+                id="verifyInstruction"
+                class="muted"
+                style="margin-bottom:8px"
+            ></p>
+
+            <div
+                id="verifyCode"
+                style="
+                    font-size:28px;
+                    font-weight:950;
+                    letter-spacing:4px;
+                    text-align:center;
+                    padding:12px;
+                "
+            ></div>
+
+        </div>
+
+        <button
+            id="verifyCheckBtn"
+            class="btn primary"
+            style="width:100%;margin-top:10px"
+            onclick="finishPhoneRegistration()"
+        >
+            Баталгаажуулсан — шалгах
+        </button>
+
+        <button
+            class="btn soft"
+            style="width:100%;margin-top:8px"
+            onclick="cancelPhoneRegistration()"
+        >
+            ← Буцах
+        </button>
+
+    </div>
+
+</div>
 <section class="af-landing" id="afLandingIntro">
 
 <div class="af-modal-head">
