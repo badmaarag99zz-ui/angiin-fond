@@ -3508,74 +3508,282 @@ body.af-intro-modal-open{overflow:hidden!important}
 .auth-install-btn:active{
     transform:scale(.985);
 }
- /* =========================================
-   SUPER ADMIN — MOBILE COMPACT
+/* =========================================
+   SUPER ADMIN — FINAL COMPACT
 ========================================= */
 
-@media (max-width:600px){
+.super-admin-filter-tabs{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:6px;
+    margin:10px 0 12px;
+}
 
-    /* Super Admin үндсэн зай */
+
+.super-admin-filter-btn{
+    min-width:0;
+    min-height:54px;
+
+    padding:7px 4px;
+
+    border:1px solid #dce8f2;
+    border-radius:12px;
+
+    background:#ffffff;
+    color:#53677e;
+
+    cursor:pointer;
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:2px;
+
+    text-align:center;
+
+    box-shadow:none;
+}
+
+
+.super-admin-filter-btn.active{
+    background:#079b66;
+    border-color:#079b66;
+    color:#ffffff;
+}
+
+
+.super-admin-filter-icon{
+    font-size:14px !important;
+    line-height:1;
+}
+
+
+.super-admin-filter-label{
+    font-size:9px !important;
+    font-weight:850;
+    line-height:1.15;
+    white-space:normal;
+}
+
+
+.super-admin-filter-count{
+    font-size:13px !important;
+    line-height:1;
+}
+
+
+.super-admin-pagination{
+    display:grid;
+    grid-template-columns:1fr auto 1fr;
+    align-items:center;
+    gap:8px;
+
+    margin:14px 0 6px;
+}
+
+
+.super-admin-pagination .btn:last-child{
+    justify-self:end;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media(max-width:600px){
+
     #superAdminView{
-        padding:10px !important;
+        padding:0 !important;
     }
 
-    /* Hero */
-    #superAdminView .super-admin-hero{
-        padding:14px !important;
-        border-radius:16px !important;
+
+    /* HERO */
+
+    #superAdminView > .groups-hero{
+        padding:13px 68px 13px 13px !important;
+        margin:0 0 8px !important;
+        border-radius:15px !important;
         min-height:0 !important;
     }
 
-    /* Статистик 3 card */
+
+    #superAdminView > .groups-hero:after{
+        width:46px !important;
+        height:46px !important;
+
+        right:11px !important;
+        top:12px !important;
+
+        font-size:24px !important;
+        border-radius:13px !important;
+    }
+
+
+    #superAdminView > .groups-hero
+    > div:first-child{
+        font-size:18px !important;
+        line-height:1.15 !important;
+        margin-bottom:3px !important;
+    }
+
+
+    #superAdminView .groups-toolbar{
+        margin:0 !important;
+    }
+
+
+    #superAdminView .groups-toolbar h2{
+        font-size:14px !important;
+        margin:2px 0 !important;
+        padding:0 !important;
+    }
+
+
+    #superAdminView .groups-toolbar .muted{
+        font-size:9px !important;
+        line-height:1.3 !important;
+    }
+
+
+    #superAdminView .groups-toolbar .btn{
+        min-height:28px !important;
+
+        width:auto !important;
+
+        margin-top:5px !important;
+        padding:5px 8px !important;
+
+        font-size:9px !important;
+    }
+
+
+    /* =========================
+       3 STAT CARDS
+    ========================= */
+
     #superAdminStats .three{
         display:grid !important;
         grid-template-columns:repeat(3,1fr) !important;
+
         gap:6px !important;
-        margin:10px 0 !important;
+        margin:8px 0 !important;
     }
+
 
     #superAdminStats .card{
-        padding:9px 6px !important;
-        min-height:0 !important;
-        border-radius:12px !important;
-        text-align:center;
+        min-height:58px !important;
+
+        margin:0 !important;
+        padding:8px 6px !important;
+
+        border-radius:11px !important;
+
+        text-align:center !important;
     }
 
+
     #superAdminStats .statlabel{
-        font-size:9px !important;
+        font-size:8px !important;
         line-height:1.15 !important;
     }
 
+
     #superAdminStats .statnum{
-        font-size:18px !important;
         margin-top:3px !important;
+
+        font-size:18px !important;
+        line-height:1 !important;
     }
 
-    /* Хүсэлтийн card */
-    #superAdminRequests > .card{
-        padding:11px !important;
-        margin-bottom:8px !important;
-        border-radius:14px !important;
+
+    /* =========================
+       FILTERS
+    ========================= */
+
+    .super-admin-filter-tabs{
+        gap:5px;
+        margin:8px 0 10px;
     }
+
+
+    .super-admin-filter-btn{
+        min-height:49px;
+        padding:6px 3px;
+        border-radius:10px;
+    }
+
+
+    .super-admin-filter-icon{
+        font-size:12px !important;
+    }
+
+
+    .super-admin-filter-label{
+        font-size:8px !important;
+    }
+
+
+    .super-admin-filter-count{
+        font-size:12px !important;
+    }
+
+
+    /* =========================
+       REQUEST CARD
+    ========================= */
+
+    #superAdminRequests > .card{
+        margin:0 0 8px !important;
+        padding:10px !important;
+
+        border-radius:13px !important;
+    }
+
 
     #superAdminRequests .muted{
-        font-size:10px !important;
+        font-size:9px !important;
     }
+
 
     #superAdminRequests b{
-        font-size:12px;
+        font-size:11px;
     }
 
-    /* Card доторх мөрүүд */
+
+    #superAdminRequests .pill{
+        padding:5px 7px !important;
+
+        font-size:8px !important;
+        white-space:nowrap;
+    }
+
+
     #superAdminRequests .row{
-        gap:6px !important;
+        gap:5px !important;
     }
 
-    /* Баримт */
+
     #superAdminRequests .btn{
-        min-height:34px !important;
-        padding:7px 9px !important;
-        font-size:11px !important;
+        min-height:33px !important;
+
+        padding:6px 7px !important;
+
+        font-size:9px !important;
+        border-radius:9px !important;
+    }
+
+
+    /* Pagination */
+
+    .super-admin-pagination{
+        margin-top:10px;
+    }
+
+
+    .super-admin-pagination .muted{
+        font-size:10px !important;
     }
 
 }
@@ -5625,6 +5833,7 @@ function renderSuperAdminRequestList(){
 
 
     const counts = {
+
         pending:
             SUPER_ADMIN_REQUESTS.filter(
                 r => r.status === 'pending'
@@ -5639,6 +5848,7 @@ function renderSuperAdminRequestList(){
             SUPER_ADMIN_REQUESTS.filter(
                 r => r.status === 'rejected'
             ).length
+
     };
 
 
@@ -5667,6 +5877,7 @@ function renderSuperAdminRequestList(){
         (SUPER_ADMIN_PAGE - 1) *
         SUPER_ADMIN_PAGE_SIZE;
 
+
     const pageRows =
         filtered.slice(
             start,
@@ -5674,32 +5885,43 @@ function renderSuperAdminRequestList(){
         );
 
 
+    /* =========================
+       FILTER TABS
+    ========================= */
+
     const tabs = `
-        <div style="
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:5px;
-    margin:10px 0;
-"
+
+        <div class="super-admin-filter-tabs">
 
             ${superAdminFilterButton(
                 'pending',
-                `⏳ Хүлээгдэж буй (${counts.pending})`
+                '⏳',
+                'Хүлээгдэж буй',
+                counts.pending
             )}
 
             ${superAdminFilterButton(
                 'approved',
-                `✅ Зөвшөөрсөн (${counts.approved})`
+                '✅',
+                'Зөвшөөрсөн',
+                counts.approved
             )}
 
             ${superAdminFilterButton(
                 'rejected',
-                `❌ Татгалзсан (${counts.rejected})`
+                '❌',
+                'Татгалзсан',
+                counts.rejected
             )}
 
         </div>
+
     `;
 
+
+    /* =========================
+       REQUEST CARDS
+    ========================= */
 
     let cards = '';
 
@@ -5707,6 +5929,7 @@ function renderSuperAdminRequestList(){
     if(!pageRows.length){
 
         const emptyText = {
+
             pending:
                 'Хүлээгдэж буй хүсэлт алга 🎉',
 
@@ -5715,9 +5938,12 @@ function renderSuperAdminRequestList(){
 
             rejected:
                 'Татгалзсан хүсэлт алга'
+
         };
 
+
         cards = `
+
             <div class="empty-state">
 
                 <div class="empty-icon">
@@ -5729,6 +5955,7 @@ function renderSuperAdminRequestList(){
                 </b>
 
             </div>
+
         `;
 
     }else{
@@ -5737,8 +5964,13 @@ function renderSuperAdminRequestList(){
             pageRows
                 .map(subscriptionRequestCard)
                 .join('');
+
     }
 
+
+    /* =========================
+       PAGINATION
+    ========================= */
 
     let pagination = '';
 
@@ -5746,13 +5978,8 @@ function renderSuperAdminRequestList(){
     if(totalPages > 1){
 
         pagination = `
-            <div
-                class="row between"
-                style="
-                    margin:16px 0 8px;
-                    gap:8px;
-                "
-            >
+
+            <div class="super-admin-pagination">
 
                 <button
                     type="button"
@@ -5766,16 +5993,8 @@ function renderSuperAdminRequestList(){
                 </button>
 
 
-                <div
-                    class="muted"
-                    style="
-                        text-align:center;
-                        white-space:nowrap;
-                    "
-                >
-                    ${SUPER_ADMIN_PAGE}
-                    /
-                    ${totalPages}
+                <div class="muted">
+                    ${SUPER_ADMIN_PAGE} / ${totalPages}
                 </div>
 
 
@@ -5791,7 +6010,9 @@ function renderSuperAdminRequestList(){
                 </button>
 
             </div>
+
         `;
+
     }
 
 
@@ -5808,38 +6029,42 @@ function renderSuperAdminRequestList(){
 
 function superAdminFilterButton(
     status,
-    text
+    icon,
+    label,
+    count
 ){
 
     const active =
         SUPER_ADMIN_FILTER === status;
 
+
     return `
+
         <button
             type="button"
-            onclick="setSuperAdminFilter('${status}')"
-            style="
-               padding:8px 4px;
-                border:none;
-                border-radius:999px;
-                padding:9px 12px;
-                font-weight:800;
-                cursor:pointer;
-
-                background:
-                    ${active
-                        ? '#079b66'
-                        : '#eef5f2'};
-
-                color:
-                    ${active
-                        ? '#ffffff'
-                        : '#526273'};
+            class="
+                super-admin-filter-btn
+                ${active ? 'active' : ''}
             "
+            onclick="setSuperAdminFilter('${status}')"
         >
-            ${text}
+
+            <span class="super-admin-filter-icon">
+                ${icon}
+            </span>
+
+            <span class="super-admin-filter-label">
+                ${label}
+            </span>
+
+            <b class="super-admin-filter-count">
+                ${count}
+            </b>
+
         </button>
+
     `;
+
 }
 
 
@@ -5856,6 +6081,7 @@ function setSuperAdminFilter(status){
         1;
 
     renderSuperAdminRequestList();
+
 }
 
 
@@ -5868,16 +6094,29 @@ function changeSuperAdminPage(direction){
     SUPER_ADMIN_PAGE +=
         direction;
 
+
     if(SUPER_ADMIN_PAGE < 1){
         SUPER_ADMIN_PAGE = 1;
     }
 
+
     renderSuperAdminRequestList();
 
-    window.scrollTo({
-        top:0,
-        behavior:'smooth'
-    });
+
+    const box =
+        document.getElementById(
+            'superAdminRequests'
+        );
+
+    if(box){
+
+        box.scrollIntoView({
+            behavior:'smooth',
+            block:'start'
+        });
+
+    }
+
 }
 
 /* =========================================================
