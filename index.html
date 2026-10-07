@@ -3508,6 +3508,77 @@ body.af-intro-modal-open{overflow:hidden!important}
 .auth-install-btn:active{
     transform:scale(.985);
 }
+ /* =========================================
+   SUPER ADMIN — MOBILE COMPACT
+========================================= */
+
+@media (max-width:600px){
+
+    /* Super Admin үндсэн зай */
+    #superAdminView{
+        padding:10px !important;
+    }
+
+    /* Hero */
+    #superAdminView .super-admin-hero{
+        padding:14px !important;
+        border-radius:16px !important;
+        min-height:0 !important;
+    }
+
+    /* Статистик 3 card */
+    #superAdminStats .three{
+        display:grid !important;
+        grid-template-columns:repeat(3,1fr) !important;
+        gap:6px !important;
+        margin:10px 0 !important;
+    }
+
+    #superAdminStats .card{
+        padding:9px 6px !important;
+        min-height:0 !important;
+        border-radius:12px !important;
+        text-align:center;
+    }
+
+    #superAdminStats .statlabel{
+        font-size:9px !important;
+        line-height:1.15 !important;
+    }
+
+    #superAdminStats .statnum{
+        font-size:18px !important;
+        margin-top:3px !important;
+    }
+
+    /* Хүсэлтийн card */
+    #superAdminRequests > .card{
+        padding:11px !important;
+        margin-bottom:8px !important;
+        border-radius:14px !important;
+    }
+
+    #superAdminRequests .muted{
+        font-size:10px !important;
+    }
+
+    #superAdminRequests b{
+        font-size:12px;
+    }
+
+    /* Card доторх мөрүүд */
+    #superAdminRequests .row{
+        gap:6px !important;
+    }
+
+    /* Баримт */
+    #superAdminRequests .btn{
+        min-height:34px !important;
+        padding:7px 9px !important;
+        font-size:11px !important;
+    }
+
+}
 </style></head><body>
 <div id="toast" class="toast hidden"></div>
 <section id="auth" class="wrap" style="max-width:480px;padding-top:8vh"><div class="card"><div class="auth-brand-banner">
@@ -5605,12 +5676,11 @@ function renderSuperAdminRequestList(){
 
     const tabs = `
         <div style="
-            display:flex;
-            gap:6px;
-            margin:14px 0;
-            overflow-x:auto;
-            padding-bottom:2px;
-        ">
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:5px;
+    margin:10px 0;
+"
 
             ${superAdminFilterButton(
                 'pending',
@@ -5749,7 +5819,7 @@ function superAdminFilterButton(
             type="button"
             onclick="setSuperAdminFilter('${status}')"
             style="
-                flex:0 0 auto;
+               padding:8px 4px;
                 border:none;
                 border-radius:999px;
                 padding:9px 12px;
