@@ -4654,91 +4654,74 @@ body.af-guide-open{
         </div>
     </div>
 
-</div><div class="tabs"><button class="btn primary" onclick="authTab('login')">Нэвтрэх</button><button class="btn soft" onclick="authTab('register')">Бүртгүүлэх</button></div><div id="loginBox"><div class="field">
-    <label>Утасны дугаар</label>
-    <input
-        id="le"
-        type="tel"
-        inputmode="numeric"
-        maxlength="8"
-        placeholder="99112233"
-    >
-</div><div class="field"><label>Нууц үг</label><input id="lp" type="password"></div><button class="btn primary" onclick="login()">Нэвтрэх</button> <button
-    class="btn soft"
-    style="width:100%;margin-top:8px"
-    onclick="openForgotPassword()"
->
-    Нууц үгээ мартсан?
-</button> 
-<!-- =========================================================
-     LOGIN — PUBLIC ACTIONS
-========================================================= -->
+<!-- =========================================
+     LOGIN / REGISTER TABS
+========================================= -->
 
-<div class="auth-public-actions">
-
-    <!-- APP INSTALL -->
+<div class="tabs">
     <button
-        id="installAppBtn"
-        type="button"
-        class="auth-public-item auth-install-item hidden"
-        onclick="installAngiinFond()"
+        class="btn primary"
+        onclick="authTab('login')"
     >
-        <span class="auth-public-icon auth-public-logo">
-            <img
-                src="/icon-192.png"
-                alt="Ангийн фонд"
-            >
-        </span>
-
-        <span class="auth-public-text">
-            <b>📲 Апп суулгах</b>
-            <small>Утасныхаа нүүрэнд нэмээд апп шиг ашиглаарай</small>
-        </span>
-
-        <span class="auth-public-arrow">›</span>
+        Нэвтрэх
     </button>
 
-
-    <!-- USER GUIDE -->
     <button
-        type="button"
-        class="auth-public-item"
-        onclick="openAfGuide()"
+        class="btn soft"
+        onclick="authTab('register')"
     >
-        <span class="auth-public-icon auth-guide-icon">
-            📘
-        </span>
+        Бүртгүүлэх
+    </button>
+</div>
 
-        <span class="auth-public-text">
-            <b>Ашиглах заавар</b>
-            <small>Ангийн фонд аппыг хэрхэн ашиглах вэ?</small>
-        </span>
 
-        <span class="auth-public-arrow">›</span>
+<!-- =========================================
+     LOGIN BOX
+========================================= -->
+
+<div id="loginBox">
+
+    <div class="field">
+        <label>Утасны дугаар</label>
+
+        <input
+            id="le"
+            type="tel"
+            inputmode="numeric"
+            maxlength="8"
+            placeholder="99112233"
+        >
+    </div>
+
+    <div class="field">
+        <label>Нууц үг</label>
+
+        <input
+            id="lp"
+            type="password"
+        >
+    </div>
+
+    <button
+        class="btn primary"
+        onclick="login()"
+    >
+        Нэвтрэх
     </button>
 
-
-    <!-- APP INTRO -->
     <button
-        type="button"
-        class="auth-public-item"
-        onclick="toggleAppIntro()"
+        class="btn soft"
+        style="width:100%;margin-top:8px"
+        onclick="openForgotPassword()"
     >
-        <span class="auth-public-icon auth-about-icon">
-            📖
-        </span>
-
-        <span class="auth-public-text">
-            <b>Аппын дэлгэрэнгүй танилцуулга</b>
-            <small>Ангийн фонд хэрхэн ажилладагтай танилцах</small>
-        </span>
-
-        <span class="auth-public-arrow">›</span>
+        Нууц үгээ мартсан?
     </button>
 
 </div>
- <!-- =========================================
-     REGISTER BOX — RESTORED
+
+
+<!-- =========================================
+     REGISTER BOX
 ========================================= -->
 
 <div id="registerBox" class="hidden">
@@ -4747,6 +4730,7 @@ body.af-guide-open{
 
         <div class="field">
             <label>Овог нэр</label>
+
             <input
                 id="rn"
                 type="text"
@@ -4756,6 +4740,7 @@ body.af-guide-open{
 
         <div class="field">
             <label>Утасны дугаар</label>
+
             <input
                 id="rpPhone"
                 type="tel"
@@ -4767,6 +4752,7 @@ body.af-guide-open{
 
         <div class="field">
             <label>Нууц үг</label>
+
             <input
                 id="rp"
                 type="password"
@@ -4793,7 +4779,6 @@ body.af-guide-open{
             class="card"
             style="background:#f0fff6"
         >
-
             <b>📱 Утас баталгаажуулах</b>
 
             <p
@@ -4812,7 +4797,6 @@ body.af-guide-open{
                     padding:12px;
                 "
             ></div>
-
         </div>
 
         <button
@@ -4833,6 +4817,81 @@ body.af-guide-open{
         </button>
 
     </div>
+
+</div>
+
+
+<!-- =========================================
+     PUBLIC ACTIONS
+========================================= -->
+
+<div class="auth-public-actions">
+
+    <!-- APP INSTALL -->
+    <button
+        id="installAppBtn"
+        type="button"
+        class="auth-public-item auth-install-item hidden"
+        onclick="installAngiinFond()"
+    >
+        <span class="auth-public-icon auth-public-logo">
+            <img
+                src="/icon-192.png"
+                alt="Ангийн фонд"
+            >
+        </span>
+
+        <span class="auth-public-text">
+            <b>📲 Апп суулгах</b>
+            <small>
+                Утасныхаа нүүрэнд нэмээд апп шиг ашиглаарай
+            </small>
+        </span>
+
+        <span class="auth-public-arrow">›</span>
+    </button>
+
+
+    <!-- USER GUIDE -->
+    <button
+        type="button"
+        class="auth-public-item"
+        onclick="openAfGuide()"
+    >
+        <span class="auth-public-icon auth-guide-icon">
+            📘
+        </span>
+
+        <span class="auth-public-text">
+            <b>Ашиглах заавар</b>
+            <small>
+                Ангийн фонд аппыг хэрхэн ашиглах вэ?
+            </small>
+        </span>
+
+        <span class="auth-public-arrow">›</span>
+    </button>
+
+
+    <!-- APP INTRO -->
+    <button
+        type="button"
+        class="auth-public-item"
+        onclick="toggleAppIntro()"
+    >
+        <span class="auth-public-icon auth-about-icon">
+            📖
+        </span>
+
+        <span class="auth-public-text">
+            <b>Аппын дэлгэрэнгүй танилцуулга</b>
+            <small>
+                Ангийн фонд хэрхэн ажилладагтай танилцах
+            </small>
+        </span>
+
+        <span class="auth-public-arrow">›</span>
+    </button>
 
 </div>
 <section class="af-landing" id="afLandingIntro">
