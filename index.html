@@ -4786,7 +4786,12 @@ body.af-intro-modal-open{overflow:hidden!important}
 <div id="home" class="page"></div><div id="children" class="page hidden"></div><div id="funds" class="page hidden"></div><div id="payments" class="page hidden"></div><div id="report" class="page hidden"></div><div id="settings" class="page hidden"></div></div></div></section><div id="modal" class="modal hidden" onclick="if(event.target===this)closeModal()"><div id="modalBody" class="modalbox"></div></div>
 <script>
 const SUPABASE_URL="https://fjvjtujwnbsonycgxuuu.supabase.co";const SUPABASE_KEY="sb_publishable_0QwVZZJsw_J0iHTov07o5A_ykK11Uai";const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-let U=null,G=null,M=null,DATA={}; let FUND_VIEW_MONTH = new Date()
+let U=null,G=null,M=null,DATA={};
+ let SUPER_ADMIN_FILTER = 'pending';
+let SUPER_ADMIN_PAGE = 1;
+const SUPER_ADMIN_PAGE_SIZE = 20;
+let SUPER_ADMIN_REQUESTS = [];
+ let FUND_VIEW_MONTH = new Date()
     .toISOString()
     .slice(0, 7); let INVITE_CHILD_FLOW = false; const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const money=n=>new Intl.NumberFormat('mn-MN').format(Number(n||0))+'₮';function toast(s){$('toast').textContent=s;$('toast').classList.remove('hidden');setTimeout(()=>$('toast').classList.add('hidden'),2500)}function modal(h){$('modalBody').innerHTML=h;$('modal').classList.remove('hidden')}async function closeModal(){
 
@@ -5409,7 +5414,7 @@ async function loadSuperAdminRequests(){
 
         const requests =
             data || [];
-
+SUPER_ADMIN_REQUESTS = requests;
 
         const pendingCount =
             requests.filter(
@@ -5502,12 +5507,7 @@ async function loadSuperAdminRequests(){
         }
 
 
-        box.innerHTML =
-            requests
-                .map(
-                    subscriptionRequestCard
-                )
-                .join('');
+      renderSuperAdminRequestList();
 
     }
     catch(error){
@@ -5539,7 +5539,276 @@ async function loadSuperAdminRequests(){
         `;
     }
 }
+/* =========================================================
+   SUPER ADMIN REQUEST FILTER + PAGINATION
+========================================================= */
 
+function renderSuperAdminRequestList(){
+
+    const box =
+        $('superAdminRequests');
+
+    if(!box){
+        return;
+    }
+
+
+    const counts = {
+        pending:
+            SUPER_ADMIN_REQUESTS.filter(
+                r => r.status === 'pending'
+            ).length,
+
+        approved:
+            SUPER_ADMIN_REQUESTS.filter(
+                r => r.status === 'approved'
+            ).length,
+
+        rejected:
+            SUPER_ADMIN_REQUESTS.filter(
+                r => r.status === 'rejected'
+            ).length
+    };
+
+
+    const filtered =
+        SUPER_ADMIN_REQUESTS.filter(
+            r => r.status === SUPER_ADMIN_FILTER
+        );
+
+
+    const totalPages =
+        Math.max(
+            1,
+            Math.ceil(
+                filtered.length /
+                SUPER_ADMIN_PAGE_SIZE
+            )
+        );
+
+
+    if(SUPER_ADMIN_PAGE > totalPages){
+        SUPER_ADMIN_PAGE = totalPages;
+    }
+
+
+    const start =
+        (SUPER_ADMIN_PAGE - 1) *
+        SUPER_ADMIN_PAGE_SIZE;
+
+    const pageRows =
+        filtered.slice(
+            start,
+            start + SUPER_ADMIN_PAGE_SIZE
+        );
+
+
+    const tabs = `
+        <div style="
+            display:flex;
+            gap:6px;
+            margin:14px 0;
+            overflow-x:auto;
+            padding-bottom:2px;
+        ">
+
+            ${superAdminFilterButton(
+                'pending',
+                `⏳ Хүлээгдэж буй (${counts.pending})`
+            )}
+
+            ${superAdminFilterButton(
+                'approved',
+                `✅ Зөвшөөрсөн (${counts.approved})`
+            )}
+
+            ${superAdminFilterButton(
+                'rejected',
+                `❌ Татгалзсан (${counts.rejected})`
+            )}
+
+        </div>
+    `;
+
+
+    let cards = '';
+
+
+    if(!pageRows.length){
+
+        const emptyText = {
+            pending:
+                'Хүлээгдэж буй хүсэлт алга 🎉',
+
+            approved:
+                'Зөвшөөрсөн хүсэлт алга',
+
+            rejected:
+                'Татгалзсан хүсэлт алга'
+        };
+
+        cards = `
+            <div class="empty-state">
+
+                <div class="empty-icon">
+                    📭
+                </div>
+
+                <b>
+                    ${emptyText[SUPER_ADMIN_FILTER]}
+                </b>
+
+            </div>
+        `;
+
+    }else{
+
+        cards =
+            pageRows
+                .map(subscriptionRequestCard)
+                .join('');
+    }
+
+
+    let pagination = '';
+
+
+    if(totalPages > 1){
+
+        pagination = `
+            <div
+                class="row between"
+                style="
+                    margin:16px 0 8px;
+                    gap:8px;
+                "
+            >
+
+                <button
+                    type="button"
+                    class="btn soft"
+                    ${SUPER_ADMIN_PAGE <= 1
+                        ? 'disabled'
+                        : ''}
+                    onclick="changeSuperAdminPage(-1)"
+                >
+                    ← Өмнөх
+                </button>
+
+
+                <div
+                    class="muted"
+                    style="
+                        text-align:center;
+                        white-space:nowrap;
+                    "
+                >
+                    ${SUPER_ADMIN_PAGE}
+                    /
+                    ${totalPages}
+                </div>
+
+
+                <button
+                    type="button"
+                    class="btn soft"
+                    ${SUPER_ADMIN_PAGE >= totalPages
+                        ? 'disabled'
+                        : ''}
+                    onclick="changeSuperAdminPage(1)"
+                >
+                    Дараах →
+                </button>
+
+            </div>
+        `;
+    }
+
+
+    box.innerHTML =
+        tabs +
+        cards +
+        pagination;
+}
+
+
+/* =========================================================
+   FILTER BUTTON
+========================================================= */
+
+function superAdminFilterButton(
+    status,
+    text
+){
+
+    const active =
+        SUPER_ADMIN_FILTER === status;
+
+    return `
+        <button
+            type="button"
+            onclick="setSuperAdminFilter('${status}')"
+            style="
+                flex:0 0 auto;
+                border:none;
+                border-radius:999px;
+                padding:9px 12px;
+                font-weight:800;
+                cursor:pointer;
+
+                background:
+                    ${active
+                        ? '#079b66'
+                        : '#eef5f2'};
+
+                color:
+                    ${active
+                        ? '#ffffff'
+                        : '#526273'};
+            "
+        >
+            ${text}
+        </button>
+    `;
+}
+
+
+/* =========================================================
+   CHANGE FILTER
+========================================================= */
+
+function setSuperAdminFilter(status){
+
+    SUPER_ADMIN_FILTER =
+        status;
+
+    SUPER_ADMIN_PAGE =
+        1;
+
+    renderSuperAdminRequestList();
+}
+
+
+/* =========================================================
+   CHANGE PAGE
+========================================================= */
+
+function changeSuperAdminPage(direction){
+
+    SUPER_ADMIN_PAGE +=
+        direction;
+
+    if(SUPER_ADMIN_PAGE < 1){
+        SUPER_ADMIN_PAGE = 1;
+    }
+
+    renderSuperAdminRequestList();
+
+    window.scrollTo({
+        top:0,
+        behavior:'smooth'
+    });
+}
 
 /* =========================================================
    REQUEST CARD
