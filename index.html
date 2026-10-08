@@ -16130,38 +16130,22 @@ window.addEventListener(
 
 function showInstallButton(){
 
-    const btn =
-        document.getElementById("installAppBtn");
+    const btn = document.getElementById("installAppBtn");
 
     if(!btn) return;
 
+    const installed =
+        window.matchMedia("(display-mode: standalone)").matches ||
+        window.navigator.standalone === true;
 
-    /* Аль хэдийн суулгасан бол харуулахгүй */
-
-    if(isStandalone){
-
+    if(installed){
         btn.classList.add("hidden");
-
         return;
     }
 
-
-    /*
-       iPhone дээр browser install event байдаггүй.
-       Тиймээс заавар харуулахын тулд товчийг гаргана.
-    */
-
-    if(
-        deferredInstallPrompt ||
-        isIOSDevice
-    ){
-
-        btn.classList.remove("hidden");
-
-    }
-
+    // Android, iPhone аль алинд нь товч харуулна
+    btn.classList.remove("hidden");
 }
-
 
 /* Install */
 
@@ -16189,16 +16173,20 @@ async function installAngiinFond(){
        ANDROID / CHROME
     ============================== */
 
-    if(!deferredInstallPrompt){
+  if(!deferredInstallPrompt){
 
-        alert(
-            "Апп суулгах боломж одоогоор идэвхжээгүй байна.\n\n" +
-            "Chrome browser-оор сайтаа нээгээд дахин оролдоно уу."
-        );
+    alert(
+        "📲 Ангийн фонд суулгах\n\n" +
+        "1. Линкийг Google Chrome-оор нээнэ.\n" +
+        "2. Баруун дээд булангийн ⋮ цэсийг дарна.\n" +
+        "3. 'Install app' эсвэл 'Add to Home screen' сонгоно.\n" +
+        "4. Install / Add дарна.\n\n" +
+        "Хэрэв Facebook эсвэл Messenger дотор нээсэн бол " +
+        "эхлээд Chrome браузерт нээнэ үү."
+    );
 
-        return;
-    }
-
+    return;
+}
 
     deferredInstallPrompt.prompt();
 
